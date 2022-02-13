@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 const validChannels = [
+  "IPC_READY",
   "LOCKFILE_UPDATE",
   "VALORANT_PRESENCES",
   "VALORANT_SOCKET_READY",
@@ -16,15 +17,15 @@ contextBridge.exposeInMainWorld("ipc", {
       ipcRenderer.send(channel, data);
     }
   },
-  sendSync: (channel, data) => {
-    if (validChannels.includes(channel)) {
-      return ipcRenderer.sendSync(channel, data);
-    }
-  },
   on: (channel, func) => {
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender`
-      ipcRenderer.on(channel, (event, ...args) => func(args));
+      ipcRenderer.on(channel, (event, ...args) => func(...args));
+    }
+  },
+  invoke: (channel, ...args) => {
+    if (validChannels.includes(channel)) {
+      return ipcRenderer.invoke(channel, ...args);
     }
   },
 });

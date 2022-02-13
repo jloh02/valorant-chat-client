@@ -1,30 +1,108 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div v-if="this.riotAlive">
+    <div id="nav">
+      <router-link to="/">Chat</router-link>
+      <router-link to="/home">In-Game</router-link>
+      <router-link to="/about">Agent Select</router-link>
+    </div>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" :key="$route.path" />
+      </transition>
+    </router-view>
   </div>
-  <router-view />
+  <RiotClientClosed v-else />
 </template>
 
-<style>
+<script lang="ts">
+import { defineComponent } from "vue";
+import { ValorantPresence } from "@/ipc_main/valorant_presence";
+import RiotClientClosed from "@/views/RiotClientClosed.vue";
+
+export default defineComponent({
+  name: "App",
+  components: { RiotClientClosed },
+  data: () => {
+    return {
+      riotAlive: false,
+    };
+  },
+  mounted() {
+    while (!window.ipc);
+
+    window.ipc.send("IPC_READY");
+
+    window.ipc.on("LOCKFILE_UPDATE", (ready) => {
+      this.riotAlive = ready;
+      console.log(this.riotAlive);
+    });
+
+    window.ipc.on(
+      "VALORANT_PRESENCES",
+      (new_presences: Map<string, ValorantPresence>) => {
+        new_presences.forEach((v, k) =>
+          this.$store.commit("updatePresence", { k, v })
+        );
+      }
+    );
+  },
+});
+</script>
+
+<style lang="postcss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Segoe UI", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  @apply bg-gray-800 text-white 
+  text-center text-base 
+  h-screen w-screen
+  min-h-screen max-h-screen;
+}
+
+#app > div {
+  @apply absolute top-0 bottom-0 w-full h-full;
 }
 
 #nav {
-  padding: 30px;
+  @apply flex 
+  m-auto h-12 max-w-1/2
+  justify-center items-end;
 }
 
 #nav a {
-  font-weight: bold;
-  color: #2c3e50;
+  @apply relative flex-1
+  py-3 px-7  
+  font-bold hover:text-lg;
+}
+
+#nav a:after {
+  content: "";
+  transition: all 300ms ease-in;
+  transform: translate(50%, 0);
+  @apply w-0;
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  @apply text-lg;
+}
+
+#nav a.router-link-exact-active:after {
+  transition: all 300ms ease-in;
+  transform: translate(0, 0);
+  @apply absolute bottom-0 left-1/4 
+  h-0.5 w-1/2
+  bg-white;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from {
+  @apply opacity-100;
+}
+.fade-leave-to {
+  @apply opacity-0;
 }
 </style>

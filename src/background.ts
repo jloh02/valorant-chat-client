@@ -1,7 +1,7 @@
 "use strict";
 
-import { resolve, join } from "path";
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import { join } from "path";
+import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { initialize_valorant_api } from "@/ipc_main/valorant";

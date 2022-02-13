@@ -50,8 +50,8 @@ export class LCUWebsocket {
         }
         li(jsonMsg[2]);
       } catch (e) {
-        // console.log(data.toString());
-        // console.log(e);
+        console.log(data.toString());
+        console.log(e);
         console.log("JSON parse error");
       }
     });

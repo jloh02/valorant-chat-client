@@ -15,10 +15,4 @@ export default defineComponent({
     HelloWorld,
   },
 });
-
-while (!window.ipc);
-
-window.ipc.on("LOCKFILE_UPDATE", (event, args) => {
-  console.log("Update");
-});
 </script>

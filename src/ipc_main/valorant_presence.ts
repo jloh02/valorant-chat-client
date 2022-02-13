@@ -12,8 +12,12 @@ export class ValorantPresence {
   score_enemy: number;
   party_id: string;
   party_size: number;
+  card_id: string;
+  title_id: string;
 
   constructor(presence: any) {
+    // console.log(presence);
+
     this.state = presence["state"];
     this.ign = `${presence["game_name"]}#${presence["game_tag"]}`;
     this.pid = presence["pid"];
@@ -22,12 +26,16 @@ export class ValorantPresence {
       Buffer.from(presence["private"], "base64").toString("ascii")
     );
 
+    // console.log(private_presence);
+
     this.game_state = private_presence["sessionLoopState"];
     this.game_mode = private_presence["queueId"];
     this.score_ally = private_presence["partyOwnerMatchScoreAllyTeam"];
     this.score_enemy = private_presence["partyOwnerMatchScoreEnemyTeam"];
     this.party_id = private_presence["partyId"];
     this.party_size = private_presence["partySize"];
+    this.card_id = private_presence["playerCardId"];
+    this.title_id = private_presence["playerTitleId"];
   }
 }
 
