@@ -69,6 +69,8 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
   axios.defaults.headers.common["Content-Type"] = "application/json";
   var ready = false,
     started = false;
+
+  //TODO debug permanent failure
   ipcMain.on("IPC_READY", () => {
     if (started) return;
     started = true;
@@ -80,12 +82,12 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
         "\\VALORANT\\Saved\\Logs\\ShooterGame.log"
       );
       if (lockfile === prev_lockfile) {
-        win.webContents.send("LOCKFILE_UPDATE", ready);
+        win.webContents.send("LOCKFILE_UPDATE", ready, puuid);
         return;
       }
       if (!lockfile || !logs) {
         ready = false;
-        win.webContents.send("LOCKFILE_UPDATE", false);
+        win.webContents.send("LOCKFILE_UPDATE", false, undefined);
         return;
       }
       prev_lockfile = lockfile;
@@ -162,7 +164,7 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
         create_agent_select_listeners();
 
         ready = true;
-        win.webContents.send("LOCKFILE_UPDATE", true);
+        win.webContents.send("LOCKFILE_UPDATE", true, puuid);
       });
 
       // query(RequestType.PD, "GET", `/mmr/v1/players/${puuid}`).then((r) => {

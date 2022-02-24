@@ -27,15 +27,16 @@ export default defineComponent({
       riotAlive: false,
     };
   },
-  mounted() {
+  created() {
     while (!window.ipc);
 
-    window.ipc.send("IPC_READY");
-
-    window.ipc.on("LOCKFILE_UPDATE", (ready) => {
+    window.ipc.on("LOCKFILE_UPDATE", (ready, puuid) => {
       this.riotAlive = ready;
       console.log(this.riotAlive);
+      if (puuid) this.$store.commit("updatePuuid", puuid);
     });
+
+    window.ipc.send("IPC_READY");
 
     window.ipc.on(
       "VALORANT_PRESENCES",

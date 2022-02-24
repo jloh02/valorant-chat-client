@@ -24,8 +24,9 @@
 import { defineComponent } from "vue";
 import { getPlayerCardSrc } from "@/js/valo-api";
 import ValoIconSvg from "@/components/ValoIconSvg.vue";
+import { ValorantPresence } from "@/ipc_main/valorant_presence";
 
-//TODO tooltip with note/full ign
+//TODO tooltip with note/full ign + party size
 
 function capsFirstLetter(input: string): string {
   return input.charAt(0).toUpperCase() + input.slice(1);
@@ -33,7 +34,7 @@ function capsFirstLetter(input: string): string {
 
 export default defineComponent({
   name: "ChatListItem",
-  props: ["active", "puuid", "presence", "data", "unread"],
+  props: ["active", "puuid", "data", "unread"],
   components: { ValoIconSvg },
   data: () => {
     return { card: "", status: "", statusColor: "" };
@@ -42,42 +43,53 @@ export default defineComponent({
     getBoxClass() {
       return this.active ? "chat-list-item active" : "chat-list-item";
     },
+    presence() {
+      return this.$store.state.presences.get(this.puuid);
+    },
   },
-  mounted() {
-    if (this.presence && this.presence.card_id) {
-      getPlayerCardSrc(this.presence.card_id).then((card) => {
-        if (card) this.card = card;
-      });
+  watch: {
+    presence: function (p) {
+      this.updatePresence(p);
+    },
+  },
+  methods: {
+    updatePresence(presence: ValorantPresence | undefined) {
+      if (presence && presence.card_id) {
+        getPlayerCardSrc(presence.card_id).then((card) => {
+          if (card) this.card = card;
+        });
 
-      if (this.presence.state == "away") {
-        this.status = "Away";
-        this.statusColor = "away";
-      } else if (this.presence.game_state == "INGAME") {
-        this.statusColor = "ingame";
-        if (this.presence.game_mode == "In Range") {
-          this.status = "In Range";
-        } else {
-          this.status = `${capsFirstLetter(this.presence.game_mode)} ${
-            this.presence.score_ally
-          }-${this.presence.score_enemy}`;
+        if (presence.state == "away") {
+          this.status = "Away";
+          this.statusColor = "away";
+        } else if (presence.game_state == "INGAME") {
+          this.statusColor = "ingame";
+          if (presence.game_mode == "In Range") {
+            this.status = "In Range";
+          } else {
+            this.status = `${capsFirstLetter(presence.game_mode)} ${
+              presence.score_ally
+            }-${presence.score_enemy}`;
+          }
+        } else if (presence.game_state == "MENUS") {
+          this.status = "Online";
+          this.statusColor = "online";
+        } /*PREGAME*/ else {
+          this.status = `Agent Select (${capsFirstLetter(presence.game_mode)})`;
+          this.statusColor = "ingame";
         }
-      } else if (this.presence.game_state == "MENUS") {
-        this.status = "Online";
-        this.statusColor = "online";
-      } /*PREGAME*/ else {
-        this.status = `Agent Select (${capsFirstLetter(
-          this.presence.game_mode
-        )})`;
-        this.statusColor = "ingame";
       }
-    }
+    },
+  },
+  created() {
+    this.updatePresence(this.presence);
   },
 });
 </script>
 
 <style lang="postcss">
 li.chat-list-item {
-  @apply flex justify-start items-center px-1 py-1 my-1 mx-1 h-full;
+  @apply flex justify-start items-center text-left px-1 py-1 my-1 mx-1 h-full;
 }
 
 .chat-list-item {
@@ -89,6 +101,8 @@ li.chat-list-item {
 }
 
 .chat-list-item.card {
+  min-height: 3rem;
+  min-width: 3rem;
   @apply h-12 w-12 p-1;
 }
 .chat-list-item.text {

@@ -4,6 +4,7 @@ const store = createStore({
   state() {
     //data
     return {
+      puuid: "",
       presences: new Map(),
     };
   },
@@ -17,6 +18,9 @@ const store = createStore({
     //Set/update data
     updatePresence(state: any, record) {
       state.presences.set(record.k, record.v);
+    },
+    updatePuuid(state: any, puuid) {
+      state.puuid = puuid;
     },
   },
 });

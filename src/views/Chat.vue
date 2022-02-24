@@ -9,15 +9,31 @@
           :message="msg.message"
         />
       </ul>
+      <div class="chat-dashboard input-bar">
+        <div class="chat-dashboard input-bar label">
+          <p>{{ this.puuidToName.get(this.active) }}</p>
+        </div>
+        <input
+          id="text-msg-input"
+          type="text"
+          placeholder="Enter message here"
+          class="chat-dashboard input-bar input"
+        />
+      </div>
     </div>
     <div id="chat-list">
       <div id="chat-search">
         <font-awesome-icon class="chat-search-icon" icon="search" />
-        <input id="search-box" type="text" placeholder="Search" />
+        <input
+          v-model="this.searchField"
+          id="search-box"
+          type="text"
+          placeholder="Search"
+        />
       </div>
       <ul class="chat-list-presences">
         <button
-          v-for="f in this.friends"
+          v-for="f in this.filteredFriends"
           :key="f.puuid"
           @click="setActive(f.puuid)"
         >
@@ -26,7 +42,6 @@
             :unread="unreadChats.has(this.active)"
             :puuid="f.puuid"
             :data="f"
-            :presence="this.presences.get(f.puuid)"
           />
         </button>
       </ul>
@@ -39,6 +54,8 @@ import { defineComponent } from "vue";
 import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
 
+//TODO start messages scrolled to bottom
+
 export default defineComponent({
   name: "Chat",
   components: { ChatListItem, ChatMessage },
@@ -46,21 +63,70 @@ export default defineComponent({
     return {
       active: "",
       friends: [],
+      searchField: "",
+      puuidToName: new Map(),
       unreadChats: new Set(),
       messages: new Map(),
     };
   },
   computed: {
-    presences() {
-      return this.$store.state.presences;
+    //Filter then sort friends
+    filteredFriends(): any[] {
+      console.log(this.friends);
+
+      //Object references to avoid ambiguous "this" error
+      let unreadTemp = this.unreadChats;
+      let presTemp = this.$store.state.presences;
+      let searchField = this.searchField;
+
+      return this.friends
+        .filter(function (friend: any) {
+          if (searchField.length == 0) return true;
+          if (
+            friend["game_name"]
+              .toLowerCase()
+              .startsWith(searchField.toLowerCase())
+          )
+            return true;
+          if (
+            friend["note"].length &&
+            friend["note"].toLowerCase().startsWith(searchField.toLowerCase())
+          )
+            return true;
+          return false;
+        })
+        .sort(function (a, b) {
+          const readA = unreadTemp.has(a["puuid"]);
+          const readB = unreadTemp.has(b["puuid"]);
+          if (readA != readB) return (readA ? 1 : 0) - (readB ? 1 : 0);
+
+          const onlineA = presTemp.has(a["puuid"]);
+          const onlineB = presTemp.has(b["puuid"]);
+          if (onlineA != onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
+
+          //TODO party grouping
+
+          return ("" + a["game_name"]).localeCompare(b["game_name"]);
+        });
     },
   },
   methods: {
     setActive(puuid: string) {
       this.active = puuid;
       this.unreadChats.delete(puuid);
-      console.log(this.messages);
-      console.log(this.messages.get(this.active));
+    },
+    updateMessages(messages: any[]) {
+      for (var msg of messages) {
+        const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
+
+        if (!msg["read"]) this.unreadChats.add(msg["puuid"]);
+        if (!this.messages.has(msgCidPuuid)) this.messages.set(msgCidPuuid, []);
+
+        this.messages.get(msgCidPuuid).push({
+          outgoing: msg["puuid"] != msgCidPuuid,
+          message: msg["body"],
+        });
+      }
     },
   },
   mounted() {
@@ -68,46 +134,23 @@ export default defineComponent({
 
     window.ipc.invoke("VALORANT_CHAT_FRIENDS").then((httpFriends) => {
       this.friends = httpFriends["data"]["friends"];
-      let presTemp = this.presences;
-      let unreadTemp = this.unreadChats;
-      let msgsTemp = this.messages;
 
       if (!window.ipc) return;
       window.ipc.invoke("VALORANT_CHAT_HISTORY").then((httpChat) => {
-        for (var msg of httpChat["data"]["messages"]) {
-          console.log(msg);
-
-          const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
-          console.log(msgCidPuuid);
-
-          if (!msg["read"]) unreadTemp.add(msg["puuid"]);
-          if (!msgsTemp.has(msgCidPuuid)) msgsTemp.set(msgCidPuuid, []);
-
-          msgsTemp.get(msgCidPuuid).push({
-            outgoing: msg["puuid"] != msgCidPuuid,
-            message: msg["body"],
-          });
-        }
+        this.updateMessages(httpChat["data"]["messages"]);
+        this.active = this.filteredFriends[0]["puuid"];
       });
 
-      this.friends.sort(function (a, b) {
-        const readA = unreadTemp.has(a["puuid"]);
-        const readB = unreadTemp.has(b["puuid"]);
-        if (readA != readB) return (readA ? 1 : 0) - (readB ? 1 : 0);
-
-        const onlineA = presTemp.has(a["puuid"]);
-        const onlineB = presTemp.has(b["puuid"]);
-        if (onlineA != onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
-
-        //TODO online/offline grouping
-
-        //TODO party grouping
-
-        return ("" + a["game_name"]).localeCompare(b["game_name"]);
+      this.friends.forEach((f) => {
+        this.puuidToName.set(f["puuid"], f["game_name"]);
       });
-
-      this.active = this.friends[0]["puuid"];
     });
+
+    // window.ipc.send(
+    //   "VALORANT_SOCKET_SUBSCRIBE",
+    //   "OnJsonApiEvent_chat_v6_messages",
+    //   (data: JSON) => {}
+    // );
   },
 });
 </script>
@@ -115,22 +158,33 @@ export default defineComponent({
 <style lang="postcss">
 .chat {
   max-height: calc(100% - 3rem);
+  height: calc(100% - 3rem);
   @apply flex;
 }
 #chat-dashboard {
-  @apply flex flex-col w-full m-2;
+  @apply flex flex-col justify-end w-full m-2;
 }
 
 .chat-dashboard.messages {
+  @apply overflow-y-scroll pr-3;
+}
 
 .chat-dashboard.input-bar {
-  @apply bg-stone-600 w-full h-12;
+  @apply flex bg-stone-600 w-full m-1 rounded;
+}
+.chat-dashboard.input-bar.label {
+  @apply bg-stone-700 min-w-fit w-1/5 m-0 p-1 px-3 rounded-r-none whitespace-nowrap;
+}
+.chat-dashboard.input-bar.input {
+  @apply bg-transparent w-full m-0 p-1 px-3 active:border-none;
 }
 
 #chat-list {
+  min-width: 33.333%;
+  max-width: 33.333%;
   @apply flex flex-col w-1/3
   items-center
-  m-2;
+  my-2 mr-2;
 }
 
 #chat-search {

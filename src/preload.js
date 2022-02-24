@@ -14,9 +14,10 @@ const validChannels = [
   "VALORANT_CHAT_HISTORY",
 ];
 contextBridge.exposeInMainWorld("ipc", {
-  send: (channel, data) => {
+  send: (channel, ...args) => {
     if (validChannels.includes(channel)) {
-      ipcRenderer.send(channel, data);
+      console.log(args);
+      ipcRenderer.send(channel, ...args);
     }
   },
   on: (channel, func) => {

@@ -24,17 +24,19 @@ export default defineComponent({
 
 <style lang="postcss">
 .chat-dashboard.msg {
-  @apply flex w-full;
+  @apply flex text-justify;
 }
 .msg-outgoing {
+  margin-left: 25%;
   @apply justify-end;
 }
 .msg-incoming {
+  margin-right: 25%;
   @apply justify-start;
 }
 
 .chat-dashboard.msg div {
-  @apply p-3 m-1 rounded-md;
+  @apply p-3 m-1 rounded;
 }
 .msg-outgoing div {
   @apply bg-stone-700;
