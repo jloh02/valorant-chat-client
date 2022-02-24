@@ -37,9 +37,9 @@ export default defineComponent({
   @apply p-3 m-1 rounded-md;
 }
 .msg-outgoing div {
-  @apply bg-gray-700;
+  @apply bg-stone-700;
 }
 .msg-incoming div {
-  @apply bg-gray-900;
+  @apply bg-stone-900;
 }
 </style>

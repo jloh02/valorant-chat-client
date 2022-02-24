@@ -55,7 +55,7 @@ export default defineComponent({
   font-family: "Segoe UI", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-gray-800 text-white 
+  @apply bg-stone-800 text-white 
   text-center text-base 
   h-screen w-screen
   min-h-screen max-h-screen;

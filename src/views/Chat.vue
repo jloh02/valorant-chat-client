@@ -122,7 +122,9 @@ export default defineComponent({
 }
 
 .chat-dashboard.messages {
-  @apply overflow-y-scroll;
+
+.chat-dashboard.input-bar {
+  @apply bg-stone-600 w-full h-12;
 }
 
 #chat-list {
@@ -133,7 +135,7 @@ export default defineComponent({
 
 #chat-search {
   min-height: 2.5rem;
-  @apply flex w-4/5 h-10 px-3 py-1 my-1 bg-gray-700
+  @apply flex w-4/5 h-10 px-3 py-1 my-1 bg-stone-700
   justify-start items-center 
   rounded-sm overflow-hidden
   focus:outline-none;
@@ -142,7 +144,7 @@ export default defineComponent({
   @apply h-4/5 w-auto p-1;
 }
 #search-box {
-  @apply w-full bg-gray-700;
+  @apply w-full bg-stone-700;
 }
 
 .chat-list-presences {
@@ -159,6 +161,6 @@ ul::-webkit-scrollbar-thumb {
   @apply bg-transparent outline-none rounded-sm;
 }
 ul:hover::-webkit-scrollbar-thumb {
-  @apply bg-gray-700 transition-colors;
+  @apply bg-stone-700 transition-colors;
 }
 </style>

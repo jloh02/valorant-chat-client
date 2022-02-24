@@ -85,7 +85,7 @@ li.chat-list-item {
 }
 
 .chat-list-item.active {
-  @apply bg-gray-700 rounded-sm;
+  @apply bg-stone-700 rounded-sm;
 }
 
 .chat-list-item.card {
