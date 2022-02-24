@@ -5,10 +5,7 @@ import { readFileSync } from "fs";
 import { BrowserWindow, ipcMain } from "electron";
 import { LCUWebsocket } from "@/ipc_main/lcu_websocket";
 import axios, { AxiosRequestHeaders, AxiosResponse, Method } from "axios";
-import {
-  ValorantPresence,
-  process_valorant_presence,
-} from "@/ipc_main/valorant_presence";
+import { process_valorant_presence } from "@/ipc_main/valorant_presence";
 
 let ws: LCUWebsocket;
 let win: BrowserWindow;
@@ -159,11 +156,14 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
       ws.onReady(() => {
         win.webContents.send("VALORANT_SOCKET_READY");
         initialize_presence_monitoring();
-      });
 
-      create_lcusocket_listeners();
-      create_chat_listeners();
-      create_agent_select_listeners();
+        create_lcusocket_listeners();
+        create_chat_listeners();
+        create_agent_select_listeners();
+
+        ready = true;
+        win.webContents.send("LOCKFILE_UPDATE", true);
+      });
 
       // query(RequestType.PD, "GET", `/mmr/v1/players/${puuid}`).then((r) => {
       //   console.log("Testing");
@@ -196,8 +196,6 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
       //   true
       // );
       // if (friendRet) console.log(friendRet.data);
-      ready = true;
-      win.webContents.send("LOCKFILE_UPDATE", true);
     }, 5000);
   });
 }

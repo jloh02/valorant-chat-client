@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios";
 export class ValorantPresence {
   ign: string;
   pid: string;
-  state: string; //TODO check "away"
+  state: string;
   game_state: string; // INGAME, PREGAME, MENUS
   game_mode: string; //"spikerush", "competitive", "deathmatch", "unrated", "snowball" or empty str (custom game)
   score_ally: number;
@@ -29,7 +29,10 @@ export class ValorantPresence {
     // console.log(private_presence);
 
     this.game_state = private_presence["sessionLoopState"];
-    this.game_mode = private_presence["queueId"];
+    this.game_mode =
+      private_presence["provisioningFlow"] == "ShootingRange"
+        ? "In Range"
+        : private_presence["queueId"];
     this.score_ally = private_presence["partyOwnerMatchScoreAllyTeam"];
     this.score_enemy = private_presence["partyOwnerMatchScoreEnemyTeam"];
     this.party_id = private_presence["partyId"];

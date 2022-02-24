@@ -1,39 +1,34 @@
 <template>
   <div class="chat">
-    <div id="chat-dashboard">Test</div>
+    <div id="chat-dashboard">
+      <ul class="chat-dashboard messages">
+        <chat-message
+          v-for="(msg, idx) in this.messages.get(this.active)"
+          :key="idx"
+          :outgoing="msg.outgoing"
+          :message="msg.message"
+        />
+      </ul>
+    </div>
     <div id="chat-list">
       <div id="chat-search">
         <font-awesome-icon class="chat-search-icon" icon="search" />
         <input id="search-box" type="text" placeholder="Search" />
       </div>
       <ul class="chat-list-presences">
-        <chat-list-item
+        <button
           v-for="f in this.friends"
-          :key="f"
-          :active="f.puuid == this.active"
-          :puuid="f.puuid"
-          :presence="presence"
-        />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="testA" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="test" presence="test" />
-        <chat-list-item :active="this.active" puuid="testF" presence="test" />
+          :key="f.puuid"
+          @click="setActive(f.puuid)"
+        >
+          <chat-list-item
+            :active="f.puuid == this.active"
+            :unread="unreadChats.has(this.active)"
+            :puuid="f.puuid"
+            :data="f"
+            :presence="this.presences.get(f.puuid)"
+          />
+        </button>
       </ul>
     </div>
   </div>
@@ -42,11 +37,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ChatListItem from "@/components/ChatListItem.vue";
+import ChatMessage from "@/components/ChatMessage.vue";
 
 export default defineComponent({
   name: "Chat",
-  components: { ChatListItem },
-  props: ["presences"],
+  components: { ChatListItem, ChatMessage },
   data() {
     return {
       active: "",
@@ -55,32 +50,53 @@ export default defineComponent({
       messages: new Map(),
     };
   },
+  computed: {
+    presences() {
+      return this.$store.state.presences;
+    },
+  },
+  methods: {
+    setActive(puuid: string) {
+      this.active = puuid;
+      this.unreadChats.delete(puuid);
+      console.log(this.messages);
+      console.log(this.messages.get(this.active));
+    },
+  },
   mounted() {
     while (!window.ipc);
 
     window.ipc.invoke("VALORANT_CHAT_FRIENDS").then((httpFriends) => {
       this.friends = httpFriends["data"]["friends"];
-      let presTemp = this.$store.state.presences;
+      let presTemp = this.presences;
       let unreadTemp = this.unreadChats;
       let msgsTemp = this.messages;
 
       if (!window.ipc) return;
       window.ipc.invoke("VALORANT_CHAT_HISTORY").then((httpChat) => {
         for (var msg of httpChat["data"]["messages"]) {
-          if (msg["cid"] != msg["pid"]) return;
+          console.log(msg);
+
+          const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
+          console.log(msgCidPuuid);
+
           if (!msg["read"]) unreadTemp.add(msg["puuid"]);
-          if (!msgsTemp.has(msg["puuid"])) msgsTemp.set(msg["puuid"], []);
-          msgsTemp.get(msg["puuid"]).push(msg["body"]);
+          if (!msgsTemp.has(msgCidPuuid)) msgsTemp.set(msgCidPuuid, []);
+
+          msgsTemp.get(msgCidPuuid).push({
+            outgoing: msg["puuid"] != msgCidPuuid,
+            message: msg["body"],
+          });
         }
       });
 
       this.friends.sort(function (a, b) {
         const readA = unreadTemp.has(a["puuid"]);
-        const readB = unreadTemp.has(a["puuid"]);
+        const readB = unreadTemp.has(b["puuid"]);
         if (readA != readB) return (readA ? 1 : 0) - (readB ? 1 : 0);
 
         const onlineA = presTemp.has(a["puuid"]);
-        const onlineB = presTemp.has(a["puuid"]);
+        const onlineB = presTemp.has(b["puuid"]);
         if (onlineA != onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
 
         //TODO online/offline grouping
@@ -89,6 +105,8 @@ export default defineComponent({
 
         return ("" + a["game_name"]).localeCompare(b["game_name"]);
       });
+
+      this.active = this.friends[0]["puuid"];
     });
   },
 });
@@ -100,7 +118,11 @@ export default defineComponent({
   @apply flex;
 }
 #chat-dashboard {
-  @apply flex flex-col w-full;
+  @apply flex flex-col w-full m-2;
+}
+
+.chat-dashboard.messages {
+  @apply overflow-y-scroll;
 }
 
 #chat-list {
@@ -124,18 +146,19 @@ export default defineComponent({
 }
 
 .chat-list-presences {
-  @apply flex flex-col overflow-y-scroll;
+  @apply flex flex-col overflow-y-scroll w-full;
 }
-.chat-list-presences::-webkit-scrollbar {
+
+ul::-webkit-scrollbar {
   @apply w-1;
 }
-.chat-list-presences::-webkit-scrollbar-track {
+ul::-webkit-scrollbar-track {
   box-shadow: inset 0 0 0 transparent;
 }
-.chat-list-presences::-webkit-scrollbar-thumb {
+ul::-webkit-scrollbar-thumb {
   @apply bg-transparent outline-none rounded-sm;
 }
-.chat-list-presences:hover::-webkit-scrollbar-thumb {
+ul:hover::-webkit-scrollbar-thumb {
   @apply bg-gray-700 transition-colors;
 }
 </style>

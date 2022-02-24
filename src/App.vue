@@ -40,9 +40,10 @@ export default defineComponent({
     window.ipc.on(
       "VALORANT_PRESENCES",
       (new_presences: Map<string, ValorantPresence>) => {
-        new_presences.forEach((v, k) =>
-          this.$store.commit("updatePresence", { k, v })
-        );
+        new_presences.forEach((v, k) => {
+          console.log(v);
+          this.$store.commit("updatePresence", { k, v });
+        });
       }
     );
   },
@@ -65,8 +66,9 @@ export default defineComponent({
 }
 
 #nav {
-  @apply flex 
-  m-auto h-12 max-w-1/2
+  @apply flex
+  h-12
+  m-auto max-w-1/2
   justify-center items-end;
 }
 
