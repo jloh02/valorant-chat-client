@@ -11,13 +11,15 @@
       </ul>
       <div class="chat-dashboard input-bar">
         <div class="chat-dashboard input-bar label">
-          <p>{{ this.puuidToName.get(this.active) }}</p>
+          <p>{{ this.messageFieldLabel }}</p>
         </div>
         <input
           id="text-msg-input"
           type="text"
           placeholder="Enter message here"
           class="chat-dashboard input-bar input"
+          v-model="this.messageField"
+          @keyup.enter="this.sendMessage"
         />
       </div>
     </div>
@@ -58,7 +60,6 @@ import {
 } from "@/types/valorant-message";
 import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
-import { ValorantPresence } from "@/types/valorant-presence";
 
 //TODO start messages scrolled to bottom
 
@@ -70,17 +71,21 @@ export default defineComponent({
   data() {
     return {
       active: "",
-      friends: new Array<ValorantFriend>(),
+      friends: new Map<string, ValorantFriend>(),
       searchField: "",
+      messageField: "",
       messages: new Map<string, ValorantSimpleMessage[]>(),
-      addedFriends: new Set<string>(),
       addedMessages: new Set<string>(), //Set to maintain which messages (mid) have been processed
-      puuidToName: new Map<string, string>(), //Convert puuids to game name
       unreadChats: new Set<string>(), //Set of unread chats cid
       allowUnread: false, //Disallow unread notifications for first 3s to allow existing msgs to load
     };
   },
   computed: {
+    messageFieldLabel(): string {
+      let activeFriend = this.friends?.get(this.active);
+      if (activeFriend) return activeFriend.game_name;
+      return "Send To";
+    },
     //Filter then sort friends
     filteredFriends(): ValorantFriend[] {
       //Object references to avoid ambiguous "this" error
@@ -89,7 +94,7 @@ export default defineComponent({
       let presTemp = this.$store.state.presences;
       let searchField = this.searchField;
 
-      return this.friends
+      return Array.from(this.friends.values())
         .filter(function (friend: ValorantFriend) {
           if (searchField.length == 0) return true;
           if (
@@ -145,15 +150,20 @@ export default defineComponent({
       }
     },
     updateFriends(friends: ValorantFriend[]) {
-      friends.forEach((f: ValorantFriend) => {
-        if (this.addedFriends.has(f.puuid)) return;
-        this.addedFriends.add(f.puuid);
-        this.friends.push(f);
-      });
-
-      for (let it = this.friends.values(), f = null; (f = it.next().value); ) {
-        this.puuidToName.set(f["puuid"], f["game_name"]);
-      }
+      friends.forEach((f: ValorantFriend) => this.friends.set(f.puuid, f));
+    },
+    sendMessage() {
+      window.ipc
+        ?.invoke(
+          "VALORANT_CHAT",
+          "SEND",
+          this.friends.get(this.active)?.pid,
+          this.messageField
+        )
+        .then((res) => {
+          console.log(res);
+        });
+      this.messageField = "";
     },
   },
   mounted() {
@@ -161,9 +171,7 @@ export default defineComponent({
 
     window.ipc.on("VALORANT_CHAT", (command: string, data) => {
       if (command == "MESSAGE") this.updateMessages(data, this.allowUnread);
-      else if (command == "FRIEND") {
-        this.updateFriends(data);
-      }
+      else if (command == "FRIEND") this.updateFriends(data);
     });
 
     //TODO Friend Monitoring
