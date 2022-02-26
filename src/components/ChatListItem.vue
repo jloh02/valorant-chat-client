@@ -24,7 +24,7 @@
 import { defineComponent } from "vue";
 import { getPlayerCardSrc } from "@/js/valo-api";
 import ValoIconSvg from "@/components/ValoIconSvg.vue";
-import { ValorantPresence } from "@/ipc_main/valorant_presence";
+import { ValorantPresence } from "@/types/valorant-presence";
 
 //TODO tooltip with note/full ign + party size
 

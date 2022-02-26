@@ -1,22 +1,14 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 const validChannels = [
-  "IPC_READY",
-  "LOCKFILE_UPDATE",
-  "VALORANT_PRESENCES",
-  "VALORANT_PRESENCES_SUB",
-  "VALORANT_PRESENCES_INITIALIZE",
-  "VALORANT_SOCKET_READY",
-  "VALORANT_SOCKET_SUBSCRIBE",
-  "VALORANT_SOCKET_UNSUBSCRIBE",
-  "VALORANT_CHAT_SEND",
-  "VALORANT_CHAT_FRIENDS",
-  "VALORANT_CHAT_HISTORY",
+  "IPC_STATUS", //IPC_READY (To Main), LOCKFILE_UPDATE (To Renderer)
+  "VALORANT_PRESENCES", //1-way channel to send presence updates to renderer
+  "VALORANT_CHAT", //SEND (To Main), FRIENDS (Renderer Req), HISTORY (To Renderer), MESSAGE (To Renderer)
+  "VALORANT_PREGAME", //SELECT
 ];
 contextBridge.exposeInMainWorld("ipc", {
   send: (channel, ...args) => {
     if (validChannels.includes(channel)) {
-      console.log(args);
       ipcRenderer.send(channel, ...args);
     }
   },

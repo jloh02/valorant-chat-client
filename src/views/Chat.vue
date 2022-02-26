@@ -1,7 +1,7 @@
 <template>
   <div class="chat">
     <div id="chat-dashboard">
-      <ul class="chat-dashboard messages">
+      <ul :key="this.messages" class="chat-dashboard messages">
         <chat-message
           v-for="(msg, idx) in this.messages.get(this.active)"
           :key="idx"
@@ -39,7 +39,7 @@
         >
           <chat-list-item
             :active="f.puuid == this.active"
-            :unread="unreadChats.has(this.active)"
+            :unread="unreadChats.has(f.puuid)"
             :puuid="f.puuid"
             :data="f"
           />
@@ -51,10 +51,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { ValorantFriend } from "@/types/valorant-friend";
+import {
+  ValorantMessage,
+  ValorantSimpleMessage,
+} from "@/types/valorant-message";
 import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
+import { ValorantPresence } from "@/types/valorant-presence";
 
 //TODO start messages scrolled to bottom
+
+//TODO state management: Update friends list when new messages
 
 export default defineComponent({
   name: "Chat",
@@ -62,25 +70,27 @@ export default defineComponent({
   data() {
     return {
       active: "",
-      friends: [],
+      friends: new Array<ValorantFriend>(),
       searchField: "",
-      puuidToName: new Map(),
-      unreadChats: new Set(),
-      messages: new Map(),
+      messages: new Map<string, ValorantSimpleMessage[]>(),
+      addedFriends: new Set<string>(),
+      addedMessages: new Set<string>(), //Set to maintain which messages (mid) have been processed
+      puuidToName: new Map<string, string>(), //Convert puuids to game name
+      unreadChats: new Set<string>(), //Set of unread chats cid
+      allowUnread: false, //Disallow unread notifications for first 3s to allow existing msgs to load
     };
   },
   computed: {
     //Filter then sort friends
-    filteredFriends(): any[] {
-      console.log(this.friends);
-
+    filteredFriends(): ValorantFriend[] {
       //Object references to avoid ambiguous "this" error
+
       let unreadTemp = this.unreadChats;
       let presTemp = this.$store.state.presences;
       let searchField = this.searchField;
 
       return this.friends
-        .filter(function (friend: any) {
+        .filter(function (friend: ValorantFriend) {
           if (searchField.length == 0) return true;
           if (
             friend["game_name"]
@@ -95,10 +105,12 @@ export default defineComponent({
             return true;
           return false;
         })
-        .sort(function (a, b) {
-          const readA = unreadTemp.has(a["puuid"]);
-          const readB = unreadTemp.has(b["puuid"]);
-          if (readA != readB) return (readA ? 1 : 0) - (readB ? 1 : 0);
+        .sort(function (a: ValorantFriend, b: ValorantFriend) {
+          if (unreadTemp) {
+            const readA = unreadTemp.has(a["puuid"]);
+            const readB = unreadTemp.has(b["puuid"]);
+            if (readA != readB) return (readB ? 1 : 0) - (readA ? 1 : 0);
+          }
 
           const onlineA = presTemp.has(a["puuid"]);
           const onlineB = presTemp.has(b["puuid"]);
@@ -112,45 +124,61 @@ export default defineComponent({
   },
   methods: {
     setActive(puuid: string) {
+      this.unreadChats.delete(this.active);
       this.active = puuid;
-      this.unreadChats.delete(puuid);
     },
-    updateMessages(messages: any[]) {
+    updateMessages(messages: ValorantMessage[], setUnread?: boolean) {
       for (var msg of messages) {
-        const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
+        if (this.addedMessages.has(msg["mid"])) continue;
+        this.addedMessages.add(msg["mid"]);
 
-        if (!msg["read"]) this.unreadChats.add(msg["puuid"]);
+        const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
+        const msgOutgoing = msg["puuid"] != msgCidPuuid;
+
+        if (setUnread && !msgOutgoing) this.unreadChats.add(msg["puuid"]);
         if (!this.messages.has(msgCidPuuid)) this.messages.set(msgCidPuuid, []);
 
-        this.messages.get(msgCidPuuid).push({
-          outgoing: msg["puuid"] != msgCidPuuid,
+        this.messages.get(msgCidPuuid)?.push({
+          outgoing: msgOutgoing,
           message: msg["body"],
         });
+      }
+    },
+    updateFriends(friends: ValorantFriend[]) {
+      friends.forEach((f: ValorantFriend) => {
+        if (this.addedFriends.has(f.puuid)) return;
+        this.addedFriends.add(f.puuid);
+        this.friends.push(f);
+      });
+
+      for (let it = this.friends.values(), f = null; (f = it.next().value); ) {
+        this.puuidToName.set(f["puuid"], f["game_name"]);
       }
     },
   },
   mounted() {
     while (!window.ipc);
 
-    window.ipc.invoke("VALORANT_CHAT_FRIENDS").then((httpFriends) => {
-      this.friends = httpFriends["data"]["friends"];
+    window.ipc.on("VALORANT_CHAT", (command: string, data) => {
+      if (command == "MESSAGE") this.updateMessages(data, this.allowUnread);
+      else if (command == "FRIEND") {
+        this.updateFriends(data);
+      }
+    });
+
+    //TODO Friend Monitoring
+    window.ipc.invoke("VALORANT_CHAT", "FRIENDS").then((httpFriends) => {
+      this.updateFriends(httpFriends["data"]["friends"]);
 
       if (!window.ipc) return;
-      window.ipc.invoke("VALORANT_CHAT_HISTORY").then((httpChat) => {
+      window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((httpChat) => {
+        // console.log(httpChat);
         this.updateMessages(httpChat["data"]["messages"]);
         this.active = this.filteredFriends[0]["puuid"];
       });
-
-      this.friends.forEach((f) => {
-        this.puuidToName.set(f["puuid"], f["game_name"]);
-      });
     });
 
-    // window.ipc.send(
-    //   "VALORANT_SOCKET_SUBSCRIBE",
-    //   "OnJsonApiEvent_chat_v6_messages",
-    //   (data: JSON) => {}
-    // );
+    setTimeout(() => (this.allowUnread = true), 3000);
   },
 });
 </script>

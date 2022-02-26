@@ -1,3 +1,5 @@
+import { ValorantPresence } from "@/types/valorant-presence";
+import { State } from "@vue/runtime-core";
 import { createStore } from "vuex";
 
 const store = createStore({
@@ -5,7 +7,7 @@ const store = createStore({
     //data
     return {
       puuid: "",
-      presences: new Map(),
+      presences: new Map<string, ValorantPresence>(),
     };
   },
   getters: {
@@ -16,10 +18,10 @@ const store = createStore({
   },
   mutations: {
     //Set/update data
-    updatePresence(state: any, record) {
+    updatePresence(state: State, record) {
       state.presences.set(record.k, record.v);
     },
-    updatePuuid(state: any, puuid) {
+    updatePuuid(state: State, puuid: string) {
       state.puuid = puuid;
     },
   },

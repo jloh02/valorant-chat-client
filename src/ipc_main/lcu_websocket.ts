@@ -3,10 +3,11 @@
 //A simple library to control Riot Games' LCU websockets (https://hextechdocs.dev/getting-started-with-the-lcu-websocket/)
 
 import WebSocket from "ws";
+import { ValorantLCUReply } from "@/types/valorant-websocket-reply";
 
 export class LCUWebsocket {
   private ws: WebSocket;
-  private listeners: Map<string, (message: any) => void>;
+  private listeners: Map<string, (message: ValorantLCUReply) => void>;
 
   constructor(password: string, port: string) {
     this.listeners = new Map();
@@ -32,7 +33,7 @@ export class LCUWebsocket {
 
     this.ws.on("message", (data) => {
       const strMsg = data.toString();
-      // console.log(`[message] ${strMsg}`);
+      // console.log(`[message] ${strMsg.substr(0, 50)}`);
       try {
         const jsonMsg = JSON.parse(strMsg);
         if (jsonMsg[0] != 8) {
@@ -64,7 +65,10 @@ export class LCUWebsocket {
     });
   }
 
-  subscribe(endpoint: string, callback: (message: any) => void): void {
+  subscribe(
+    endpoint: string,
+    callback: (message: ValorantLCUReply) => void
+  ): void {
     this.ws.send(`[5, "${endpoint}"]`);
     this.listeners.set(endpoint, callback);
   }

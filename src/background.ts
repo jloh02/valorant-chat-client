@@ -12,7 +12,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
-var win: BrowserWindow;
+let win: BrowserWindow;
 async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -26,7 +26,6 @@ async function createWindow() {
       nodeIntegration: process.env
         .ELECTRON_NODE_INTEGRATION as unknown as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      enableRemoteModule: true,
       preload: join(__dirname, "/preload.js"),
     },
   });
@@ -39,6 +38,7 @@ async function createWindow() {
     ],
   };
 
+  //CORS Bypass
   win.webContents.session.webRequest.onHeadersReceived(
     filter,
     (details, callback) => {

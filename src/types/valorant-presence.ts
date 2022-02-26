@@ -2,6 +2,29 @@
 
 import { AxiosResponse } from "axios";
 
+export type ValorantRawPresence = {
+  actor: string;
+  basic: string;
+  details: string;
+  game_name: string;
+  game_tag: string;
+  location: string;
+  msg: string;
+  name: string;
+  patchline: string;
+  pid: string;
+  platform: string;
+  private: string;
+  privateJwt: string;
+  product: string;
+  puuid: string;
+  region: string;
+  resource: string;
+  state: string;
+  summary: string;
+  time: number;
+};
+
 export class ValorantPresence {
   ign: string;
   pid: string;
@@ -15,14 +38,14 @@ export class ValorantPresence {
   card_id: string;
   title_id: string;
 
-  constructor(presence: any) {
+  constructor(presence: ValorantRawPresence) {
     // console.log(presence);
 
     this.state = presence["state"];
     this.ign = `${presence["game_name"]}#${presence["game_tag"]}`;
     this.pid = presence["pid"];
 
-    var private_presence = JSON.parse(
+    let private_presence = JSON.parse(
       Buffer.from(presence["private"], "base64").toString("ascii")
     );
 
@@ -32,6 +55,8 @@ export class ValorantPresence {
     this.game_mode =
       private_presence["provisioningFlow"] == "ShootingRange"
         ? "In Range"
+        : private_presence["queueId"].length == 0
+        ? "Custom"
         : private_presence["queueId"];
     this.score_ally = private_presence["partyOwnerMatchScoreAllyTeam"];
     this.score_enemy = private_presence["partyOwnerMatchScoreEnemyTeam"];
@@ -46,7 +71,7 @@ export class ValorantPresenceSelf extends ValorantPresence {
   match_id?: string;
 
   constructor(
-    presence: any,
+    presence: ValorantRawPresence,
     get_game_id: (endpoint: string) => Promise<AxiosResponse | undefined>
   ) {
     super(presence);
@@ -66,16 +91,18 @@ export class ValorantPresenceSelf extends ValorantPresence {
 }
 
 export function process_valorant_presence(
-  presences: any,
+  presences: ValorantRawPresence[] | undefined,
   puuid: string,
   query_function: (endpoint: string) => Promise<AxiosResponse | undefined>
-): Map<string, ValorantPresence> {
-  var ret = new Map();
-  for (var p of presences) {
-    console.log(p["puuid"]);
-    if (p["puuid"] == puuid) {
+): Map<string, ValorantRawPresence> {
+  let ret = new Map();
+  if (!presences) return ret;
+  for (let p of presences) {
+    if (p["product"] != "valorant") continue;
+    // console.log(p["puuid"]);
+    if (p["puuid"] == puuid)
       ret.set(p["puuid"], new ValorantPresenceSelf(p, query_function));
-    } else ret.set(p["puuid"], new ValorantPresence(p));
+    else ret.set(p["puuid"], new ValorantPresence(p));
   }
   return ret;
 }

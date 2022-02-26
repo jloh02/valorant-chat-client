@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ValorantPresence } from "@/ipc_main/valorant_presence";
+import { ValorantPresence } from "@/types/valorant-presence";
 import RiotClientClosed from "@/views/RiotClientClosed.vue";
 
 export default defineComponent({
@@ -30,18 +30,20 @@ export default defineComponent({
   created() {
     while (!window.ipc);
 
-    window.ipc.on("LOCKFILE_UPDATE", (ready, puuid) => {
+    window.ipc.on("IPC_STATUS", (command, ready, puuid) => {
+      if (command != "LOCKFILE_UPDATE") return;
+
       this.riotAlive = ready;
       console.log(this.riotAlive);
       if (puuid) this.$store.commit("updatePuuid", puuid);
     });
 
-    window.ipc.send("IPC_READY");
+    window.ipc.send("IPC_STATUS", "IPC_READY");
 
     window.ipc.on(
       "VALORANT_PRESENCES",
       (new_presences: Map<string, ValorantPresence>) => {
-        new_presences.forEach((v, k) => {
+        new_presences.forEach((v: ValorantPresence, k: string) => {
           console.log(v);
           this.$store.commit("updatePresence", { k, v });
         });
