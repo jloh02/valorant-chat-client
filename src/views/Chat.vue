@@ -8,6 +8,7 @@
           :outgoing="msg.outgoing"
           :message="msg.message"
         />
+        <div ref="dashboardLast" id="chat-dashboard-last" />
       </ul>
       <div class="chat-dashboard input-bar">
         <div class="chat-dashboard input-bar label">
@@ -34,6 +35,7 @@
         />
       </div>
       <ul class="chat-list-presences">
+        <div ref="chatListFirst" id="chat-list-first" />
         <button
           v-for="f in this.filteredFriends"
           :key="f.puuid"
@@ -60,8 +62,6 @@ import {
 } from "@/types/valorant-message";
 import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
-
-//TODO start messages scrolled to bottom
 
 //TODO state management: Update friends list when new messages
 
@@ -131,6 +131,7 @@ export default defineComponent({
     setActive(puuid: string) {
       this.unreadChats.delete(this.active);
       this.active = puuid;
+      this.scrollDashboardToLast(false);
     },
     updateMessages(messages: ValorantMessage[], setUnread?: boolean) {
       for (var msg of messages) {
@@ -140,7 +141,13 @@ export default defineComponent({
         const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
         const msgOutgoing = msg["puuid"] != msgCidPuuid;
 
-        if (setUnread && !msgOutgoing) this.unreadChats.add(msg["puuid"]);
+        if (setUnread && !msgOutgoing) {
+          if (this.active == msg["puuid"]) this.scrollDashboardToLast(true);
+          else {
+            this.scrollChatListToFirst();
+            this.unreadChats.add(msg["puuid"]);
+          }
+        }
         if (!this.messages.has(msgCidPuuid)) this.messages.set(msgCidPuuid, []);
 
         this.messages.get(msgCidPuuid)?.push({
@@ -165,6 +172,26 @@ export default defineComponent({
         });
       this.messageField = "";
     },
+    scrollDashboardToLast(smooth: boolean) {
+      this.$nextTick(() => {
+        const el: any = this.$refs.dashboardLast;
+        if (el)
+          el.scrollIntoView({
+            behavior: smooth ? "smooth" : "auto",
+            block: "end",
+          });
+      });
+    },
+    scrollChatListToFirst() {
+      this.$nextTick(() => {
+        const el: any = this.$refs.chatListFirst;
+        if (el)
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      });
+    },
   },
   mounted() {
     while (!window.ipc);
@@ -174,7 +201,6 @@ export default defineComponent({
       else if (command == "FRIEND") this.updateFriends(data);
     });
 
-    //TODO Friend Monitoring
     window.ipc.invoke("VALORANT_CHAT", "FRIENDS").then((httpFriends) => {
       this.updateFriends(httpFriends["data"]["friends"]);
 
@@ -183,6 +209,7 @@ export default defineComponent({
         // console.log(httpChat);
         this.updateMessages(httpChat["data"]["messages"]);
         this.active = this.filteredFriends[0]["puuid"];
+        this.scrollDashboardToLast(false);
       });
     });
 
@@ -202,7 +229,7 @@ export default defineComponent({
 }
 
 .chat-dashboard.messages {
-  @apply overflow-y-scroll pr-3;
+  @apply flex flex-col w-full overflow-y-scroll pr-3;
 }
 
 .chat-dashboard.input-bar {
@@ -230,7 +257,7 @@ export default defineComponent({
   rounded-sm overflow-hidden
   focus:outline-none;
 }
-#chat-search .chat-search-icon {
+.chat-search-icon {
   @apply h-4/5 w-auto p-1;
 }
 #search-box {
