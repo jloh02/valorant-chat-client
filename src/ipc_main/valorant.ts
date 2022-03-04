@@ -81,7 +81,6 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
 
   axios.defaults.headers.common["Content-Type"] = "application/json";
 
-  //TODO debug permanent failure
   ipcMain.on("IPC_STATUS", (event, command) => {
     if (command != "IPC_READY") return;
 

@@ -63,8 +63,6 @@ import {
 import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
 
-//TODO state management: Update friends list when new messages
-
 export default defineComponent({
   name: "Chat",
   components: { ChatListItem, ChatMessage },
