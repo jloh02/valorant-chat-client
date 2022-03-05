@@ -161,19 +161,20 @@ export default defineComponent({
         const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
         const msgOutgoing = msg["puuid"] != msgCidPuuid;
 
-        if (setUnread && !msgOutgoing) {
-          if (this.active == msg["puuid"]) this.scrollDashboardToLast(true);
-          else {
-            this.scrollChatListToPuuid(msgCidPuuid);
-            this.unreadChats.add(msg["puuid"]);
-          }
-        }
         if (!this.messages.has(msgCidPuuid)) this.messages.set(msgCidPuuid, []);
 
         this.messages.get(msgCidPuuid)?.push({
           outgoing: msgOutgoing,
           message: msg["body"],
         });
+
+        if (setUnread) {
+          if (this.active == msgCidPuuid) this.scrollDashboardToLast(true);
+          else {
+            this.unreadChats.add(msg["puuid"]);
+            this.scrollChatListToPuuid(msgCidPuuid);
+          }
+        }
       }
     },
     updateFriends(friends: ValorantFriend[]) {
