@@ -120,12 +120,12 @@ export default defineComponent({
           if (
             friend["game_name"]
               .toLowerCase()
-              .startsWith(searchField.toLowerCase())
+              .includes(searchField.toLowerCase())
           )
             return true;
           if (
             friend["note"].length &&
-            friend["note"].toLowerCase().startsWith(searchField.toLowerCase())
+            friend["note"].toLowerCase().includes(searchField.toLowerCase())
           )
             return true;
           return false;
