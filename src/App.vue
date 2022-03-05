@@ -1,9 +1,7 @@
 <template>
   <div v-if="this.riotAlive">
     <div id="nav">
-      <router-link to="/">Chat</router-link>
-      <router-link to="/home">In-Game</router-link>
-      <router-link to="/about">Agent Select</router-link>
+      <router-link to="/">VALORANT Chat Client</router-link>
     </div>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
@@ -72,7 +70,8 @@ export default defineComponent({
   @apply flex
   h-12
   m-auto max-w-1/2
-  justify-center items-end;
+  justify-center items-end
+  cursor-default;
 }
 
 #nav a {
