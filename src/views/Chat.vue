@@ -36,18 +36,30 @@
       </div>
       <ul class="chat-list-presences">
         <div ref="chatListFirst" id="chat-list-first" />
-        <button
-          v-for="f in this.filteredFriends"
+        <div
+          v-for="[idx, f] of this.filteredFriends.entries()"
           :key="f.puuid"
-          @click="setActive(f.puuid)"
+          :ref="f.puuid"
+          class="chat-list-item-div"
         >
-          <chat-list-item
-            :active="f.puuid == this.active"
-            :unread="unreadChats.has(f.puuid)"
-            :puuid="f.puuid"
-            :data="f"
+          <button @click="setActive(f.puuid)">
+            <chat-list-item
+              :active="f.puuid == this.active"
+              :unread="unreadChats.has(f.puuid)"
+              :puuid="f.puuid"
+              :data="f"
+            />
+          </button>
+          <chat-list-party-entry
+            v-if="
+              this.presences.has(f.puuid) &&
+              this.presences.get(f.puuid)?.party_id !=
+                this.presences.get(this.filteredFriends[idx + 1]?.puuid)
+                  ?.party_id
+            "
+            :partyCount="this.presences.get(f.puuid)?.party_size"
           />
-        </button>
+        </div>
       </ul>
     </div>
   </div>
@@ -60,12 +72,13 @@ import {
   ValorantMessage,
   ValorantSimpleMessage,
 } from "@/types/valorant-message";
+import ChatListPartyEntry from "@/components/ChatListPartyEntry.vue";
 import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
 
 export default defineComponent({
   name: "Chat",
-  components: { ChatListItem, ChatMessage },
+  components: { ChatListItem, ChatMessage, ChatListPartyEntry },
   data() {
     return {
       active: "",
@@ -79,6 +92,9 @@ export default defineComponent({
     };
   },
   computed: {
+    presences() {
+      return this.$store.state.presences;
+    },
     messageFieldLabel(): string {
       let activeFriend = this.friends?.get(this.active);
       if (activeFriend) return activeFriend.game_name;
@@ -88,7 +104,6 @@ export default defineComponent({
     filteredFriends(): ValorantFriend[] {
       //Object references to avoid ambiguous "this" error
 
-      let unreadTemp = this.unreadChats;
       let presTemp = this.$store.state.presences;
       let searchField = this.searchField;
 
@@ -109,19 +124,19 @@ export default defineComponent({
           return false;
         })
         .sort(function (a: ValorantFriend, b: ValorantFriend) {
-          if (unreadTemp) {
-            const readA = unreadTemp.has(a["puuid"]);
-            const readB = unreadTemp.has(b["puuid"]);
-            if (readA != readB) return (readB ? 1 : 0) - (readA ? 1 : 0);
-          }
-
           const onlineA = presTemp.has(a["puuid"]);
           const onlineB = presTemp.has(b["puuid"]);
           if (onlineA != onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
 
-          //TODO party grouping
+          //Sort by party ID if online
+          if (onlineA) {
+            const partyA = presTemp.get(a["puuid"]).party_id;
+            const partyB = presTemp.get(b["puuid"]).party_id;
 
-          return ("" + a["game_name"]).localeCompare(b["game_name"]);
+            if (partyA != partyB) return partyA.localeCompare(partyB);
+          }
+
+          return a["game_name"].localeCompare(b["game_name"]);
         });
     },
   },
@@ -142,7 +157,7 @@ export default defineComponent({
         if (setUnread && !msgOutgoing) {
           if (this.active == msg["puuid"]) this.scrollDashboardToLast(true);
           else {
-            this.scrollChatListToFirst();
+            this.scrollChatListToPuuid(msgCidPuuid);
             this.unreadChats.add(msg["puuid"]);
           }
         }
@@ -170,6 +185,19 @@ export default defineComponent({
         });
       this.messageField = "";
     },
+    scrollChatListToPuuid(puuid: string) {
+      this.$nextTick(() => {
+        console.log(puuid);
+        console.log(this.$refs);
+        const el: any = this.$refs[puuid];
+        console.log(el);
+        if (el && el[0])
+          el[0].scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      });
+    },
     scrollDashboardToLast(smooth: boolean) {
       this.$nextTick(() => {
         const el: any = this.$refs.dashboardLast;
@@ -177,16 +205,6 @@ export default defineComponent({
           el.scrollIntoView({
             behavior: smooth ? "smooth" : "auto",
             block: "end",
-          });
-      });
-    },
-    scrollChatListToFirst() {
-      this.$nextTick(() => {
-        const el: any = this.$refs.chatListFirst;
-        if (el)
-          el.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
           });
       });
     },
@@ -212,6 +230,8 @@ export default defineComponent({
     });
 
     setTimeout(() => (this.allowUnread = true), 3000);
+
+    let i = 0;
   },
 });
 </script>
@@ -234,7 +254,7 @@ export default defineComponent({
   @apply flex bg-stone-600 w-full m-1 rounded;
 }
 .chat-dashboard.input-bar.label {
-  @apply bg-stone-700 min-w-fit w-1/5 m-0 p-1 px-3 rounded-r-none whitespace-nowrap;
+  @apply bg-stone-700 min-w-fit w-1/5 m-0 p-1 px-3 rounded-r-none whitespace-nowrap cursor-default;
 }
 .chat-dashboard.input-bar.input {
   @apply bg-transparent w-full m-0 p-1 px-3 active:border-none;
@@ -264,6 +284,14 @@ export default defineComponent({
 
 .chat-list-presences {
   @apply flex flex-col overflow-y-scroll w-full;
+}
+
+.chat-list-item-div {
+  @apply flex flex-col h-full my-1 mx-1;
+}
+
+.chat-list-item-div button {
+  @apply w-full;
 }
 
 ul::-webkit-scrollbar {

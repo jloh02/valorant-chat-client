@@ -89,7 +89,7 @@ export default defineComponent({
 
 <style lang="postcss">
 li.chat-list-item {
-  @apply flex justify-start items-center text-left px-1 py-1 my-1 mx-1 h-full;
+  @apply flex justify-start items-center text-left h-full px-1 py-1;
 }
 
 .chat-list-item {
