@@ -268,8 +268,7 @@ export default defineComponent({
 }
 
 #chat-list {
-  min-width: 33.333%;
-  max-width: 33.333%;
+  max-width: 300px;
   @apply flex flex-col w-1/3
   items-center
   my-2 mr-2;
