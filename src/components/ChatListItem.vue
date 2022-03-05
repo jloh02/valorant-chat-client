@@ -5,7 +5,7 @@
 
     <div class="chat-list-item text">
       <p class="chat-list-item game-name">
-        {{ this.data.game_name }}#{{ this.data.game_tag }}
+        {{ this.data.game_name }}
       </p>
       <p
         v-if="this.presence"
@@ -25,8 +25,6 @@ import { defineComponent } from "vue";
 import { getPlayerCardSrc } from "@/js/valo-api";
 import ValoIconSvg from "@/components/ValoIconSvg.vue";
 import { ValorantPresence } from "@/types/valorant-presence";
-
-//TODO tooltip with note/full ign + party size
 
 function capsFirstLetter(input: string): string {
   return input.charAt(0).toUpperCase() + input.slice(1);

@@ -42,7 +42,7 @@
           :ref="f.puuid"
           class="chat-list-item-div"
         >
-          <button @click="setActive(f.puuid)">
+          <button class="chat-list-item-button" @click="setActive(f.puuid)">
             <chat-list-item
               :active="f.puuid == this.active"
               :unread="unreadChats.has(f.puuid)"
@@ -50,6 +50,7 @@
               :data="f"
             />
           </button>
+          <chat-list-item-overlay :data="f" />
           <chat-list-party-entry
             v-if="
               this.presences.has(f.puuid) &&
@@ -72,13 +73,19 @@ import {
   ValorantMessage,
   ValorantSimpleMessage,
 } from "@/types/valorant-message";
-import ChatListPartyEntry from "@/components/ChatListPartyEntry.vue";
-import ChatListItem from "@/components/ChatListItem.vue";
 import ChatMessage from "@/components/ChatMessage.vue";
+import ChatListItem from "@/components/ChatListItem.vue";
+import ChatListPartyEntry from "@/components/ChatListPartyEntry.vue";
+import ChatListItemOverlay from "@/components/ChatListItemOverlay.vue";
 
 export default defineComponent({
   name: "Chat",
-  components: { ChatListItem, ChatMessage, ChatListPartyEntry },
+  components: {
+    ChatListItem,
+    ChatMessage,
+    ChatListPartyEntry,
+    ChatListItemOverlay,
+  },
   data() {
     return {
       active: "",
@@ -287,11 +294,11 @@ export default defineComponent({
 }
 
 .chat-list-item-div {
-  @apply flex flex-col h-full my-1 mx-1;
+  @apply flex flex-col h-full my-1 mx-1 relative;
 }
 
 .chat-list-item-div button {
-  @apply w-full;
+  @apply w-full relative;
 }
 
 ul::-webkit-scrollbar {

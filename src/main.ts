@@ -5,10 +5,14 @@ import store from "./store";
 import "./assets/tailwind.css";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSearch, faUsers } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faUsers,
+  faFileLines,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faSearch, faUsers);
+library.add(faSearch, faUsers, faFileLines);
 
 declare global {
   interface Window {
