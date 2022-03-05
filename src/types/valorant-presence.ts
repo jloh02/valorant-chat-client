@@ -1,6 +1,7 @@
 "use strict";
 
 import { AxiosResponse } from "axios";
+import { GameMode } from "@/constants";
 
 export type ValorantRawPresence = {
   actor: string;
@@ -55,9 +56,8 @@ export class ValorantPresence {
     this.game_mode =
       private_presence["provisioningFlow"] == "ShootingRange"
         ? "In Range"
-        : private_presence["queueId"].length == 0
-        ? "Custom"
-        : private_presence["queueId"];
+        : GameMode.get(private_presence["queueId"]) ||
+          private_presence["queueId"];
     this.score_ally = private_presence["partyOwnerMatchScoreAllyTeam"];
     this.score_enemy = private_presence["partyOwnerMatchScoreEnemyTeam"];
     this.party_id = private_presence["partyId"];
