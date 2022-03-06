@@ -5,7 +5,10 @@ import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { initialize_valorant_api } from "@/ipc_main/valorant";
+import { runRiotClient } from "@/ipc_main/windows_util";
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+runRiotClient();
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([

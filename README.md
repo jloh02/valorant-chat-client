@@ -1,24 +1,18 @@
 # valo-client
 
-## Project setup
+## Installation
+Go to Releases
+
+### For Developers
+#### Install Packages
 ```
-yarn install
+yarn add
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+#### Remove Runnable from Windows Package
+- Navigate to `node_modules/windows`
+- Delete the `runnable.js` file
+- In `index.js`, remove the line for runnable (line 4)
 
-### Compiles and minifies for production
-```
-yarn build
-```
 
-### Lints and fixes files
-```
-yarn lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

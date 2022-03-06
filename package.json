@@ -24,6 +24,7 @@
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.2",
+    "windows": "^0.1.0",
     "ws": "^8.5.0"
   },
   "devDependencies": {
