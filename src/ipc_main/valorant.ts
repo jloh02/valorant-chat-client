@@ -102,7 +102,7 @@ async function initialize() {
     return;
   }
 
-  const channelNames = ["VALORANT_CHAT", "VALORANT_PREGAME"];
+  const channelNames = ["VALORANT_CHAT", "VALORANT_PRESENCES"];
   channelNames.forEach((channel) => {
     ipcMain.removeHandler(channel);
     ipcMain.removeAllListeners(channel);
@@ -240,12 +240,16 @@ async function initialize_presence_monitoring() {
   if (pres.data) {
     win.webContents.send(
       "VALORANT_PRESENCES",
+      "Update",
       process_valorant_presence(pres.data["presences"], puuid, query_game)
     );
   }
   ws.subscribe("OnJsonApiEvent_chat_v4_presences", (pres: ValorantLCUReply) => {
+    console.log(pres.eventType);
+    if (pres.eventType == "Delete") console.log(pres.data.presences);
     win.webContents.send(
       "VALORANT_PRESENCES",
+      pres.eventType,
       process_valorant_presence(pres.data.presences, puuid, query_game)
     );
   });

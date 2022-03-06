@@ -2,9 +2,8 @@ import { contextBridge, ipcRenderer } from "electron";
 
 const validChannels = [
   "IPC_STATUS", //IPC_READY (To Main), LOCKFILE_UPDATE (To Renderer)
-  "VALORANT_PRESENCES", //1-way channel to send presence updates to renderer
+  "VALORANT_PRESENCES", //1-way channel to send presence updates/deletes to renderer
   "VALORANT_CHAT", //SEND (To Main), FRIENDS (Renderer Req), HISTORY (To Renderer), MESSAGE (To Renderer)
-  "VALORANT_PREGAME", //SELECT
 ];
 contextBridge.exposeInMainWorld("ipc", {
   send: (channel, ...args) => {

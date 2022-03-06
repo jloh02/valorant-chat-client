@@ -18,6 +18,9 @@ const store = createStore({
   },
   mutations: {
     //Set/update data
+    deletePresence(state: State, key) {
+      state.presences.delete(key);
+    },
     updatePresence(state: State, record) {
       state.presences.set(record.k, record.v);
     },

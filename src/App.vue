@@ -40,11 +40,16 @@ export default defineComponent({
 
     window.ipc.on(
       "VALORANT_PRESENCES",
-      (new_presences: Map<string, ValorantPresence>) => {
-        new_presences.forEach((v: ValorantPresence, k: string) => {
-          console.log(v);
-          this.$store.commit("updatePresence", { k, v });
-        });
+      (eventType: string, new_presences: Map<string, ValorantPresence>) => {
+        if (eventType == "Delete") {
+          new_presences.forEach((v: ValorantPresence, k: string) => {
+            this.$store.commit("deletePresence", k);
+          });
+        } else {
+          new_presences.forEach((v: ValorantPresence, k: string) => {
+            this.$store.commit("updatePresence", { k, v });
+          });
+        }
       }
     );
   },

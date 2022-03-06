@@ -1,6 +1,10 @@
 <template>
   <li :class="getBoxClass">
-    <img v-if="this.card.length" class="chat-list-item card" :src="this.card" />
+    <img
+      v-if="this.presence && this.card.length"
+      class="chat-list-item card"
+      :src="this.card"
+    />
     <valo-icon-svg v-else class="chat-list-item card" />
 
     <div class="chat-list-item text">
