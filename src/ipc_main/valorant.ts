@@ -5,14 +5,8 @@ import { readFileSync } from "fs";
 import { BrowserWindow, ipcMain } from "electron";
 import { LCUWebsocket } from "@/ipc_main/lcu_websocket";
 import axios, { AxiosRequestHeaders, AxiosResponse, Method } from "axios";
-import {
-  process_valorant_presence,
-  ValorantPresence,
-  ValorantRawPresence,
-} from "@/types/valorant-presence";
+import { process_valorant_presence } from "@/types/valorant-presence";
 import { ValorantLCUReply } from "@/types/valorant-websocket-reply";
-import { ValorantMessage } from "@/types/valorant-message";
-import { ValorantFriend } from "@/types/valorant-friend";
 
 let ws: LCUWebsocket;
 let win: BrowserWindow;

@@ -32,7 +32,7 @@ export default defineComponent({
       if (command != "LOCKFILE_UPDATE") return;
 
       this.riotAlive = ready;
-      console.log(this.riotAlive);
+      //console.log(this.riotAlive);
       if (puuid) this.$store.commit("updatePuuid", puuid);
     });
 

@@ -189,16 +189,13 @@ export default defineComponent({
           this.messageField
         )
         .then((res) => {
-          console.log(res);
+          //console.log(res);
         });
       this.messageField = "";
     },
     scrollChatListToPuuid(puuid: string) {
       this.$nextTick(() => {
-        console.log(puuid);
-        console.log(this.$refs);
         const el: any = this.$refs[puuid];
-        console.log(el);
         if (el && el[0])
           el[0].scrollIntoView({
             behavior: "smooth",
