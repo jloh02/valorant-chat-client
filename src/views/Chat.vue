@@ -181,21 +181,17 @@ export default defineComponent({
       friends.forEach((f: ValorantFriend) => this.friends.set(f.puuid, f));
     },
     sendMessage() {
-      window.ipc
-        ?.invoke(
-          "VALORANT_CHAT",
-          "SEND",
-          this.friends.get(this.active)?.pid,
-          this.messageField
-        )
-        .then((res) => {
-          //console.log(res);
-        });
+      window.ipc?.invoke(
+        "VALORANT_CHAT",
+        "SEND",
+        this.friends.get(this.active)?.pid,
+        this.messageField
+      );
       this.messageField = "";
     },
     scrollChatListToPuuid(puuid: string) {
       this.$nextTick(() => {
-        const el: any = this.$refs[puuid];
+        const el: HTMLElement[] = this.$refs[puuid] as HTMLElement[];
         if (el && el[0])
           el[0].scrollIntoView({
             behavior: "smooth",
@@ -205,7 +201,7 @@ export default defineComponent({
     },
     scrollDashboardToLast(smooth: boolean) {
       this.$nextTick(() => {
-        const el: any = this.$refs.dashboardLast;
+        const el: HTMLElement = this.$refs.dashboardLast as HTMLElement;
         if (el)
           el.scrollIntoView({
             behavior: smooth ? "smooth" : "auto",

@@ -35,6 +35,7 @@ export class LCUWebsocket {
       const strMsg = data.toString();
       // console.log(`[message] ${strMsg.substr(0, 50)}`);
       try {
+        if (strMsg.length == 0) return;
         const jsonMsg = JSON.parse(strMsg);
         if (jsonMsg[0] != 8) {
           console.log("Not a message");
