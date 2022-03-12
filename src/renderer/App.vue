@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { ValorantPresence } from "@/types/valorant-presence";
-import RiotClientClosed from "@/views/RiotClientClosed.vue";
+import RiotClientClosed from "./views/RiotClientClosed.vue";
 
 export default defineComponent({
   name: "App",
@@ -30,9 +30,7 @@ export default defineComponent({
 
     window.ipc.on("IPC_STATUS", (command, ready, puuid) => {
       if (command != "LOCKFILE_UPDATE") return;
-
       this.riotAlive = ready;
-      //console.log(this.riotAlive);
       if (puuid) this.$store.commit("updatePuuid", puuid);
     });
 

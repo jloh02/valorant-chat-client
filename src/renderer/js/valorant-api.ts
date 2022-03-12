@@ -1,5 +1,3 @@
-"use strict";
-
 async function get(endpoint: string) {
   return await fetch(`https://valorant-api.com${endpoint}`);
 }

@@ -26,8 +26,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getPlayerCardSrc } from "@/js/valo-api";
-import ValoIconSvg from "@/components/ValoIconSvg.vue";
+import { getPlayerCardSrc } from "@/renderer/js/valorant-api";
+import ValoIconSvg from "@/renderer/components/ValoIconSvg.vue";
 import { ValorantPresence } from "@/types/valorant-presence";
 
 function capsFirstLetter(input: string): string {

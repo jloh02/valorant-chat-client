@@ -11,7 +11,6 @@ yarn add
 
 #### Remove Runnable from Windows Package
 - Navigate to `node_modules/windows`
-- Delete the `runnable.js` file
 - In `index.js`, remove the line for runnable (line 4)
 
 

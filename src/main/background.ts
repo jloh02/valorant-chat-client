@@ -1,13 +1,13 @@
-"use strict";
-
 import { join } from "path";
+import { initLog } from "./log_util";
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
-import { initialize_valorant_api } from "@/ipc_main/valorant";
-import { runRiotClient } from "@/ipc_main/windows_util";
+import { initialize_valorant_api } from "@/main/valorant";
+import { runRiotClient } from "@/main/windows_util";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
+initLog();
 runRiotClient();
 
 // Scheme must be registered before the app is ready
@@ -26,10 +26,11 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env
-        .ELECTRON_NODE_INTEGRATION as unknown as boolean,
+      nodeIntegration:
+        true || (process.env.ELECTRON_NODE_INTEGRATION as unknown as boolean),
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       preload: join(__dirname, "/preload.js"),
+      nodeIntegrationInWorker: true,
     },
   });
 

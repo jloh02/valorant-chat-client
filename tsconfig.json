@@ -23,7 +23,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/preload.js"
+    "src/renderer/preload.js"
   ],
   "exclude": ["node_modules"]
 }

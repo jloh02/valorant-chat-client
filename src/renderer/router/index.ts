@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Chat from "@/views/Chat.vue";
+import Chat from "@/renderer/views/Chat.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {

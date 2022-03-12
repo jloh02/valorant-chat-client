@@ -1,9 +1,8 @@
-"use strict";
-
 import https from "https";
+import log from "electron-log";
 import { readFileSync } from "fs";
 import { BrowserWindow, ipcMain } from "electron";
-import { LCUWebsocket } from "@/ipc_main/lcu_websocket";
+import { LCUWebsocket } from "@/main/lcu_websocket";
 import axios, { AxiosRequestHeaders, AxiosResponse, Method } from "axios";
 import { process_valorant_presence } from "@/types/valorant-presence";
 import { ValorantLCUReply } from "@/types/valorant-websocket-reply";
@@ -24,9 +23,8 @@ function readLocalAppdataFile(path: string): string | undefined {
   try {
     content = readFileSync(process.env.LOCALAPPDATA + path).toString("utf-8");
   } catch (err) {
-    if (err instanceof Error && err.message.includes("ENOENT")) {
-      // console.log("File not found");
-    }
+    // AppData file not found
+    // if (err instanceof Error && err.message.includes("ENOENT")) {}
   }
   return content;
 }
@@ -145,31 +143,10 @@ async function initialize() {
     puuid = entJson["subject"];
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
     headers["X-Riot-Entitlements-JWT"] = entJson["token"]; //Set entitlement
-    // console.log(entJson);
   }
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
   headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
-
-  // const sessRet = await query(
-  //   RequestType.LOCALHOST,
-  //   "GET",
-  //   "/chat/v1/session",
-  //   true
-  // );
-  // if (sessRet) console.log(sessRet.data);
-
-  // const extSessionRet = await query(
-  //   RequestType.LOCALHOST,
-  //   "GET",
-  //   "/product-session/v1/external-sessions",
-  //   true
-  // );
-  // if (extSessionRet) {
-  //   const extSessionJson = extSessionRet?.data;
-  //   ign = `${extSessionJson["game_name"]}#${extSessionJson["game_tag"]}`;
-  //   console.log(extSessionJson);
-  // }
 
   ws = new LCUWebsocket(lockfileDet[3], port);
   ws.onReady(async () => {
@@ -183,30 +160,6 @@ async function initialize() {
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", true, puuid);
     setTimeout(initialize, lockfile_polling_rate);
   });
-
-  // query(RequestType.PD, "GET", `/mmr/v1/players/${puuid}`).then((r) => {
-  //   console.log("Testing");
-  //   console.log(r?.status);
-  //   console.log(r?.data);
-  // });
-
-  // query(RequestType.LOCALHOST, "GET", "/help", true).then((r) => {
-  //   console.log(r.status);
-  //   console.log(r.data);
-  // });
-
-  // query(
-  //   RequestType.LOCALHOST,
-  //   "POST",
-  //   "/chat/v6/messages",
-  //   true,
-  //   '{"cid": "095dfd66-c9ed-5d18-920c-1410c6c6cff8@jp1.pvp.net","message": "testing jon","type": "chat"}'
-  // ).then((msgRet) => {
-  //   if (msgRet) {
-  //     console.log(msgRet.status);
-  //     console.log(msgRet.data);
-  //   }
-  // });
 }
 
 function convert_query_to_ipc_msg(res: AxiosResponse | undefined): object {
@@ -239,8 +192,6 @@ async function initialize_presence_monitoring() {
     );
   }
   ws.subscribe("OnJsonApiEvent_chat_v4_presences", (pres: ValorantLCUReply) => {
-    console.log(pres.eventType);
-    if (pres.eventType == "Delete") console.log(pres.data.presences);
     win.webContents.send(
       "VALORANT_PRESENCES",
       pres.eventType,
@@ -248,17 +199,6 @@ async function initialize_presence_monitoring() {
     );
   });
 }
-
-// function create_lcusocket_listeners() {
-//   ipcMain.on(
-//     "VALORANT_SOCKET",
-//     (event, command, endpoint: string, callback: (data: JSON) => void) => {
-//       if (command == "SUBSCRIBE")
-//         ws.subscribe(endpoint, (data) => callback(data));
-//       else if (command == "UNSUBSCRIBE") ws.unsubscribe(endpoint);
-//     }
-//   );
-// }
 
 function create_chat_listeners() {
   ipcMain.handle("VALORANT_CHAT", async (event, command, cid, message) => {
@@ -284,7 +224,6 @@ function create_chat_listeners() {
             "/chat/v4/friends",
             true
           );
-          // console.log(res?.data["friends"].length);
         } while (!res || res.status != 200 || res.data["friends"].length == 0);
         return convert_query_to_ipc_msg(res);
       case "HISTORY":
@@ -295,7 +234,6 @@ function create_chat_listeners() {
             "/chat/v6/messages",
             true
           );
-          // console.log(res?.data["messages"].length);
         } while (!res || res.status != 200 || res.data["messages"].length == 0);
         return convert_query_to_ipc_msg(res);
       default:

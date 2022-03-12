@@ -1,5 +1,4 @@
-"use strict";
-
+import log from "electron-log";
 import { AxiosResponse } from "axios";
 import { GameMode } from "@/constants";
 
@@ -40,8 +39,6 @@ export class ValorantPresence {
   title_id: string;
 
   constructor(presence: ValorantRawPresence) {
-    // console.log(presence);
-
     this.state = presence["state"];
     this.ign = `${presence["game_name"]}#${presence["game_tag"]}`;
     this.pid = presence["pid"];
@@ -49,8 +46,6 @@ export class ValorantPresence {
     let private_presence = JSON.parse(
       Buffer.from(presence["private"], "base64").toString("ascii")
     );
-
-    // console.log(private_presence);
 
     this.game_state = private_presence["sessionLoopState"];
     this.game_mode =
@@ -99,7 +94,7 @@ export function process_valorant_presence(
   if (!presences) return ret;
   for (let p of presences) {
     if (p["product"] != "valorant") continue;
-    // console.log(p["puuid"]);
+    log.debug("Updating presence: " + p["puuid"]);
     if (p["puuid"] == puuid)
       ret.set(p["puuid"], new ValorantPresenceSelf(p, query_function));
     else ret.set(p["puuid"], new ValorantPresence(p));

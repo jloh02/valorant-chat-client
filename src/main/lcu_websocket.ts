@@ -1,7 +1,6 @@
-"use strict";
-
 //A simple library to control Riot Games' LCU websockets (https://hextechdocs.dev/getting-started-with-the-lcu-websocket/)
 
+import log from "electron-log";
 import WebSocket from "ws";
 import { ValorantLCUReply } from "@/types/valorant-websocket-reply";
 
@@ -17,51 +16,49 @@ export class LCUWebsocket {
 
     this.ws.onclose = function (event) {
       if (event.wasClean) {
-        console.log(
+        log.info(
           `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
         );
       } else {
         // e.g. server process killed or network down
         // event.code is usually 1006 in this case
-        console.log("[close] Connection died");
+        log.info("[close] Connection died");
       }
     };
 
     this.ws.onerror = function (error) {
-      console.log(`[error] ${error.message}`);
+      log.warn(`[error] ${error.message}`);
     };
 
     this.ws.on("message", (data) => {
       const strMsg = data.toString();
-      // console.log(`[message] ${strMsg.substr(0, 50)}`);
+      log.debug(`[message] ${strMsg}`);
       try {
         if (strMsg.length == 0) return;
         const jsonMsg = JSON.parse(strMsg);
         if (jsonMsg[0] != 8) {
-          console.log("Not a message");
+          log.warn("Not a message");
           return;
         }
         if (!this.listeners.has(jsonMsg[1])) {
-          console.log("Not subscribed");
+          log.warn("Not subscribed");
           return;
         }
         const li = this.listeners.get(jsonMsg[1]);
         if (!li) {
-          console.log("Unknown error in listener");
+          log.warn("Unknown error in listener");
           return;
         }
         li(jsonMsg[2]);
       } catch (e) {
-        // console.log(data.toString());
-        // console.log(e);
-        console.log("JSON parse error");
+        log.warn("JSON parse error");
       }
     });
   }
 
   onReady(callback: () => void) {
     this.ws.on("open", () => {
-      console.log("[open] Connection established");
+      log.info("[open] Connection established");
       callback();
     });
   }

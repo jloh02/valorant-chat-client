@@ -73,10 +73,10 @@ import {
   ValorantMessage,
   ValorantSimpleMessage,
 } from "@/types/valorant-message";
-import ChatMessage from "@/components/ChatMessage.vue";
-import ChatListItem from "@/components/ChatListItem.vue";
-import ChatListPartyEntry from "@/components/ChatListPartyEntry.vue";
-import ChatListItemOverlay from "@/components/ChatListItemOverlay.vue";
+import ChatMessage from "@/renderer/components/ChatMessage.vue";
+import ChatListItem from "@/renderer/components/ChatListItem.vue";
+import ChatListPartyEntry from "@/renderer/components/ChatListPartyEntry.vue";
+import ChatListItemOverlay from "@/renderer/components/ChatListItemOverlay.vue";
 
 export default defineComponent({
   name: "Chat",
@@ -223,7 +223,6 @@ export default defineComponent({
 
       if (!window.ipc) return;
       window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((httpChat) => {
-        // console.log(httpChat);
         this.updateMessages(httpChat["data"]["messages"]);
         this.active = this.filteredFriends[0]["puuid"];
         this.scrollDashboardToLast(false);
@@ -231,8 +230,6 @@ export default defineComponent({
     });
 
     setTimeout(() => (this.allowUnread = true), 3000);
-
-    let i = 0;
   },
 });
 </script>
