@@ -5,7 +5,7 @@
       class="chat-list-item card"
       :src="this.card"
     />
-    <valo-icon-svg v-else class="chat-list-item card" />
+    <img v-else src="valo-icon.svg" class="chat-list-item card" />
 
     <div class="chat-list-item text">
       <p class="chat-list-item game-name">
@@ -27,7 +27,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { getPlayerCardSrc } from "@/renderer/js/valorant-api";
-import ValoIconSvg from "@/renderer/components/ValoIconSvg.vue";
 import { ValorantPresence } from "@/types/valorant-presence";
 
 function capsFirstLetter(input: string): string {
@@ -37,7 +36,6 @@ function capsFirstLetter(input: string): string {
 export default defineComponent({
   name: "ChatListItem",
   props: ["active", "puuid", "data", "unread"],
-  components: { ValoIconSvg },
   data: () => {
     return { card: "", status: "", statusColor: "" };
   },
