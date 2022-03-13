@@ -236,8 +236,8 @@ export default defineComponent({
 
 <style lang="postcss">
 .chat {
-  max-height: calc(100% - 3rem);
-  height: calc(100% - 3rem);
+  max-height: calc(100% - 1.5rem);
+  height: calc(100% - 1.5rem);
   @apply flex;
 }
 #chat-dashboard {

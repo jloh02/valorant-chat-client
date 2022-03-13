@@ -1,6 +1,6 @@
 import { join } from "path";
 import { initLog } from "./log_util";
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { autoUpdater } from "electron-updater";
@@ -24,6 +24,7 @@ async function createWindow() {
     height: 800,
     minWidth: 600,
     minHeight: 400,
+    frame: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -80,6 +81,21 @@ async function createWindow() {
     win.loadURL("app://./index.html");
     autoUpdater.checkForUpdatesAndNotify();
   }
+
+  //Setup listeners to control window
+  ipcMain.on("WINDOW", (event, command) => {
+    switch (command) {
+      case "CLOSE":
+        win.close();
+        break;
+      case "MINMAX":
+        win.isMaximized() ? win.unmaximize() : win.maximize();
+        break;
+      case "MINIMIZE":
+        win.minimize();
+        break;
+    }
+  });
 }
 
 app.on(

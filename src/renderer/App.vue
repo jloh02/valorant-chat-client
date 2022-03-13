@@ -1,25 +1,21 @@
 <template>
   <div v-if="this.riotAlive">
-    <div id="nav">
-      <router-link to="/">VALORANT Chat Client</router-link>
-    </div>
-    <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" :key="$route.path" />
-      </transition>
-    </router-view>
+    <nav-bar />
+    <chat />
   </div>
   <RiotClientClosed v-else />
 </template>
 
 <script lang="ts">
+import NavBar from "./components/NavBar.vue";
+import Chat from "./views/Chat.vue";
 import { defineComponent } from "vue";
 import { ValorantPresence } from "@/types/valorant-presence";
 import RiotClientClosed from "./views/RiotClientClosed.vue";
 
 export default defineComponent({
   name: "App",
-  components: { RiotClientClosed },
+  components: { NavBar, Chat, RiotClientClosed },
   data: () => {
     return {
       riotAlive: false,
@@ -69,47 +65,19 @@ export default defineComponent({
   @apply absolute top-0 bottom-0 w-full h-full;
 }
 
-#nav {
-  @apply flex
-  h-12
-  m-auto max-w-1/2
-  justify-center items-end
-  cursor-default;
+*:focus {
+  outline: none;
 }
 
-#nav a {
-  @apply relative flex-1
-  py-3 px-7  
-  font-bold hover:text-lg;
+* {
+  -webkit-user-select: none;
 }
 
-#nav a:after {
-  content: "";
-  transition: all 300ms ease-in;
-  transform: translate(50%, 0);
-  @apply w-0;
+input {
+  -webkit-user-select: text;
 }
 
-#nav a.router-link-exact-active {
-  @apply text-lg;
-}
-
-#nav a.router-link-exact-active:after {
-  transition: all 300ms ease-in;
-  transform: translate(0, 0);
-  @apply absolute bottom-0 left-1/4 
-  h-0.5 w-1/2
-  bg-white;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s;
-}
-.fade-enter-from {
-  @apply opacity-100;
-}
-.fade-leave-to {
-  @apply opacity-0;
+::selection {
+  @apply bg-stone-400;
 }
 </style>

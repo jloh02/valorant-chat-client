@@ -1,6 +1,5 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
 import store from "./store";
 import "@/assets/tailwind.css";
 
@@ -9,10 +8,12 @@ import {
   faSearch,
   faUsers,
   faFileLines,
+  faXmark,
+  faMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faSearch, faUsers, faFileLines);
+library.add(faSearch, faUsers, faFileLines, faXmark, faMinus);
 
 declare global {
   interface Window {
@@ -26,4 +27,4 @@ declare global {
 
 const app = createApp(App);
 app.component("font-awesome-icon", FontAwesomeIcon);
-app.use(router).use(store).mount("#app");
+app.use(store).mount("#app");
