@@ -1,12 +1,22 @@
 import { join } from "path";
 import { initLog } from "./log_util";
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  ipcMain,
+  globalShortcut,
+} from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { autoUpdater } from "electron-updater";
 import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+//Ensure single app instance
+const lockRetrieved = app.requestSingleInstanceLock();
+if (!lockRetrieved) app.exit(0);
 
 initLog();
 runRiotClient();
@@ -33,6 +43,7 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       preload: join(__dirname, "/preload.js"),
       nodeIntegrationInWorker: true,
+      devTools: isDevelopment,
     },
   });
 
@@ -79,6 +90,8 @@ async function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
+    win.removeMenu();
+    globalShortcut.unregisterAll();
     autoUpdater.checkForUpdatesAndNotify();
   }
 
