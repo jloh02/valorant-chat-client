@@ -80,4 +80,13 @@ input {
 ::selection {
   @apply bg-stone-400;
 }
+
+svg {
+  display: inline-block;
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+  overflow: visible;
+  box-sizing: content-box;
+}
 </style>
