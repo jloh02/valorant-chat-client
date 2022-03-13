@@ -16,7 +16,8 @@ export function initLog() {
   )}`;
   const filename = `vcc-${dateStr}-${timeStr}.log`;
 
-  log.transports.console.level = "info";
+  log.transports.console.level = "debug";
+  log.transports.file.level = "info";
   log.transports.file.fileName = filename;
   log.transports.file.archiveLog = (oldLogFile) => initLog();
 
