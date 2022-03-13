@@ -1,5 +1,4 @@
 import https from "https";
-import log from "electron-log";
 import { readFileSync } from "fs";
 import { BrowserWindow, ipcMain } from "electron";
 import { LCUWebsocket } from "@/main/lcu_websocket";

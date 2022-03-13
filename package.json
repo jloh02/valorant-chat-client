@@ -1,7 +1,7 @@
 {
   "name": "valorant-chat-client",
   "version": "0.1.0",
-  "description": "A chat application to enable VALORANT's chat functionality without opening the game",
+  "description": "VALORANT Chat Client",
   "author": {
     "name": "Jonathan Loh",
     "email": "jonathanloh02@gmail.com",

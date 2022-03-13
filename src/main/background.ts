@@ -1,4 +1,5 @@
 import { join } from "path";
+import log from "electron-log";
 import { initLog } from "./log_util";
 import {
   app,
@@ -19,6 +20,9 @@ const lockRetrieved = app.requestSingleInstanceLock();
 if (!lockRetrieved) app.exit(0);
 
 initLog();
+
+log.debug("Lock Retrieved and log initialized");
+
 runRiotClient();
 
 // Scheme must be registered before the app is ready
@@ -89,7 +93,7 @@ async function createWindow() {
   } else {
     createProtocol("app");
     // Load the index.html when not in development
-    win.loadURL("app://./index.html");
+    await win.loadURL("app://./index.html");
     win.removeMenu();
     globalShortcut.unregisterAll();
     autoUpdater.checkForUpdatesAndNotify();
@@ -109,6 +113,7 @@ async function createWindow() {
         break;
     }
   });
+  log.debug("Window created");
 }
 
 app.on(
@@ -150,6 +155,7 @@ app.on("ready", async () => {
   }
   createWindow();
   initialize_valorant_api(win);
+  log.debug("VALORANT API initialized");
 });
 
 // Exit cleanly on request from parent process in development mode.
