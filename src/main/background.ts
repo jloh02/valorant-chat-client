@@ -3,6 +3,7 @@ import { initLog } from "./log_util";
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
+import { autoUpdater } from "electron-updater";
 import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -21,8 +22,8 @@ async function createWindow() {
   win = new BrowserWindow({
     width: 1200,
     height: 800,
-    minWidth: 1000,
-    minHeight: 600,
+    minWidth: 600,
+    minHeight: 400,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -77,6 +78,7 @@ async function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
+    autoUpdater.checkForUpdatesAndNotify();
   }
 }
 

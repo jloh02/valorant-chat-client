@@ -1,7 +1,14 @@
 {
-  "name": "valo-client",
+  "name": "valorant-chat-client",
   "version": "0.1.0",
-  "private": true,
+  "description": "A chat application to enable VALORANT's chat functionality without opening the game",
+  "author": {
+    "name": "Jonathan Loh",
+    "email": "jonathanloh02@gmail.com",
+    "url": "https://jloh02.github.io/"
+  },
+  "license": "MIT",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -20,6 +27,7 @@
     "autoprefixer": "^10.4.2",
     "axios": "^0.25.0",
     "electron-log": "^4.4.6",
+    "electron-updater": "^4.6.5",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",

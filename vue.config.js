@@ -19,6 +19,21 @@ module.exports = {
       mainProcessFile: "src/main/background.ts",
       rendererProcessFile: "src/renderer/main.ts",
       mainProcessWatch: ["src/main/*"],
+      builderOptions: {
+        productName: "VALORANT Chat Client",
+        publish: ["github"],
+        win: {
+          target: ["nsis"],
+          icon: "build/icons/icon.png",
+        },
+        nsis: {
+          oneClick: false,
+          perMachine: true,
+          allowElevation: true,
+          allowToChangeInstallationDirectory: true,
+          deleteAppDataOnUninstall: true,
+        },
+      },
     },
   },
 };
