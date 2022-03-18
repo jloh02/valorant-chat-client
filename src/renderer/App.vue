@@ -1,9 +1,9 @@
 <template>
-  <div v-if="this.riotAlive">
-    <nav-bar />
-    <chat />
+  <nav-bar />
+  <div v-if="this.riotAlive" class="app-div"><chat /></div>
+  <div v-else class="app-div">
+    <riot-client-closed />
   </div>
-  <RiotClientClosed v-else />
 </template>
 
 <script lang="ts">
@@ -61,8 +61,10 @@ export default defineComponent({
   min-h-screen max-h-screen;
 }
 
-#app > div {
-  @apply absolute top-0 bottom-0 w-full h-full;
+.app-div {
+  height: calc(100%-1.25rem);
+  @apply absolute top-5 bottom-0 w-full
+  flex flex-col items-center justify-center;
 }
 
 *:focus {
