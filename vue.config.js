@@ -33,6 +33,13 @@ module.exports = {
           allowToChangeInstallationDirectory: true,
           deleteAppDataOnUninstall: true,
         },
+        extraResources: [
+          {
+            from: "node_modules/regedit/vbs",
+            to: "regedit/vbs",
+            filter: ["**/*"],
+          },
+        ],
       },
     },
   },
