@@ -26,7 +26,7 @@ export function initLog() {
   for (const f of files) {
     if (
       f.endsWith(".log") &&
-      (f.substr(4, 8) as unknown as number) - (dateStr as unknown as number) > 1
+      (dateStr as unknown as number) - (f.substr(4, 8) as unknown as number) > 1
     ) {
       log.info("Deleting old logs:", f);
       fs.unlinkSync(path.join(parent, f));
