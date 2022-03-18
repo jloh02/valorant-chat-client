@@ -1,4 +1,5 @@
 import https from "https";
+import log from "electron-log";
 import { readFileSync } from "fs";
 import { BrowserWindow, ipcMain } from "electron";
 import { LCUWebsocket } from "@/main/lcu_websocket";
@@ -93,6 +94,8 @@ async function initialize() {
     return;
   }
 
+  log.debug(lockfile);
+
   const channelNames = ["VALORANT_CHAT", "VALORANT_PRESENCES"];
   channelNames.forEach((channel) => {
     ipcMain.removeHandler(channel);
@@ -142,17 +145,19 @@ async function initialize() {
     puuid = entJson["subject"];
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
     headers["X-Riot-Entitlements-JWT"] = entJson["token"]; //Set entitlement
+    log.debug(entJson);
   }
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
   headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
+  log.debug(verRes);
 
   ws = new LCUWebsocket(lockfileDet[3], port);
   ws.onReady(async () => {
     await initialize_presence_monitoring();
-
+    log.debug("Initialized presence monitoring");
     create_chat_listeners();
-    create_agent_select_listeners();
+    log.debug("Created chat monitoring");
 
     ready = true;
     prev_lockfile = lockfile;
@@ -245,25 +250,4 @@ function create_chat_listeners() {
   ws.subscribe("OnJsonApiEvent_chat_v4_friends", (res) => {
     win.webContents.send("VALORANT_CHAT", "FRIEND", res.data.friends);
   });
-}
-
-function create_agent_select_listeners() {
-  ipcMain.handle(
-    "VALORANT_PREGAME",
-    async (event, command, match_id, agent_id) => {
-      switch (command) {
-        case "SELECT":
-          return await query(
-            RequestType.GLZ,
-            "POST",
-            "/chat/v6/messages",
-            false,
-            `/pregame/v1/matches/${match_id}/select/${agent_id}`
-          );
-        default:
-          console.warn("Unknown VALORANT_PREGAME message: " + command);
-          return undefined;
-      }
-    }
-  );
 }
