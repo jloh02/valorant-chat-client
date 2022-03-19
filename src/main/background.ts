@@ -37,6 +37,7 @@ async function createWindow() {
     minWidth: 600,
     minHeight: 400,
     frame: false,
+    backgroundColor: "#292524",
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -47,6 +48,10 @@ async function createWindow() {
       nodeIntegrationInWorker: true,
       devTools: isDevelopment,
     },
+  });
+
+  win.once("ready-to-show", () => {
+    win.show();
   });
 
   const filter = {
