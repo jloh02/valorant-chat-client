@@ -150,7 +150,7 @@ async function initialize() {
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
   headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
-  log.debug(verRes);
+  log.debug(verRes.data["data"]["riotClientVersion"]);
 
   ws = new LCUWebsocket(lockfileDet[3], port);
   ws.onReady(async () => {
