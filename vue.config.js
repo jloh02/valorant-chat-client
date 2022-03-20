@@ -18,7 +18,7 @@ module.exports = {
       preload: "src/renderer/preload.js",
       mainProcessFile: "src/main/background.ts",
       rendererProcessFile: "src/renderer/main.ts",
-      mainProcessWatch: ["src/main/*"],
+      mainProcessWatch: ["src/main/*", "src/types/*"],
       builderOptions: {
         productName: "VALORANT Chat Client",
         publish: ["github"],
