@@ -51,7 +51,7 @@ export class ValorantPresence {
     this.game_mode =
       private_presence["provisioningFlow"] == "ShootingRange"
         ? "In Range"
-        : GameMode.get(private_presence["queueId"]) ||
+        : GameMode.get(private_presence["queueId"]) ??
           private_presence["queueId"];
     this.score_ally = private_presence["partyOwnerMatchScoreAllyTeam"];
     this.score_enemy = private_presence["partyOwnerMatchScoreEnemyTeam"];
