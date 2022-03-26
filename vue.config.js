@@ -15,9 +15,12 @@ module.exports = {
       chainWebpackMainProcess: (config) => {
         config.target("electron-main");
       },
-      preload: "src/renderer/preload.js",
       mainProcessFile: "src/main/background.ts",
       rendererProcessFile: "src/renderer/main.ts",
+      preload: {
+        preload: "src/renderer/preload.js",
+        updaterPreload: "src/renderer/updater-preload.js",
+      },
       mainProcessWatch: ["src/main/*", "src/types/*"],
       builderOptions: {
         productName: "VALORANT Chat Client",
