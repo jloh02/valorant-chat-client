@@ -1,6 +1,6 @@
 {
   "name": "valorant-chat-client",
-  "version": "0.1.1",
+  "version": "0.0.1",
   "description": "VALORANT Chat Client",
   "author": {
     "name": "Jonathan Loh",
@@ -33,7 +33,7 @@
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.0.23",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0",
+    "vue-router": "^4.0.14",
     "vuex": "^4.0.2",
     "ws": "^8.5.0"
   },
