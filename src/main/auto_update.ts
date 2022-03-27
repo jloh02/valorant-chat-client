@@ -1,6 +1,6 @@
 import log from "electron-log";
 import { BrowserWindow, ipcMain } from "electron";
-import { autoUpdater, UpdateInfo } from "electron-updater";
+import { autoUpdater, UpdateInfo, ProgressInfo } from "electron-updater";
 import { createWindow } from "./browser_window";
 
 autoUpdater.autoDownload = false;
@@ -47,7 +47,12 @@ export function testUpdater() {
         for (; i < 100; i++) {
           const j = i;
           setTimeout(() => {
-            autoUpdater.emit("download-progress", {}, 1, j / 100, 100, j);
+            autoUpdater.emit("download-progress", {
+              bytesPerSecond: 1,
+              percent: j / 100,
+              total: 100,
+              transferred: j,
+            });
           }, (j + 1) * 1000);
         }
 
@@ -75,10 +80,13 @@ function initializeUpdateListeners() {
     );
   });
 
-  autoUpdater.on(
-    "download-progress",
-    (progress, bytesPerSecond, percent, total, transferred) =>
-      updaterWin.webContents.send("UPDATE", "PROGRESS", transferred, total)
+  autoUpdater.on("download-progress", (progress: ProgressInfo) =>
+    updaterWin.webContents.send(
+      "UPDATE",
+      "PROGRESS",
+      progress.transferred,
+      progress.total
+    )
   );
 
   autoUpdater.on("update-not-available", () =>
