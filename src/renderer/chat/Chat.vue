@@ -193,6 +193,9 @@ export default defineComponent({
             this.unreadChats.add(msg["puuid"]);
             this.scrollChatListToPuuid(msgCidPuuid);
           }
+
+          //if(!msgOutgoing)
+          window.ipc?.send("WINDOW", "NOTIFY", msg["game_name"], msg["body"]);
         }
       }
     },

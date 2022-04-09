@@ -4,7 +4,7 @@ const validChannels = [
   "IPC_STATUS", //IPC_READY (To Main), LOCKFILE_UPDATE (To Renderer)
   "VALORANT_PRESENCES", //1-way channel to send presence updates/deletes to renderer
   "VALORANT_CHAT", //SEND (To Main), FRIENDS (Renderer Req), HISTORY (To Renderer), MESSAGE (To Renderer)
-  "WINDOW", //Use MINMAX, MINIMIZE or CLOSE (To Main) to replace frame functions
+  "WINDOW", //Use MINMAX, MINIMIZE or CLOSE (To Main) to replace frame functions; NOTIFY (To Main) to show notification
 ];
 contextBridge.exposeInMainWorld("ipc", {
   send: (channel, ...args) => {

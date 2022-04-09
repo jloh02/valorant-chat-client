@@ -12,6 +12,7 @@ import { checkForUpdates, testUpdater } from "./auto_update";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
+import { closeNotifications, showNotification } from "./notifications";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 //Ensure single app instance
@@ -67,8 +68,13 @@ function createMainRendererWindow() {
     }
   );
 
+  win.on("focus", () => {
+    win.flashFrame(false);
+    closeNotifications();
+  });
+
   //Setup listeners to control window
-  ipcMain.on("WINDOW", (event, command) => {
+  ipcMain.on("WINDOW", (event, command, a, b) => {
     switch (command) {
       case "CLOSE":
         win.close();
@@ -78,6 +84,10 @@ function createMainRendererWindow() {
         break;
       case "MINIMIZE":
         win.minimize();
+        break;
+      case "NOTIFY":
+        if (!win.isFocused()) win.flashFrame(true);
+        showNotification(a, b);
         break;
     }
   });
