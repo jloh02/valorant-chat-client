@@ -37,6 +37,9 @@ export class ValorantPresence {
   party_size: number;
   card_id: string;
   title_id: string;
+  accountLevel: number;
+  competitiveTier: number;
+  leaderboardPosition: number;
 
   constructor(presence: ValorantRawPresence) {
     this.state = presence["state"];
@@ -59,6 +62,9 @@ export class ValorantPresence {
     this.party_size = private_presence["partySize"];
     this.card_id = private_presence["playerCardId"];
     this.title_id = private_presence["playerTitleId"];
+    this.accountLevel = private_presence["accountLevel"];
+    this.competitiveTier = private_presence["competitiveTier"];
+    this.leaderboardPosition = private_presence["leaderboardPosition"];
   }
 }
 

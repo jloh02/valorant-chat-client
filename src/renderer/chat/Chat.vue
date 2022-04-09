@@ -64,7 +64,12 @@
               :data="f"
             />
           </button>
-          <chat-list-item-overlay :data="f" />
+          <chat-list-item-overlay
+            :data="f"
+            :presence="
+              this.presences.has(f.puuid) ? this.presences.get(f.puuid) : undefined
+            "
+          />
           <chat-list-party-entry
             v-if="
               this.presences.has(f.puuid) &&
