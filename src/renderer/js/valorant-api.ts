@@ -12,7 +12,7 @@ export async function getPlayerCardSrc(
   return resJson["data"]["displayIcon"];
 }
 
-let rankIcons: Map<number, string>, rankColors:Map<number,string>;
+let rankIcons: Map<number, string>, rankColors: Map<number, string>;
 get("/v1/competitivetiers").then(async (res) => {
   if (!res || !res.ok) return;
   const resJson = await res.json();
@@ -20,7 +20,7 @@ get("/v1/competitivetiers").then(async (res) => {
   rankIcons = new Map();
   rankColors = new Map();
   const tierArr = resJson["data"];
-  const tiers = tierArr[tierArr.length-1]["tiers"];
+  const tiers = tierArr[tierArr.length - 1]["tiers"];
   for (const x of tiers) {
     rankIcons.set(x.tier, x.largeIcon);
     rankColors.set(x.tier, x.color);

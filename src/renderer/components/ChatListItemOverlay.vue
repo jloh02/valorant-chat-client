@@ -24,7 +24,10 @@
     </div>
     <div v-if="presence" class="chat-list-item-sub-col">
       <img class="chat-list-item-rank-icon" :src="this.rankIcon" />
-      <p v-if="this.presence.competitiveTier > 20" :style="'color: #' + this.rankColor">
+      <p
+        v-if="this.presence.competitiveTier > 20"
+        :style="'color: #' + this.rankColor"
+      >
         #{{ this.presence.leaderboardPosition }}
       </p>
     </div>
@@ -65,12 +68,14 @@ export default defineComponent({
   flex flex-row justify-between items-center px-4 py-2;
 }
 
-.chat-list-item-rank-icon{
+.chat-list-item-rank-icon {
+  min-width: 40px;
   @apply h-10 w-10;
 }
 
 .chat-list-item-sub-col {
-  @apply flex flex-col;
+  @apply flex flex-col
+  text-left;
 }
 
 .chat-list-item-overlay-note {

@@ -67,7 +67,9 @@
           <chat-list-item-overlay
             :data="f"
             :presence="
-              this.presences.has(f.puuid) ? this.presences.get(f.puuid) : undefined
+              this.presences.has(f.puuid)
+                ? this.presences.get(f.puuid)
+                : undefined
             "
           />
           <chat-list-party-entry
