@@ -196,8 +196,8 @@ export default defineComponent({
             this.scrollChatListToPuuid(msgCidPuuid);
           }
 
-          //if(!msgOutgoing)
-          window.ipc?.send("WINDOW", "NOTIFY", msg["game_name"], msg["body"]);
+          if (!msgOutgoing)
+            window.ipc?.send("WINDOW", "NOTIFY", msg["game_name"], msg["body"]);
         }
       }
     },
