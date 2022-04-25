@@ -106,7 +106,7 @@ li.chat-list-item {
   @apply h-12 w-12 p-1;
 }
 .chat-list-item.text {
-  @apply flex-1 flex flex-col p-1;
+  @apply flex-1 flex flex-col p-1 pointer-events-none;
 }
 .chat-list-item.text .game-name {
   @apply text-base;
