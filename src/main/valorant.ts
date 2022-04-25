@@ -158,6 +158,8 @@ async function initialize() {
     log.debug("Initialized presence monitoring");
     create_chat_listeners();
     log.debug("Created chat monitoring");
+    create_party_listeners();
+    log.debug("Created party monitoring");
 
     ready = true;
     prev_lockfile = lockfile;
@@ -249,5 +251,49 @@ function create_chat_listeners() {
   });
   ws.subscribe("OnJsonApiEvent_chat_v4_friends", (res) => {
     win.webContents.send("VALORANT_CHAT", "FRIEND", res.data.friends);
+  });
+}
+
+async function create_party_listeners() {
+  ipcMain.handle("VALORANT_PARTY", async (event, command, paramA, paramB) => {
+    switch (command) {
+      //paramA: name, paramB: tag
+      case "INVITE":
+        const partyRes = await query(
+          RequestType.GLZ,
+          "GET",
+          `/parties/v1/players/${puuid}`
+        );
+        if (!partyRes || partyRes.status != 200) return 0;
+        const resI = await query(
+          RequestType.GLZ,
+          "POST",
+          `/parties/v1/parties/${partyRes.data.CurrentPartyID}/invites/name/${paramA}/tag/${paramB}`
+        );
+        if (resI?.status == 200) return 1;
+        return 0;
+
+      //paramA: party_id, paramB: other_puuid
+      case "JOIN":
+        const res = await query(
+          RequestType.GLZ,
+          "POST",
+          `/parties/v1/players/${puuid}/joinparty/${paramA}`
+        );
+        if (res?.status == 200) return 1;
+
+        const res2 = await query(
+          RequestType.GLZ,
+          "POST",
+          `/parties/v1/parties/${paramA}/request`,
+          false,
+          JSON.stringify({ Subjects: [paramB] })
+        );
+        if (res2?.status == 200) return 2;
+        return 0;
+
+      default:
+        console.warn("Unknown VALORANT_CHAT message: " + command);
+    }
   });
 }
