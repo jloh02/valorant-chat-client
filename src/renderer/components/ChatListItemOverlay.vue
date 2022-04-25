@@ -46,7 +46,6 @@ export default defineComponent({
       return getRankIcon(this.presence.competitiveTier);
     },
     rankColor() {
-      console.log(getRankColor(this.presence.competitiveTier));
       return getRankColor(this.presence.competitiveTier);
     },
   },
