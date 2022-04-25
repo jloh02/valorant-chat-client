@@ -26,7 +26,8 @@ export type ValorantRawPresence = {
 };
 
 export class ValorantPresence {
-  ign: string;
+  name: string;
+  tag: string;
   pid: string;
   state: string;
   game_state: string; // INGAME, PREGAME, MENUS
@@ -43,7 +44,8 @@ export class ValorantPresence {
 
   constructor(presence: ValorantRawPresence) {
     this.state = presence["state"];
-    this.ign = `${presence["game_name"]}#${presence["game_tag"]}`;
+    this.name = presence["game_name"];
+    this.tag = presence["game_tag"];
     this.pid = presence["pid"];
 
     let private_presence = JSON.parse(
