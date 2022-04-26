@@ -17,6 +17,9 @@
       Riot Client Closed<br />
       Waiting for Response...
     </p>
+    <button class="open-riot-client-button" @click="openRiotClient">
+      Open Riot Client
+    </button>
   </div>
 </template>
 
@@ -25,12 +28,16 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Error",
+  methods: {
+    openRiotClient() {
+      window.ipc?.send("WINDOW", "OPEN_RIOT_CLIENT");
+    },
+  },
 });
 </script>
 
 <style lang="postcss">
 /* Taken from https://www.cssscript.com/animated-google-loader-with-svg-and-css/ */
-
 .riot-client-closed {
   @apply flex flex-col justify-center items-center;
 }
@@ -107,5 +114,9 @@ export default defineComponent({
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -124;
   }
+}
+
+.open-riot-client-button {
+  @apply mt-2 p-2 rounded bg-red-600;
 }
 </style>

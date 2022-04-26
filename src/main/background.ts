@@ -89,6 +89,9 @@ function createMainRendererWindow() {
         if (!win.isFocused()) win.flashFrame(true);
         showNotification(a, b);
         break;
+      case "OPEN_RIOT_CLIENT":
+        runRiotClient();
+        break;
     }
   });
   log.debug("Window created");
