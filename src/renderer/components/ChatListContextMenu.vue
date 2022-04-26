@@ -1,4 +1,5 @@
 <template>
+  <party-invite-dialog ref="dialog" />
   <div
     class="chat-list-ctx-menu"
     ref="contextMenu"
@@ -29,9 +30,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import PartyInviteDialog from "@/renderer/components/PartyInviteDialog.vue";
 
 export default defineComponent({
   name: "ChatListContextMenu",
+  components: { PartyInviteDialog },
   data: () => {
     return {
       puuid: "",
@@ -42,6 +45,10 @@ export default defineComponent({
   },
   expose: ["setPosition"],
   methods: {
+    hideContextMenu() {
+      const el: HTMLElement = this.$refs.contextMenu as HTMLElement;
+      if (el) el.style.opacity = "0";
+    },
     setPosition(
       x: number,
       y: number,
@@ -70,20 +77,25 @@ export default defineComponent({
         el.style.opacity = "100";
       }
     },
-    hideContextMenu() {
-      const el: HTMLElement = this.$refs.contextMenu as HTMLElement;
-      if (el) el.style.opacity = "0";
+    showDialog(msg: string) {
+      (this.$refs.dialog as InstanceType<typeof PartyInviteDialog>).show(msg);
     },
     inviteToParty() {
       /* 
       Returns:
       0 - Failed
       1 - Invited
+      2 - Already in Party
       */
       window.ipc
         ?.invoke("VALORANT_PARTY", "INVITE", this.name, this.tag)
         .then((res) => {
-          console.log(res);
+          if (res == 0)
+            this.showDialog(
+              "Invite Failed\nCheck that the VALORANT game is open"
+            );
+          else if (res == 1) this.showDialog("Invite Successful");
+          else if (res == 2) this.showDialog("Invite Failed\nAlready in party");
         });
       this.hideContextMenu();
     },
@@ -97,7 +109,19 @@ export default defineComponent({
       window.ipc
         ?.invoke("VALORANT_PARTY", "JOIN", this.party_id, this.puuid)
         .then((res) => {
-          console.log(res);
+          switch (res) {
+            case 0:
+              this.showDialog(
+                "Request Failed\nCheck that the VALORANT game is open"
+              );
+              break;
+            case 1:
+              this.showDialog("Invite to Party Accepted");
+              break;
+            case 2:
+              this.showDialog("Requested to Join Party");
+              break;
+          }
         });
       this.hideContextMenu();
     },
