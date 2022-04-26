@@ -17,4 +17,5 @@ export type ValorantMessage = {
 export type ValorantSimpleMessage = {
   outgoing: boolean;
   message: string;
+  timestamp: number;
 };

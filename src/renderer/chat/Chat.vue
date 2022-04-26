@@ -3,7 +3,7 @@
     <div id="chat-dashboard">
       <ul :key="this.messages" class="chat-dashboard messages">
         <chat-message
-          v-for="(msg, idx) in this.messages.get(this.active)"
+          v-for="(msg, idx) in this.messagesView"
           :key="idx"
           :outgoing="msg.outgoing"
           :message="msg.message"
@@ -122,8 +122,7 @@ export default defineComponent({
       friends: new Map<string, ValorantFriend>(),
       searchField: "",
       messageField: "",
-      messages: new Map<string, ValorantSimpleMessage[]>(),
-      addedMessages: new Set<string>(), //Set to maintain which messages (mid) have been processed
+      messages: new Map<string, Map<string, ValorantSimpleMessage>>(),
       unreadChats: new Set<string>(), //Set of unread chats cid
       allowUnread: false, //Disallow unread notifications for first 3s to allow existing msgs to load
     };
@@ -176,6 +175,17 @@ export default defineComponent({
           return a["game_name"].localeCompare(b["game_name"]);
         });
     },
+    messagesView() {
+      const msgMap = this.messages.get(this.active);
+      if (!msgMap) return [];
+
+      const msgList: ValorantSimpleMessage[] = Array.from(msgMap.values());
+      return msgList.sort(
+        (a: ValorantSimpleMessage, b: ValorantSimpleMessage) => {
+          return a.timestamp - b.timestamp;
+        }
+      );
+    },
   },
   methods: {
     setActive(puuid: string) {
@@ -198,17 +208,18 @@ export default defineComponent({
     },
     updateMessages(messages: ValorantMessage[], setUnread?: boolean) {
       for (var msg of messages) {
-        if (this.addedMessages.has(msg["mid"])) continue;
-        this.addedMessages.add(msg["mid"]);
-
         const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
         const msgOutgoing = msg["puuid"] != msgCidPuuid;
 
-        if (!this.messages.has(msgCidPuuid)) this.messages.set(msgCidPuuid, []);
+        if (!this.messages.has(msgCidPuuid))
+          this.messages.set(msgCidPuuid, new Map());
 
-        this.messages.get(msgCidPuuid)?.push({
+        console.log(msg);
+
+        this.messages.get(msgCidPuuid)?.set(msg["mid"], {
           outgoing: msgOutgoing,
           message: msg["body"],
+          timestamp: msg["time"] as unknown as number,
         });
 
         if (setUnread) {
