@@ -11,7 +11,7 @@ autoUpdater.logger = log;
 let updaterWin: BrowserWindow;
 
 autoUpdater.on("update-available", (info: UpdateInfo) => {
-  log.info("Update available for version:", info.version);
+  log.info("[UPDATER] Update available for version:", info.version);
   updaterWin = createWindow(true);
   initializeUpdateListeners();
 });
@@ -20,10 +20,11 @@ export function checkForUpdates() {
   ipcMain.on("UPDATE", (event, cmd) => {
     switch (cmd) {
       case "UPDATE":
-        log.info("Downloading Update");
+        log.info("[UPDATER] Downloading update");
         autoUpdater.downloadUpdate();
         break;
       case "CANCEL":
+        log.info("[UPDATER] Update cancelled");
         ipcMain.removeAllListeners("UPDATER");
         autoUpdater.removeAllListeners("update-downloaded");
         updaterWin.close();
@@ -42,7 +43,7 @@ export function testUpdater() {
   ipcMain.on("UPDATE", (event, cmd) => {
     switch (cmd) {
       case "UPDATE":
-        log.info("Downloading Update");
+        log.info("[UPDATER] Downloading update");
         let i = 0;
         for (; i < 100; i++) {
           const j = i;
@@ -63,6 +64,7 @@ export function testUpdater() {
         }, 100000);
         break;
       case "CANCEL":
+        log.info("[UPDATER] Update cancelled");
         ipcMain.removeAllListeners("UPDATER");
         autoUpdater.removeAllListeners("update-downloaded");
         updaterWin.close();
@@ -75,27 +77,30 @@ function initializeUpdateListeners() {
   autoUpdater.on("error", (error: Error) => {
     if (updaterWin) updaterWin.close();
     log.warn(
-      "Update error:",
+      "[UPDATER] Update error:",
       error == null ? "unknown" : (error.stack || error).toString()
     );
   });
 
-  autoUpdater.on("download-progress", (progress: ProgressInfo) =>
+  autoUpdater.on("download-progress", (progress: ProgressInfo) => {
+    log.info(
+      `[UPDATER] Update progress: ${progress.transferred}/${progress.total}`
+    );
     updaterWin.webContents.send(
       "UPDATE",
       "PROGRESS",
       progress.transferred,
       progress.total
-    )
-  );
+    );
+  });
 
   autoUpdater.on("update-not-available", () =>
-    log.info("No updates available")
+    log.info("[UPDATER] No updates available")
   );
 
   //Automatically close application and install upon update completion
   autoUpdater.on("update-downloaded", (info) => {
-    log.info("Update downloaded (", info.version, ")");
+    log.info("[UPDATER] Update downloaded (", info.version, ")");
     setImmediate(() => autoUpdater.quitAndInstall());
   });
 }

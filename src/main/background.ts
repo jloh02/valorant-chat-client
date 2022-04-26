@@ -21,7 +21,7 @@ if (!lockRetrieved) app.exit(0);
 
 initLog();
 
-log.debug("Lock Retrieved and log initialized");
+log.info("[Background] Lock Retrieved and log initialized");
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -94,7 +94,7 @@ function createMainRendererWindow() {
         break;
     }
   });
-  log.debug("Window created");
+  log.info("[Background] Window created");
 }
 
 app.on(
@@ -137,7 +137,7 @@ app.on("ready", async () => {
   }
   createMainRendererWindow();
   initialize_valorant_api(win);
-  log.debug("VALORANT API initialized");
+  log.info("[Background] VALORANT API initialized");
 
   if (!isDevelopment) checkForUpdates();
   // else testUpdater();

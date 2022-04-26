@@ -15,10 +15,10 @@ export async function runRiotClient() {
       err: Error | undefined,
       result: RegistryItemCollection<string[]>
     ) {
-      if (err) log.warn(err);
+      if (err) log.warn("[WINDOWS] Registry error: " + err);
       else if (result[regPath].exists) {
         const unins = result[regPath].values.UninstallString.value;
-        log.debug(unins);
+        log.info("[WINDOWS] Uninstall Path: " + unins);
         if (unins) child_process.exec(unins.split(" --uninstall")[0]);
       }
     }

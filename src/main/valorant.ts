@@ -94,7 +94,7 @@ async function initialize() {
     return;
   }
 
-  log.debug(lockfile);
+  log.info("[VALORANT] Lockfile data: " + lockfile);
 
   const channelNames = [
     "VALORANT_CHAT",
@@ -149,21 +149,24 @@ async function initialize() {
     puuid = entJson["subject"];
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
     headers["X-Riot-Entitlements-JWT"] = entJson["token"]; //Set entitlement
-    log.debug(entJson);
+    log.info("[VALORANT] Entitlement: " + entJson);
   }
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
   headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
-  log.debug(verRes.data["data"]["riotClientVersion"]);
+  log.info(
+    "[VALORANT] Riot Client Version: " +
+      verRes.data["data"]["riotClientVersion"]
+  );
 
   ws = new LCUWebsocket(lockfileDet[3], port);
   ws.onReady(async () => {
     await initialize_presence_monitoring();
-    log.debug("Initialized presence monitoring");
+    log.info("[VALORANT] Initialized presence monitoring");
     create_chat_listeners();
-    log.debug("Created chat monitoring");
+    log.info("[VALORANT] Created chat monitoring");
     create_party_listeners();
-    log.debug("Created party monitoring");
+    log.info("[VALORANT] Created party monitoring");
 
     ready = true;
     prev_lockfile = lockfile;
@@ -217,15 +220,15 @@ function create_chat_listeners() {
     //Query for 5s to ensure msgs/friends not empty (Chat server takes awhile to start)
     switch (command) {
       case "SEND":
-        return convert_query_to_ipc_msg(
-          await query(
-            RequestType.LOCALHOST,
-            "POST",
-            "/chat/v6/messages",
-            true,
-            `{"cid": "${cid}","message": "${message}","type": "chat"}`
-          )
+        res = await query(
+          RequestType.LOCALHOST,
+          "POST",
+          "/chat/v6/messages",
+          true,
+          `{"cid": "${cid}","message": "${message}","type": "chat"}`
         );
+        log.info("[VALORANT] Send Message: " + res?.data);
+        return convert_query_to_ipc_msg(res);
       case "FRIENDS":
         do {
           res = await query(
@@ -235,6 +238,7 @@ function create_chat_listeners() {
             true
           );
         } while (!res || res.status != 200 || res.data["friends"].length == 0);
+        log.info("[VALORANT] Friends Request: " + res?.data);
         return convert_query_to_ipc_msg(res);
       case "HISTORY":
         do {
@@ -245,6 +249,7 @@ function create_chat_listeners() {
             true
           );
         } while (!res || res.status != 200 || res.data["messages"].length == 0);
+        log.info("[VALORANT] Message History: " + res?.data);
         return convert_query_to_ipc_msg(res);
       default:
         console.warn("Unknown VALORANT_CHAT message: " + command);
@@ -268,14 +273,14 @@ async function create_party_listeners() {
           "GET",
           `/parties/v1/players/${puuid}`
         );
-        log.debug(partyRes?.data);
+        log.info("[VALORANT] Party Response: " + partyRes?.data);
         if (!partyRes || partyRes.status != 200) return 0;
         const resI = await query(
           RequestType.GLZ,
           "POST",
           `/parties/v1/parties/${partyRes.data.CurrentPartyID}/invites/name/${paramA}/tag/${paramB}`
         );
-        log.debug(resI?.data);
+        log.info("[VALORANT] Party Invite Response: " + resI?.data);
         if (resI?.status == 200) return 1;
         if (resI?.status == 409) return 2;
         return 0;
@@ -287,7 +292,7 @@ async function create_party_listeners() {
           "POST",
           `/parties/v1/players/${puuid}/joinparty/${paramA}`
         );
-        log.debug(res?.data);
+        log.info("[VALORANT] Party Join Response: " + res?.data);
         if (res?.status == 200) return 1;
 
         const res2 = await query(
@@ -297,7 +302,7 @@ async function create_party_listeners() {
           false,
           JSON.stringify({ Subjects: [paramB] })
         );
-        log.debug(res2?.data);
+        log.info("[VALORANT] Party Join Request Response: " + res2?.data);
         if (res2?.status == 200) return 2;
         return 0;
 

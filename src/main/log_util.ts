@@ -28,7 +28,7 @@ export function initLog() {
       f.endsWith(".log") &&
       (dateStr as unknown as number) - (f.substr(4, 8) as unknown as number) > 1
     ) {
-      log.info("Deleting old logs:", f);
+      log.info("[Logger] Deleting old logs:", f);
       fs.unlinkSync(path.join(parent, f));
     }
   }

@@ -102,7 +102,7 @@ export function process_valorant_presence(
   if (!presences) return ret;
   for (let p of presences) {
     if (p["product"] != "valorant") continue;
-    log.debug("Updating presence: " + p["puuid"]);
+    log.info("[VALORANT] Updating presence: " + p["puuid"]);
     if (p["puuid"] == puuid)
       ret.set(p["puuid"], new ValorantPresenceSelf(p, query_function));
     else ret.set(p["puuid"], new ValorantPresence(p));

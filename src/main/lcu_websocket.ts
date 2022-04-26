@@ -17,48 +17,48 @@ export class LCUWebsocket {
     this.ws.onclose = function (event) {
       if (event.wasClean) {
         log.info(
-          `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
+          `[LCU Websocket] Connection closed cleanly, code=${event.code} reason=${event.reason}`
         );
       } else {
         // e.g. server process killed or network down
         // event.code is usually 1006 in this case
-        log.info("[close] Connection died");
+        log.info("[LCU Websocket] Connection died");
       }
     };
 
     this.ws.onerror = function (error) {
-      log.warn(`[error] ${error.message}`);
+      log.warn(`[LCU Websocket] ${error.message}`);
     };
 
     this.ws.on("message", (data) => {
       const strMsg = data.toString();
-      log.debug(`[message] ${strMsg}`);
+      log.info(`[LCU Websocket] ${strMsg}`);
       try {
         if (strMsg.length == 0) return;
         const jsonMsg = JSON.parse(strMsg);
         if (jsonMsg[0] != 8) {
-          log.warn("Not a message");
+          log.warn("[LCU Websocket] Not a message");
           return;
         }
         if (!this.listeners.has(jsonMsg[1])) {
-          log.warn("Not subscribed");
+          log.warn("[LCU Websocket] Not subscribed");
           return;
         }
         const li = this.listeners.get(jsonMsg[1]);
         if (!li) {
-          log.warn("Unknown error in listener");
+          log.warn("[LCU Websocket] Unknown error in listener");
           return;
         }
         li(jsonMsg[2]);
       } catch (e) {
-        log.warn("JSON parse error");
+        log.warn("[LCU Websocket] JSON parse error");
       }
     });
   }
 
   onReady(callback: () => void) {
     this.ws.on("open", () => {
-      log.info("[open] Connection established");
+      log.info("[LCU Websocket] Connection established");
       callback();
     });
   }
