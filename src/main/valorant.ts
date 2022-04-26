@@ -238,7 +238,7 @@ function create_chat_listeners() {
             true
           );
         } while (!res || res.status != 200 || res.data["friends"].length == 0);
-        log.info("[VALORANT] Friends Request: " + res?.data);
+        log.info("[VALORANT] Friends Request: " + res?.data["friends"].length);
         return convert_query_to_ipc_msg(res);
       case "HISTORY":
         do {
@@ -249,7 +249,7 @@ function create_chat_listeners() {
             true
           );
         } while (!res || res.status != 200 || res.data["messages"].length == 0);
-        log.info("[VALORANT] Message History: " + res?.data);
+        log.info("[VALORANT] Message History: " + res?.data["messages"].length);
         return convert_query_to_ipc_msg(res);
       default:
         console.warn("Unknown VALORANT_CHAT message: " + command);
