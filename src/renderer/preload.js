@@ -24,4 +24,9 @@ contextBridge.exposeInMainWorld("ipc", {
       return ipcRenderer.invoke(channel, ...args);
     }
   },
+  removeAllListeners: (channel) => {
+    if (validChannels.includes(channel)) {
+      ipcRenderer.removeAllListeners(channel);
+    }
+  },
 });

@@ -214,8 +214,6 @@ export default defineComponent({
         if (!this.messages.has(msgCidPuuid))
           this.messages.set(msgCidPuuid, new Map());
 
-        console.log(msg);
-
         this.messages.get(msgCidPuuid)?.set(msg["mid"], {
           outgoing: msgOutgoing,
           message: msg["body"],
@@ -268,6 +266,7 @@ export default defineComponent({
     },
   },
   mounted() {
+    this.allowUnread = false;
     while (!window.ipc);
 
     window.ipc.on("VALORANT_CHAT", (command: string, data) => {
@@ -287,6 +286,9 @@ export default defineComponent({
     });
 
     setTimeout(() => (this.allowUnread = true), 3000);
+  },
+  unmounted() {
+    window.ipc?.removeAllListeners("VALORANT_CHAT");
   },
 });
 </script>
