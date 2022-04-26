@@ -303,8 +303,7 @@ export default defineComponent({
 }
 
 #chat-list {
-  max-width: 300px;
-  width: calc(33.333333% + 1rem);
+  flex: 0 0 min(calc(33.33333% + 1rem), 300px);
   @apply flex flex-col
   items-center
   my-2 mr-2;
