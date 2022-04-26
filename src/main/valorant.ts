@@ -96,7 +96,11 @@ async function initialize() {
 
   log.debug(lockfile);
 
-  const channelNames = ["VALORANT_CHAT", "VALORANT_PRESENCES"];
+  const channelNames = [
+    "VALORANT_CHAT",
+    "VALORANT_PRESENCES",
+    "VALORANT_PARTY",
+  ];
   channelNames.forEach((channel) => {
     ipcMain.removeHandler(channel);
     ipcMain.removeAllListeners(channel);
@@ -264,13 +268,16 @@ async function create_party_listeners() {
           "GET",
           `/parties/v1/players/${puuid}`
         );
+        log.debug(partyRes?.data);
         if (!partyRes || partyRes.status != 200) return 0;
         const resI = await query(
           RequestType.GLZ,
           "POST",
           `/parties/v1/parties/${partyRes.data.CurrentPartyID}/invites/name/${paramA}/tag/${paramB}`
         );
+        log.debug(resI?.data);
         if (resI?.status == 200) return 1;
+        if (resI?.status == 409) return 2;
         return 0;
 
       //paramA: party_id, paramB: other_puuid
@@ -280,6 +287,7 @@ async function create_party_listeners() {
           "POST",
           `/parties/v1/players/${puuid}/joinparty/${paramA}`
         );
+        log.debug(res?.data);
         if (res?.status == 200) return 1;
 
         const res2 = await query(
@@ -289,6 +297,7 @@ async function create_party_listeners() {
           false,
           JSON.stringify({ Subjects: [paramB] })
         );
+        log.debug(res2?.data);
         if (res2?.status == 200) return 2;
         return 0;
 
