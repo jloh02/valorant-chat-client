@@ -47,7 +47,10 @@ export default defineComponent({
   methods: {
     hideContextMenu() {
       const el: HTMLElement = this.$refs.contextMenu as HTMLElement;
-      if (el) el.style.opacity = "0";
+      if (el) {
+        el.style.opacity = "0";
+        el.style.pointerEvents = "none";
+      }
     },
     setPosition(
       x: number,
@@ -75,6 +78,7 @@ export default defineComponent({
         el.style.top = y + "px";
         el.style.left = x + "px";
         el.style.opacity = "100";
+        el.style.pointerEvents = "auto";
       }
     },
     showDialog(msg: string) {
@@ -133,7 +137,7 @@ export default defineComponent({
 .chat-list-ctx-menu {
   @apply fixed rounded z-50 
   drop-shadow bg-stone-600 border-none
-  transition-opacity opacity-0;
+  transition-opacity opacity-0 pointer-events-none;
 }
 
 .chat-list-ctx-menu-item {
