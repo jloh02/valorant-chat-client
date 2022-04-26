@@ -119,4 +119,7 @@ export default defineComponent({
 .open-riot-client-button {
   @apply mt-2 p-2 rounded bg-red-600;
 }
+.open-riot-client-button:active {
+  @apply bg-red-700;
+}
 </style>
