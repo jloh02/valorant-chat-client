@@ -337,7 +337,7 @@ export default defineComponent({
 }
 
 .chat-list-presences {
-  @apply flex flex-col overflow-y-scroll w-full;
+  @apply flex flex-col overflow-y-scroll w-full h-full;
 }
 
 .chat-list-item-div {
