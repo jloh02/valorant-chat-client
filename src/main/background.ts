@@ -15,6 +15,7 @@ import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
 import { closeNotifications, showNotification } from "./notifications";
 import { initialize_tray } from "./tray";
+import { get_preference, initialize_preferences } from "./preferences";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 //Ensure single app instance
@@ -77,7 +78,7 @@ function createMainRendererWindow() {
   ipcMain.on("WINDOW", (event, command, a, b) => {
     switch (command) {
       case "CLOSE":
-        win.hide();
+        get_preference("minimizeToTray") ? win.hide() : win.close();
         break;
       case "MINMAX":
         win.isMaximized() ? win.unmaximize() : win.maximize();
@@ -86,8 +87,10 @@ function createMainRendererWindow() {
         win.minimize();
         break;
       case "NOTIFY":
-        if (!win.isFocused()) win.flashFrame(true);
-        showNotification(a, b);
+        if (get_preference("notifications")) {
+          if (!win.isFocused()) win.flashFrame(true);
+          showNotification(a, b);
+        }
         break;
       case "OPEN_RIOT_CLIENT":
         runRiotClient();
@@ -134,13 +137,13 @@ app.on("ready", async () => {
       console.error("Vue Devtools failed to install:", e.toString());
     }
   }
+  initialize_preferences(app);
   createMainRendererWindow();
   log.info("[Background] Main window created");
-  initialize_tray(app,win,tray);
+  initialize_tray(app, win, tray);
   log.info("[Background] Tray initialized");
   initialize_valorant_api(win);
   log.info("[Background] VALORANT API initialized");
-
 
   if (!isDevelopment) checkForUpdates();
   // else testUpdater();

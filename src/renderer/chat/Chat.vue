@@ -214,6 +214,8 @@ export default defineComponent({
         if (!this.messages.has(msgCidPuuid))
           this.messages.set(msgCidPuuid, new Map());
 
+        const msgExists = this.messages.get(msgCidPuuid)?.has(msg["mid"]);
+
         this.messages.get(msgCidPuuid)?.set(msg["mid"], {
           outgoing: msgOutgoing,
           message: msg["body"],
@@ -227,7 +229,7 @@ export default defineComponent({
             this.scrollChatListToPuuid(msgCidPuuid);
           }
 
-          if (!msgOutgoing)
+          if (!msgOutgoing && !msgExists)
             window.ipc?.send("WINDOW", "NOTIFY", msg["game_name"], msg["body"]);
         }
       }
