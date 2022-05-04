@@ -344,7 +344,7 @@ export default defineComponent({
 }
 
 .chat-list-item-div {
-  @apply flex flex-col h-full my-1 mx-1 relative;
+  @apply flex flex-col h-min my-1 mx-1 relative;
 }
 
 .chat-list-item-div button {
