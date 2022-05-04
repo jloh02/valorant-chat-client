@@ -3,9 +3,11 @@ import { initLog } from "./log_util";
 import {
   app,
   protocol,
-  BrowserWindow,
   ipcMain,
   globalShortcut,
+  BrowserWindow,
+  Menu,
+  Tray,
 } from "electron";
 import { createWindow } from "./browser_window";
 import { checkForUpdates, testUpdater } from "./auto_update";
@@ -18,9 +20,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 //Ensure single app instance
 const lockRetrieved = app.requestSingleInstanceLock();
 if (!lockRetrieved) app.exit(0);
-
 initLog();
-
 log.info("[Background] Lock Retrieved and log initialized");
 
 // Scheme must be registered before the app is ready
@@ -28,7 +28,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
-let win: BrowserWindow;
+let win: BrowserWindow, tray: Tray;
 
 function createMainRendererWindow() {
   win = createWindow(false);
@@ -77,7 +77,7 @@ function createMainRendererWindow() {
   ipcMain.on("WINDOW", (event, command, a, b) => {
     switch (command) {
       case "CLOSE":
-        win.close();
+        win.hide();
         break;
       case "MINMAX":
         win.isMaximized() ? win.unmaximize() : win.maximize();
@@ -138,6 +138,28 @@ app.on("ready", async () => {
   createMainRendererWindow();
   initialize_valorant_api(win);
   log.info("[Background] VALORANT API initialized");
+
+  tray = new Tray("build/icons/icon.png");
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Open VCC",
+      click: function () {
+        win.show();
+      },
+    },
+    {
+      label: "Quit",
+      click: function () {
+        win.close();
+        app.quit();
+      },
+    },
+  ]);
+  tray.on("click", function () {
+    win.show();
+  });
+  tray.setToolTip("VALORANT Chat Client");
+  tray.setContextMenu(contextMenu);
 
   if (!isDevelopment) checkForUpdates();
   // else testUpdater();
