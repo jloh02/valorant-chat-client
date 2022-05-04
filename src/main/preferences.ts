@@ -12,7 +12,7 @@ let prefsPath: string,
 
 export function initialize_preferences(app: App) {
   const appPath = app.getPath("userData");
-  prefsPath = appPath + "preferences.json";
+  prefsPath = appPath + "/preferences.json";
 
   log.info("[Preferences] Path to Preferences: " + prefsPath);
   if (existsSync(prefsPath)) {
