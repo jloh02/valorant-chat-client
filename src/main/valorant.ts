@@ -23,8 +23,7 @@ function readLocalAppdataFile(path: string): string | undefined {
   try {
     content = readFileSync(process.env.LOCALAPPDATA + path).toString("utf-8");
   } catch (err) {
-    // AppData file not found
-    // if (err instanceof Error && err.message.includes("ENOENT")) {}
+    log.error("[VALORANT] LocalAppData Error: " + JSON.stringify(err));
   }
   return content;
 }
@@ -87,7 +86,9 @@ async function initialize() {
   const lockfile = readLocalAppdataFile(
     "\\Riot Games\\Riot Client\\Config\\lockfile"
   );
-  const shooterlogs = readLocalAppdataFile("\\VALORANT\\Saved\\shooterlogs\\ShooterGame.log");
+  const shooterlogs = readLocalAppdataFile(
+    "\\VALORANT\\Saved\\logs\\ShooterGame.log"
+  );
   if (lockfile === prev_lockfile) {
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", ready, puuid);
     setTimeout(initialize, lockfile_polling_rate);
