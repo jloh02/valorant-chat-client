@@ -300,11 +300,12 @@ export default defineComponent({
   @apply flex w-full h-full;
 }
 #chat-dashboard {
-  @apply flex flex-col justify-end w-full m-2;
+  overflow-wrap: anywhere;
+  @apply flex flex-1 flex-col justify-end m-2;
 }
 
 .chat-dashboard.messages {
-  @apply flex flex-col w-full overflow-y-scroll pr-3;
+  @apply flex flex-col overflow-y-scroll pr-3;
 }
 
 .chat-dashboard.input-bar {
