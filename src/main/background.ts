@@ -6,7 +6,6 @@ import {
   ipcMain,
   globalShortcut,
   BrowserWindow,
-  Menu,
   Tray,
 } from "electron";
 import { createWindow } from "./browser_window";
@@ -15,6 +14,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
 import { closeNotifications, showNotification } from "./notifications";
+import { initialize_tray } from "./tray";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 //Ensure single app instance
@@ -94,7 +94,6 @@ function createMainRendererWindow() {
         break;
     }
   });
-  log.info("[Background] Window created");
 }
 
 app.on(
@@ -136,30 +135,12 @@ app.on("ready", async () => {
     }
   }
   createMainRendererWindow();
+  log.info("[Background] Main window created");
+  initialize_tray(app,win,tray);
+  log.info("[Background] Tray initialized");
   initialize_valorant_api(win);
   log.info("[Background] VALORANT API initialized");
 
-  tray = new Tray("build/icons/icon.png");
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: "Open VCC",
-      click: function () {
-        win.show();
-      },
-    },
-    {
-      label: "Quit",
-      click: function () {
-        win.close();
-        app.quit();
-      },
-    },
-  ]);
-  tray.on("click", function () {
-    win.show();
-  });
-  tray.setToolTip("VALORANT Chat Client");
-  tray.setContextMenu(contextMenu);
 
   if (!isDevelopment) checkForUpdates();
   // else testUpdater();
