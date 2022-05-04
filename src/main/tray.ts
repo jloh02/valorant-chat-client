@@ -1,8 +1,9 @@
+import path from "path";
 import { App, BrowserWindow, Menu, Tray } from "electron";
 import { flip_preference, get_preference } from "./preferences";
 
 export function initialize_tray(app: App, win: BrowserWindow, tray: Tray) {
-  tray = new Tray("build/icons/icon.png");
+  tray = new Tray(process.env.NODE_ENV == "production" ? path.join(__dirname, "/icon.png") : "build/icons/icon.png");
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Open VALORANT Chat",
