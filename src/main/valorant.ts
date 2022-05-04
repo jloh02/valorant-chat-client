@@ -87,7 +87,7 @@ async function initialize() {
   const lockfile = readLocalAppdataFile(
     "\\Riot Games\\Riot Client\\Config\\lockfile"
   );
-  const logs = readLocalAppdataFile("\\VALORANT\\Saved\\Logs\\ShooterGame.log");
+  const shooterlogs = readLocalAppdataFile("\\VALORANT\\Saved\\shooterlogs\\ShooterGame.log");
   if (lockfile === prev_lockfile) {
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", ready, puuid);
     setTimeout(initialize, lockfile_polling_rate);
@@ -106,18 +106,21 @@ async function initialize() {
     ipcMain.removeAllListeners(channel);
   });
 
-  if (!lockfile || !logs) {
+  let region_match;
+  if (
+    !lockfile ||
+    !shooterlogs ||
+    !(region_match = shooterlogs.match(/https:\/\/glz-(.{2})-1\.(?:.{2})\.a\.pvp\.net/))
+  ) {
     ready = false;
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined);
     prev_lockfile = "";
     setTimeout(initialize, lockfile_polling_rate);
     return;
   }
-
-  const region_match = logs.match(
-    /https:\/\/glz-(.{2})-1\.(?:.{2})\.a\.pvp\.net/
-  );
-  if (region_match) region = region_match[1];
+  
+  region = region_match[1];
+  log.info("[VALORANT] Region: " + region);
 
   const lockfileDet = lockfile.split(":");
   port = lockfileDet[2];
