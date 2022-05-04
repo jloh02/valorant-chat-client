@@ -9,7 +9,7 @@ import { ValorantLCUReply } from "@/types/valorant-websocket-reply";
 
 let ws: LCUWebsocket;
 let win: BrowserWindow;
-let puuid: string, port: string, region: string;
+let puuid: string, port: string, region: string, shard: string;
 let headers: AxiosRequestHeaders, basicHeaders: AxiosRequestHeaders;
 
 enum RequestType {
@@ -38,10 +38,10 @@ async function query(
   let url = "";
   switch (type) {
     case RequestType.GLZ:
-      url = `https://glz-${region}-1.${region}.a.pvp.net`;
+      url = `https://glz-${region}-1.${shard}.a.pvp.net`;
       break;
     case RequestType.PD:
-      url = `https://pd.${region}.a.pvp.net`;
+      url = `https://pd.${shard}.a.pvp.net`;
       break;
     case RequestType.LOCALHOST:
       url = `https://127.0.0.1:${port}`;
@@ -107,11 +107,16 @@ async function initialize() {
     ipcMain.removeAllListeners(channel);
   });
 
-  let region_match;
+  let region_shard_match = shooterlogs?.match(
+    /https:\/\/glz-(.{2,5})-1\.(.{2,3})\.a\.pvp\.net/
+  );
+
   if (
     !lockfile ||
     !shooterlogs ||
-    !(region_match = shooterlogs.match(/https:\/\/glz-(.{2})-1\.(?:.{2})\.a\.pvp\.net/))
+    !region_shard_match ||
+    !region_shard_match[1] ||
+    !region_shard_match[2]
   ) {
     ready = false;
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined);
@@ -119,9 +124,11 @@ async function initialize() {
     setTimeout(initialize, lockfile_polling_rate);
     return;
   }
-  
-  region = region_match[1];
+
+  region = region_shard_match[1];
+  shard = region_shard_match[2];
   log.info("[VALORANT] Region: " + region);
+  log.info("[VALORANT] Shard: " + shard);
 
   const lockfileDet = lockfile.split(":");
   port = lockfileDet[2];
