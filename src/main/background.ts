@@ -88,8 +88,9 @@ function createMainRendererWindow() {
         break;
       case "NOTIFY":
         if (get_preference("notifications")) {
-          if (!win.isFocused()) win.flashFrame(true);
-          showNotification(a, b);
+          const focused = win.isFocused();
+          if (!focused) win.flashFrame(true);
+          showNotification(a, b, focused);
         }
         break;
       case "OPEN_RIOT_CLIENT":
