@@ -7,6 +7,7 @@ import {
   globalShortcut,
   BrowserWindow,
   Tray,
+  Rectangle,
 } from "electron";
 import { createWindow } from "./browser_window";
 import { checkForUpdates, testUpdater } from "./auto_update";
@@ -15,7 +16,7 @@ import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
 import { closeNotifications, showNotification } from "./notifications";
 import { initialize_tray } from "./tray";
-import { get_preference, initialize_preferences } from "./preferences";
+import { initialize_preferences, get_preference, set_preference } from "./preferences";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 //Ensure single app instance
@@ -31,8 +32,8 @@ protocol.registerSchemesAsPrivileged([
 
 let win: BrowserWindow, tray: Tray;
 
-function createMainRendererWindow() {
-  win = createWindow(false);
+function createMainRendererWindow(prefFound:boolean) {
+  win = createWindow(false, prefFound);
   globalShortcut.unregisterAll();
 
   //CORS Bypass
@@ -74,6 +75,9 @@ function createMainRendererWindow() {
     closeNotifications();
   });
 
+  win.on("move", save_window_preferences);
+  win.on("resize", save_window_preferences);
+
   //Setup listeners to control window
   ipcMain.on("WINDOW", (event, command, a, b) => {
     switch (command) {
@@ -100,6 +104,14 @@ function createMainRendererWindow() {
   });
 }
 
+function save_window_preferences(){
+  const bounds = win.getNormalBounds();
+  set_preference("_winWidth", bounds.width);
+  set_preference("_winHeight", bounds.height);
+  set_preference("_winX", bounds.x);
+  set_preference("_winY", bounds.y);
+}
+
 app.on(
   "certificate-error",
   (event, webContents, url, error, certificate, callback) => {
@@ -122,7 +134,7 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createMainRendererWindow();
+  if (BrowserWindow.getAllWindows().length === 0) createMainRendererWindow(true);
 });
 
 // This method will be called when Electron has finished
@@ -138,8 +150,9 @@ app.on("ready", async () => {
       console.error("Vue Devtools failed to install:", e.toString());
     }
   }
-  initialize_preferences(app);
-  createMainRendererWindow();
+  const prefFound = initialize_preferences(app);
+  createMainRendererWindow(prefFound);
+  if(!prefFound) save_window_preferences();
   log.info("[Background] Main window created");
   initialize_tray(app, win, tray);
   log.info("[Background] Tray initialized");

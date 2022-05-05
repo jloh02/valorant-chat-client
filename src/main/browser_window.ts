@@ -1,14 +1,32 @@
 import { join } from "path";
 import { BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
+import { get_preference } from "./preferences";
 
 let parentWindow: BrowserWindow;
 
-export function createWindow(isPopup: boolean) {
-  // Create the browser window.
+export function createWindow(isPopup: boolean, prefFound?: boolean) {
+  //Default parameters for updater window
+  let width = 500;
+  let height = 150;
+  let x: number | undefined;
+  let y: number | undefined;
+
+  //Parameters for main renderer window
+  if (!isPopup) {
+    //Use 1200x800 window if no preferences file found
+    width = (get_preference("_winWidth") as number | undefined) || 1200;
+    height = (get_preference("_winHeight") as number | undefined) || 800;
+    if (prefFound) {
+      x = get_preference("_winX") as number | undefined;
+      y = get_preference("_winY") as number | undefined;
+    }
+  }
   let winVar = new BrowserWindow({
-    width: isPopup ? 500 : 1200,
-    height: isPopup ? 150 : 800,
+    x: x,
+    y: y,
+    width: width,
+    height: height,
     minWidth: 600,
     minHeight: 400,
     frame: false,
