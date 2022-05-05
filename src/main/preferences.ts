@@ -11,8 +11,8 @@ class Preferences {
   _winY?: number = undefined;
 }
 
-let prefsPath: string,
-  prefs = new Preferences();
+let prefsPath: string;
+let prefs = new Preferences();
 
 //Returns true of presence already exists
 export function initialize_preferences(app: App): boolean {
@@ -42,19 +42,17 @@ function writePreferences() {
   return prefStr;
 }
 
-export function get_preference(option: string): boolean | number | undefined {
-  return (prefs as any)[option];
+export function get_preference(
+  option: keyof Preferences
+): Preferences[typeof option] {
+  return prefs[option];
 }
 
-export function flip_preference(option: string) {
-  if (option in prefs) (prefs as any)[option] = !(prefs as any)[option];
-  const prefStr = writePreferences();
-  if (option.charAt(0) != "_")
-    log.info("[Preferences] Saved preference: " + prefStr);
-}
-
-export function set_preference(option: string, value: number) {
-  if (option in prefs) (prefs as any)[option] = value;
+export function set_preference<K extends keyof Preferences>(
+  option: K,
+  value: Preferences[K]
+) {
+  prefs[option] = value;
   const prefStr = writePreferences();
   if (option.charAt(0) != "_")
     log.info("[Preferences] Saved preference: " + prefStr);

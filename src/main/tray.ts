@@ -1,6 +1,6 @@
 import path from "path";
 import { App, BrowserWindow, Menu, Tray } from "electron";
-import { flip_preference, get_preference } from "./preferences";
+import { set_preference, get_preference } from "./preferences";
 
 export function initialize_tray(app: App, win: BrowserWindow, tray: Tray) {
   tray = new Tray(
@@ -22,17 +22,17 @@ export function initialize_tray(app: App, win: BrowserWindow, tray: Tray) {
         {
           type: "checkbox",
           label: "Minimize to Tray",
-          checked: get_preference("minimizeToTray"),
+          checked: get_preference("minimizeToTray") as boolean,
           click: function () {
-            flip_preference("minimizeToTray");
+            set_preference("minimizeToTray",!get_preference("minimizeToTray") as boolean);
           },
         },
         {
           type: "checkbox",
           label: "Enable Notifications",
-          checked: get_preference("notifications"),
+          checked: get_preference("notifications") as boolean,
           click: function () {
-            flip_preference("notifications");
+            set_preference("notifications",!get_preference("notifications") as boolean);
           },
         },
       ]),
