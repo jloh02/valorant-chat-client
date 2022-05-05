@@ -2,9 +2,11 @@
 A Windows application to access VALORANT's chat function without opening the game
 
 **Rationale**
+
 Many users do not have any access to Riot Mobile and have not way of checking if their friends are already online, much less text them ingame
 
 **Disclaimer**
+
 Use of this application as at OWN RISK. The developer(s) will not be responsible for any harm/damage done due to the use of this application. This application is NOT endorsed by Riot Games.
 
 Nonetheless, you can check out the code. It's pretty much safe. I'm not trying to hack your computer ;)
