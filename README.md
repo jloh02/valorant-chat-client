@@ -19,6 +19,7 @@ Nonetheless, you can check out the code. It's pretty much safe. I'm not trying t
   - [General Usage](#general-usage)
   - [Tray Icon](#tray-icon)
   - [Updates](#updates)
+- [Contributing](#contributing)
 
 ## Features
 - Chat with friends in VALORANT with only Riot Client opened
@@ -61,3 +62,15 @@ Nonetheless, you can check out the code. It's pretty much safe. I'm not trying t
 - When prompted to allow the installer to make changes to the computer, click `Yes`
 
 ![](docs/update.png)
+ 
+
+## Contributing
+If you want to contribute back to this project, simply fork this repository, clone it and run
+```
+yarn install
+```
+
+To run a debug version
+```
+yarn electron:serve
+```
