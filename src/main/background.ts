@@ -16,7 +16,11 @@ import { initialize_valorant_api } from "@/main/valorant";
 import { runRiotClient } from "@/main/windows_util";
 import { closeNotifications, showNotification } from "./notifications";
 import { initialize_tray } from "./tray";
-import { initialize_preferences, get_preference, set_preference } from "./preferences";
+import {
+  initialize_preferences,
+  get_preference,
+  set_preference,
+} from "./preferences";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 //Ensure single app instance
@@ -32,7 +36,7 @@ protocol.registerSchemesAsPrivileged([
 
 let win: BrowserWindow, tray: Tray;
 
-function createMainRendererWindow(prefFound:boolean) {
+function createMainRendererWindow(prefFound: boolean) {
   win = createWindow(false, prefFound);
   globalShortcut.unregisterAll();
 
@@ -104,7 +108,7 @@ function createMainRendererWindow(prefFound:boolean) {
   });
 }
 
-function save_window_preferences(){
+function save_window_preferences() {
   const bounds = win.getNormalBounds();
   set_preference("_winWidth", bounds.width);
   set_preference("_winHeight", bounds.height);
@@ -134,25 +138,28 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createMainRendererWindow(true);
+  if (BrowserWindow.getAllWindows().length === 0)
+    createMainRendererWindow(true);
 });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  if (process.platform === "win32") app.setAppUserModelId(app.name);
+
   runRiotClient();
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
       await installExtension(VUEJS3_DEVTOOLS);
     } catch (e) {
-      console.error("Vue Devtools failed to install:", e.toString());
+      console.error("Vue Devtools failed to install:", JSON.stringify(e));
     }
   }
   const prefFound = initialize_preferences(app);
   createMainRendererWindow(prefFound);
-  if(!prefFound) save_window_preferences();
+  if (!prefFound) save_window_preferences();
   log.info("[Background] Main window created");
   initialize_tray(app, win, tray);
   log.info("[Background] Tray initialized");
