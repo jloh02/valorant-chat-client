@@ -7,7 +7,6 @@ import {
   globalShortcut,
   BrowserWindow,
   Tray,
-  Rectangle,
 } from "electron";
 import { createWindow } from "./browser_window";
 import { checkForUpdates, testUpdater } from "./auto_update";
@@ -146,7 +145,7 @@ app.on("activate", () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  if (process.platform === "win32") app.setAppUserModelId(app.name);
+  if (process.platform === "win32") app.setAppUserModelId("VALORANT Chat Client");
 
   runRiotClient();
   if (isDevelopment && !process.env.IS_TEST) {
