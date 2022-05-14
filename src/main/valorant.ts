@@ -79,7 +79,6 @@ export function initialize_valorant_api(browser_window: BrowserWindow) {
   });
 }
 
-let ready = false;
 let prev_lockfile = "";
 const lockfile_polling_rate = 5000;
 async function initialize() {
@@ -89,8 +88,8 @@ async function initialize() {
   const shooterlogs = readLocalAppdataFile(
     "\\VALORANT\\Saved\\logs\\ShooterGame.log"
   );
+  
   if (lockfile === prev_lockfile) {
-    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", ready, puuid);
     setTimeout(initialize, lockfile_polling_rate);
     return;
   }
@@ -118,7 +117,6 @@ async function initialize() {
     !region_shard_match[1] ||
     !region_shard_match[2]
   ) {
-    ready = false;
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined);
     prev_lockfile = "";
     setTimeout(initialize, lockfile_polling_rate);
@@ -179,7 +177,6 @@ async function initialize() {
     create_party_listeners();
     log.info("[VALORANT] Created party monitoring");
 
-    ready = true;
     prev_lockfile = lockfile;
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", true, puuid);
     setTimeout(initialize, lockfile_polling_rate);
