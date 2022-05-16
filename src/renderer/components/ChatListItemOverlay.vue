@@ -69,11 +69,12 @@ export default defineComponent({
 
 .chat-list-item-rank-icon {
   min-width: 40px;
-  @apply h-10 w-10;
+  @apply h-10 w-10 ml-2;
 }
 
 .chat-list-item-sub-col {
   @apply flex flex-col
+  items-center justify-center
   text-left;
 }
 
