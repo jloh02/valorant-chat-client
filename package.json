@@ -1,6 +1,6 @@
 {
   "name": "valorant-chat-client",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "description": "VALORANT Chat Client",
   "author": {
     "name": "Jonathan Loh",
@@ -23,8 +23,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.2",
+    "autoprefixer": "^10.4.7",
     "electron": "18.2.0",
     "electron-builder": "^23.0.3",
+    "sass": "^1.51.0",
     "typescript": "^4.6.4",
     "vite": "^2.9.8",
     "vite-plugin-electron": "^0.4.3",
