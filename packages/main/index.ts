@@ -1,73 +1,80 @@
-import { app, BrowserWindow, shell } from 'electron'
-import { release } from 'os'
-import { join } from 'path'
+import { app, BrowserWindow, Tray } from "electron";
+import log from "electron-log";
+import { initLog } from "./log_util";
+import { release } from "os";
+import { checkForUpdates } from "./auto_updater";
+import { createMainRendererWindow } from "./browser_window";
+import { readPreferences, saveWindowPreferences } from "./preferences";
+import { startRiotClient } from "./windows";
+import { createTray } from "./tray";
+import { initializeValorantApi } from "./valorant";
 
 // Disable GPU Acceleration for Windows 7
-if (release().startsWith('6.1')) app.disableHardwareAcceleration()
+if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 
 // Set application name for Windows 10+ notifications
-if (process.platform === 'win32') app.setAppUserModelId(app.getName())
+if (process.platform === "win32") app.setAppUserModelId("VALORANT Chat Client");
 
 if (!app.requestSingleInstanceLock()) {
-  app.quit()
-  process.exit(0)
+  app.quit();
+  process.exit(0);
 }
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-let win: BrowserWindow | null = null
+initLog();
+log.info("[Background] Lock Retrieved and log initialized");
 
-async function createWindow() {
-  win = new BrowserWindow({
-    title: 'Main window',
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.cjs'),
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  })
+let win: BrowserWindow, tray: Tray;
 
-  if (app.isPackaged) {
-    win.loadFile(join(__dirname, '../renderer/index.html'))
-  } else {
-    // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
-    const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}`
-
-    win.loadURL(url)
-    // win.webContents.openDevTools()
+app.on(
+  "certificate-error",
+  (event, webContents, url, error, certificate, callback) => {
+    event.preventDefault();
+    callback(true);
   }
+);
 
-  // Test active push message to Renderer-process
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
-  })
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
+});
 
-  // Make all links open with the browser, not with the application
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url)
-    return { action: 'deny' }
-  })
-}
-
-app.whenReady().then(createWindow)
-
-app.on('window-all-closed', () => {
-  win = null
-  if (process.platform !== 'darwin') app.quit()
-})
-
-app.on('second-instance', () => {
+app.on("second-instance", () => {
   if (win) {
     // Focus on the main window if the user tried to open another
-    if (win.isMinimized()) win.restore()
-    win.focus()
+    if (win.isMinimized()) win.restore();
+    win.focus();
   }
-})
+});
 
-app.on('activate', () => {
-  const allWindows = BrowserWindow.getAllWindows()
-  if (allWindows.length) {
-    allWindows[0].focus()
+app.on("activate", () => {
+  const allWindows = BrowserWindow.getAllWindows();
+  if (allWindows.length) allWindows[0].focus();
+  else win = createMainRendererWindow(app.isPackaged, true);
+});
+
+app.whenReady().then(() => {
+  startRiotClient();
+
+  const prefFound = readPreferences(app);
+  win = createMainRendererWindow(app.isPackaged, prefFound);
+  if (!prefFound) saveWindowPreferences(win);
+  log.info("[Background] Main window created");
+  createTray(app, win, tray);
+  log.info("[Background] Tray created");
+  initializeValorantApi(win);
+  log.info("[Background] VALORANT API initialized");
+
+  if (app.isPackaged) checkForUpdates();
+  // else testUpdater();
+});
+
+if (!app.isPackaged) {
+  if (process.platform === "win32") {
+    process.on("message", (data) => {
+      if (data === "graceful-exit") app.quit();
+    });
   } else {
-    createWindow()
+    process.on("SIGTERM", () => {
+      app.quit();
+    });
   }
-})
+}
