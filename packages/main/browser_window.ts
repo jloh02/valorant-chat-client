@@ -44,8 +44,11 @@ export function createWindow(
     backgroundColor: "#292524",
     webPreferences: {
       nodeIntegration: false,
-      contextIsolation: false,
-      preload: join(__dirname, "../preload/index.cjs"),
+      contextIsolation: true,
+      preload: join(
+        __dirname,
+        isPopup ? "../preload/updater.cjs" : "../preload/renderer.cjs"
+      ),
       devTools: !isPopup,
     },
   });
@@ -78,7 +81,10 @@ export function createWindow(
   return winVar;
 }
 
-export function createMainRendererWindow(isPackaged:boolean, prefFound: boolean) {
+export function createMainRendererWindow(
+  isPackaged: boolean,
+  prefFound: boolean
+) {
   let win = createWindow(isPackaged, false, prefFound);
   globalShortcut.unregisterAll();
 
