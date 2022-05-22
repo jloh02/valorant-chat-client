@@ -1,0 +1,21 @@
+<template>
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    role="img"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 700 700"
+  >
+    <rect
+      x="150"
+      y="150"
+      rx="100"
+      ry="100"
+      width="400"
+      height="400"
+      stroke="currentColor"
+      fill="transparent"
+      stroke-width="100"
+    />
+  </svg>
+</template>

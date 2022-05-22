@@ -1,7 +1,18 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import './samples/node-api'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
 
-createApp(App)
-  .mount('#app')
-  .$nextTick(window.removeLoading)
+declare global {
+  interface Window {
+    ipc?: {
+      send: (channel: string, ...data: any[]) => void;
+      invoke: (channel: string, ...args: any[]) => Promise<any>;
+      on: (channel: string, func: (...args: any[]) => void) => void;
+      removeAllListeners: (channel: string) => void;
+    };
+  }
+}
+
+const app = createApp(App);
+app.use(store).use(router).mount("#app");

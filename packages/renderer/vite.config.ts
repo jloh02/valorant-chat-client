@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import resolve from 'vite-plugin-resolve'
-import electron from 'vite-plugin-electron/renderer'
-import pkg from '../../package.json'
+import path from "path";
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import resolve from "vite-plugin-resolve";
+import electron from "vite-plugin-electron/renderer";
+import pkg from "../../package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,13 +20,14 @@ export default defineConfig({
        */
       {
         // If you use electron-store, this will work - ESM format code snippets
-        'electron-store': 'const Store = require("electron-store"); export default Store;',
+        "electron-store":
+          'const Store = require("electron-store"); export default Store;',
       }
     ),
   ],
-  base: './',
+  base: "./",
   build: {
-    outDir: '../../dist/renderer',
+    outDir: "../../dist/renderer",
     emptyOutDir: true,
     sourcemap: true,
   },
@@ -33,4 +35,20 @@ export default defineConfig({
     host: pkg.env.VITE_DEV_SERVER_HOST,
     port: pkg.env.VITE_DEV_SERVER_PORT,
   },
-})
+  define: {
+    __VUE_OPTIONS_API__: false,
+    __VUE_PROD_DEVTOOLS__: false,
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/assets/styles.scss";`,
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    }
+  },
+});

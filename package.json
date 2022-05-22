@@ -33,7 +33,6 @@
     "vite": "^2.9.8",
     "vite-plugin-electron": "^0.4.3",
     "vite-plugin-resolve": "^2.0.8",
-    "vue": "^3.2.33",
     "vue-tsc": "^0.34.11"
   },
   "env": {
@@ -53,6 +52,9 @@
     "electron-updater": "^5.0.1",
     "postcss": "^8.1.0",
     "regedit": "^5.1.1",
+    "vue": "^3.2.35",
+    "vue-router": "^4.0.15",
+    "vuex": "^4.0.2",
     "ws": "^8.6.0"
   }
 }
