@@ -4,13 +4,13 @@ import { Notification, nativeImage } from "electron";
 let notifs: Notification[] = [];
 
 export function showNotification(
-  game_name: string,
+  gameName: string,
   msg: string,
   temp: boolean
 ) {
   const notif = new Notification({
     icon: nativeImage.createFromDataURL("/icon.png"),
-    title: "Message from " + game_name,
+    title: "Message from " + gameName,
     body: msg,
   });
   notif.show();

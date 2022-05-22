@@ -37,6 +37,7 @@ export function createWindow(
     height: height,
     minWidth: SCREEN_DEFAULTS.minWidth,
     minHeight: SCREEN_DEFAULTS.minHeight,
+    show: false,
     frame: false,
     resizable: !isPopup,
     modal: isPopup,

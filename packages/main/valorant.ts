@@ -22,7 +22,7 @@ enum RequestType {
 function readLocalAppdataFile(path: string): string | undefined {
   let content;
   try {
-    content = readFileSync(process.env.LOCALAPPDATA + path).toString("utf-8");
+    content = readFileSync(process.env["LOCALAPPDATA"] + path).toString("utf-8");
   } catch (err) {
     log.error("[VALORANT] LocalAppData Error: " + JSON.stringify(err));
   }
@@ -70,8 +70,8 @@ async function query(
   return res;
 }
 
-export function initializeValorantApi(browser_window: BrowserWindow) {
-  win = browser_window;
+export function initializeValorantApi(browserWindow: BrowserWindow) {
+  win = browserWindow;
 
   axios.defaults.headers.common["Content-Type"] = "application/json";
 
@@ -82,7 +82,7 @@ export function initializeValorantApi(browser_window: BrowserWindow) {
   });
 }
 
-let prev_lockfile = "";
+let prevLockfile = "";
 async function initialize() {
   const lockfile = readLocalAppdataFile(
     "\\Riot Games\\Riot Client\\Config\\lockfile"
@@ -91,7 +91,7 @@ async function initialize() {
     "\\VALORANT\\Saved\\logs\\ShooterGame.log"
   );
 
-  if (lockfile === prev_lockfile) {
+  if (lockfile === prevLockfile) {
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
     return;
   }
@@ -108,32 +108,32 @@ async function initialize() {
     ipcMain.removeAllListeners(channel);
   });
 
-  let region_shard_match = shooterlogs?.match(
+  let regionShardMatch = shooterlogs?.match(
     /https:\/\/glz-(.{2,5})-1\.(.{2,3})\.a\.pvp\.net/
   );
 
   if (
     !lockfile ||
     !shooterlogs ||
-    !region_shard_match ||
-    !region_shard_match[1] ||
-    !region_shard_match[2]
+    !regionShardMatch ||
+    !regionShardMatch[1] ||
+    !regionShardMatch[2]
   ) {
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined);
-    prev_lockfile = "";
+    prevLockfile = "";
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
     return;
   }
 
-  region = region_shard_match[1];
-  shard = region_shard_match[2];
+  region = regionShardMatch[1];
+  shard = regionShardMatch[2];
   log.info("[VALORANT] Region: " + region);
   log.info("[VALORANT] Shard: " + shard);
 
   const lockfileDet = lockfile.split(":");
   port = lockfileDet[2];
 
-  const b64_lockfile_password = Buffer.from(`riot:${lockfileDet[3]}`).toString(
+  const base64LockfilePassword = Buffer.from(`riot:${lockfileDet[3]}`).toString(
     "base64"
   );
 
@@ -145,7 +145,7 @@ async function initialize() {
 
   basicHeaders = {
     "Content-Type": "application/json",
-    Authorization: "Basic " + b64_lockfile_password,
+    Authorization: "Basic " + base64LockfilePassword,
   };
 
   //Get token and entitlement
@@ -179,7 +179,7 @@ async function initialize() {
     initPartyListeners();
     log.info("[VALORANT] Created party monitoring");
 
-    prev_lockfile = lockfile;
+    prevLockfile = lockfile;
     win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", true, puuid);
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
   });
@@ -298,7 +298,7 @@ async function initPartyListeners() {
         if (resI?.status == 409) return 2;
         return 0;
 
-      //paramA: party_id, paramB: other_puuid
+      //paramA: partyId, paramB: otherPuuid
       case "JOIN":
         const res = await query(
           RequestType.GLZ,
