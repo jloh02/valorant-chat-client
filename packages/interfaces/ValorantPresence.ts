@@ -6,8 +6,8 @@ export interface ValorantRawPresence {
   actor: string;
   basic: string;
   details: string;
-  game_name: string;
-  game_tag: string;
+  gameName: string;
+  gameTag: string;
   location: string;
   msg: string;
   name: string;
@@ -30,67 +30,67 @@ export default class ValorantPresence {
   tag: string;
   pid: string;
   state: string;
-  game_state: string; // INGAME, PREGAME, MENUS
-  game_mode: string; //"spikerush", "competitive", "deathmatch", "unrated", "snowball" or empty str (custom game)
-  score_ally: number;
-  score_enemy: number;
-  party_id: string;
-  party_size: number;
-  card_id: string;
-  title_id: string;
+  gameState: string; // INGAME, PREGAME, MENUS
+  gameMode: string; //"spikerush", "competitive", "deathmatch", "unrated", "snowball" or empty str (custom game)
+  scoreAlly: number;
+  scoreEnemy: number;
+  partyId: string;
+  partySize: number;
+  cardId: string;
+  titleId: string;
   accountLevel: number;
   competitiveTier: number;
   leaderboardPosition: number;
 
   constructor(presence: ValorantRawPresence) {
     this.state = presence["state"];
-    this.name = presence["game_name"];
-    this.tag = presence["game_tag"];
+    this.name = presence["gameName"];
+    this.tag = presence["gameTag"];
     this.pid = presence["pid"];
 
-    let private_presence = JSON.parse(
+    let privatePresence = JSON.parse(
       Buffer.from(presence["private"], "base64").toString("ascii")
     );
 
-    this.game_state = private_presence["sessionLoopState"];
-    this.game_mode =
-      private_presence["provisioningFlow"] == "ShootingRange"
+    this.gameState = privatePresence["sessionLoopState"];
+    this.gameMode =
+      privatePresence["provisioningFlow"] == "ShootingRange"
         ? "In Range"
-        : GAME_MODE.get(private_presence["queueId"]) ??
-          private_presence["queueId"];
-    this.score_ally = private_presence["partyOwnerMatchScoreAllyTeam"];
-    this.score_enemy = private_presence["partyOwnerMatchScoreEnemyTeam"];
-    this.party_id = private_presence["partyId"];
-    this.party_size = private_presence["partySize"];
-    this.card_id = private_presence["playerCardId"];
-    this.title_id = private_presence["playerTitleId"];
-    this.accountLevel = private_presence["accountLevel"];
-    this.competitiveTier = private_presence["competitiveTier"];
-    this.leaderboardPosition = private_presence["leaderboardPosition"];
+        : GAME_MODE.get(privatePresence["queueId"]) ??
+          privatePresence["queueId"];
+    this.scoreAlly = privatePresence["partyOwnerMatchScoreAllyTeam"];
+    this.scoreEnemy = privatePresence["partyOwnerMatchScoreEnemyTeam"];
+    this.partyId = privatePresence["partyId"];
+    this.partySize = privatePresence["partySize"];
+    this.cardId = privatePresence["playerCardId"];
+    this.titleId = privatePresence["playerTitleId"];
+    this.accountLevel = privatePresence["accountLevel"];
+    this.competitiveTier = privatePresence["competitiveTier"];
+    this.leaderboardPosition = privatePresence["leaderboardPosition"];
   }
 }
 
 export class ValorantPresenceSelf extends ValorantPresence {
-  match_id?: string;
+  matchId?: string;
 
   constructor(
     presence: ValorantRawPresence,
-    get_game_id: (endpoint: string) => Promise<AxiosResponse | undefined>
+    getGameId: (endpoint: string) => Promise<AxiosResponse | undefined>
   ) {
     super(presence);
-    switch (this.game_state) {
+    switch (this.gameState) {
       case "PREGAME":
-        get_game_id(`/pregame/v1/players/${presence["puuid"]}`).then((res) => {
-          this.match_id = res?.data["MatchID"];
+        getGameId(`/pregame/v1/players/${presence["puuid"]}`).then((res) => {
+          this.matchId = res?.data["MatchID"];
         });
         break;
       case "INGAME":
-        get_game_id(`/core-game/v1/players/${presence["puuid"]}`).then(
-          (res) => (this.match_id = res?.data["MatchID"])
+        getGameId(`/core-game/v1/players/${presence["puuid"]}`).then(
+          (res) => (this.matchId = res?.data["MatchID"])
         );
         break;
       default:
-        log.warn("[VALORANT] Invalid game state: " + this.game_state);
+        log.warn("[VALORANT] Invalid game state: " + this.gameState);
     }
   }
 }
@@ -98,7 +98,7 @@ export class ValorantPresenceSelf extends ValorantPresence {
 export function processPresence(
   presences: ValorantRawPresence[] | undefined,
   puuid: string,
-  query_function: (endpoint: string) => Promise<AxiosResponse | undefined>
+  queryFunction: (endpoint: string) => Promise<AxiosResponse | undefined>
 ): Map<string, ValorantRawPresence> {
   let ret = new Map();
   if (!presences) return ret;
@@ -106,7 +106,7 @@ export function processPresence(
     if (p["product"] != "valorant") continue;
     log.info("[VALORANT] Updating presence: " + p["puuid"]);
     if (p["puuid"] == puuid)
-      ret.set(p["puuid"], new ValorantPresenceSelf(p, query_function));
+      ret.set(p["puuid"], new ValorantPresenceSelf(p, queryFunction));
     else ret.set(p["puuid"], new ValorantPresence(p));
   }
   return ret;

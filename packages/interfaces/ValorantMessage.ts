@@ -1,8 +1,8 @@
 export default interface ValorantMessage {
   body: string;
   cid: string;
-  game_name: string;
-  game_tag: string;
+  gameName: string;
+  gameTag: string;
   id: string;
   mid: string;
   name: string;

@@ -1,12 +1,12 @@
 export default interface ValorantFriend {
   displayGroup: string;
-  game_name: string;
-  game_tag: string;
+  gameName: string;
+  gameTag: string;
   group: string;
-  last_online_ts: number;
+  lastOnlineTimestamp: number;
   name: string;
   note: string;
   pid: string;
   puuid: string;
   region: string;
-};
+}
