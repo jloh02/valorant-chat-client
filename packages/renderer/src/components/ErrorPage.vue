@@ -93,4 +93,8 @@ function openRiotClient() {
   margin-top: 0.5rem;
   padding: 0.5rem;
 }
+
+p{
+  text-align: center;
+}
 </style>
