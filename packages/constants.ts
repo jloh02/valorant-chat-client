@@ -9,8 +9,8 @@ export const SCREEN_DEFAULTS = {
   updaterHeight: 150,
   mainWidth: 1200,
   mainHeight: 800,
-  minWidth: 600,
-  minHeight: 400,
+  minWidth: 750,
+  minHeight: 500,
 };
 
 export const LOCKFILE_POLLING_RATE = 5000; //in ms
