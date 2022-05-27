@@ -9,10 +9,10 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useStore } from "vuex";
-import ValorantPresence from "../../../interfaces/ValorantPresence";
-import TitleBar from "../components/titlebar/TitleBar.vue";
-// import Chat from "./Chat.vue";
-import ErrorPage from "../components/ErrorPage.vue";
+import ValorantPresence from "../../../../interfaces/ValorantPresence";
+import Chat from "./Chat.vue";
+import ErrorPage from "../ErrorPage.vue";
+import TitleBar from "../titlebar/TitleBar.vue";
 
 const riotAlive = ref(false);
 const store = useStore();
@@ -42,3 +42,14 @@ window.ipc.on(
   }
 );
 </script>
+
+<style lang="scss" scoped>
+.app-div {
+  @extend .flex-col;
+  justify-content: center;
+  position: absolute;
+  top: 1.25rem;
+  bottom: 0;
+  width: 100%;
+}
+</style>

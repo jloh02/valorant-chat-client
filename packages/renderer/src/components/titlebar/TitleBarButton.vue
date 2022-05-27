@@ -17,9 +17,9 @@ import Minus from "../../icons/Minus.vue";
 import Minmax from "../../icons/Minmax.vue";
 import XMark from "../../icons/XMark.vue";
 
-const props = defineProps({
-  icon: String,
-});
+const props = defineProps<{
+  icon: String;
+}>();
 
 function modWindow() {
   switch (props.icon) {

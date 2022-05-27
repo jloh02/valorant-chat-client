@@ -26,7 +26,7 @@ import TitleBarButton from "./TitleBarButton.vue";
   -webkit-app-region: drag;
 
   p {
-    @extend .text-sm;
+    @extend .text-xs;
     font-weight: bold;
     margin-left: 0.5rem;
     color: $background-accent;
