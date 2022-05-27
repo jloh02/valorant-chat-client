@@ -6,8 +6,8 @@ export interface ValorantRawPresence {
   actor: string;
   basic: string;
   details: string;
-  gameName: string;
-  gameTag: string;
+  game_name: string;
+  game_tag: string;
   location: string;
   msg: string;
   name: string;
@@ -43,13 +43,13 @@ export default class ValorantPresence {
   leaderboardPosition: number;
 
   constructor(presence: ValorantRawPresence) {
-    this.state = presence["state"];
-    this.name = presence["gameName"];
-    this.tag = presence["gameTag"];
-    this.pid = presence["pid"];
+    this.state = presence.state;
+    this.name = presence.game_name;
+    this.tag = presence.game_tag;
+    this.pid = presence.pid;
 
     let privatePresence = JSON.parse(
-      Buffer.from(presence["private"], "base64").toString("ascii")
+      Buffer.from(presence.private, "base64").toString("ascii")
     );
 
     this.gameState = privatePresence["sessionLoopState"];
@@ -80,12 +80,12 @@ export class ValorantPresenceSelf extends ValorantPresence {
     super(presence);
     switch (this.gameState) {
       case "PREGAME":
-        getGameId(`/pregame/v1/players/${presence["puuid"]}`).then((res) => {
+        getGameId(`/pregame/v1/players/${presence.puuid}`).then((res) => {
           this.matchId = res?.data["MatchID"];
         });
         break;
       case "INGAME":
-        getGameId(`/core-game/v1/players/${presence["puuid"]}`).then(
+        getGameId(`/core-game/v1/players/${presence.puuid}`).then(
           (res) => (this.matchId = res?.data["MatchID"])
         );
         break;
