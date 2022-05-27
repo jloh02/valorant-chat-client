@@ -7,6 +7,7 @@ import axios, { AxiosRequestHeaders, AxiosResponse, Method } from "axios";
 import LcuWebsocketReply from "../interfaces/LcuWebsocketReply";
 import LcuWebSocket from "../interfaces/LcuWebsocket";
 import { processPresence } from "../interfaces/ValorantPresence";
+import { processFriend } from "../interfaces/ValorantFriend";
 
 let ws: LcuWebSocket;
 let win: BrowserWindow;
@@ -252,7 +253,7 @@ function initChatListeners() {
           );
         } while (!res || res.status != 200 || res.data["friends"].length == 0);
         log.info("[VALORANT] Friends Request: " + res?.data["friends"].length);
-        return convertQueryToIpcMsg(res);
+        return processFriend(res.data.friends);
       case "HISTORY":
         do {
           res = await query(
@@ -272,7 +273,7 @@ function initChatListeners() {
     win.webContents.send("VALORANT_CHAT", "MESSAGE", res.data.messages);
   });
   ws.subscribe("OnJsonApiEvent_chat_v4_friends", (res) => {
-    win.webContents.send("VALORANT_CHAT", "FRIEND", res.data.friends);
+    win.webContents.send("VALORANT_CHAT", "FRIEND", processFriend(res.data.friends));
   });
 }
 
