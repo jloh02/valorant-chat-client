@@ -1,5 +1,5 @@
-import ValorantFriend from "./ValorantFriend";
-import { ValorantMessage } from "./ValorantMessage";
+import { ValorantRawFriend } from "./ValorantFriend";
+import ValorantMessage from "./ValorantMessage";
 import { ValorantRawPresence } from "./ValorantPresence";
 
 export default interface LcuWebsocketReply {
@@ -10,6 +10,6 @@ export default interface LcuWebsocketReply {
 
 interface LcuWebsocketReplyData {
   messages?: ValorantMessage[];
-  friends?: ValorantFriend[];
+  friends?: ValorantRawFriend[];
   presences?: ValorantRawPresence[];
 }
