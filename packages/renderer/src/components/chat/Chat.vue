@@ -84,7 +84,7 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
     });
     if (setUnread) {
       if (active.value === msgCidPuuid) {
-        chatMessagesView.value?.scrollLastMessage(false);
+        chatMessagesView.value?.scrollLastMessage(true);
       } else {
         unreadChats.add(msg["puuid"]);
         userList.value?.scrollChatListToPuuid(msgCidPuuid);
