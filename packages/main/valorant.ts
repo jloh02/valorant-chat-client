@@ -266,7 +266,7 @@ function initChatListeners() {
         log.info("[VALORANT] Message History: " + res?.data["messages"].length);
         return convertQueryToIpcMsg(res);
       default:
-        console.warn("Unknown VALORANT_CHAT message: " + command);
+        log.warn("Unknown VALORANT_CHAT message: " + command);
     }
   });
   ws.subscribe("OnJsonApiEvent_chat_v6_messages", (res) => {
@@ -320,7 +320,7 @@ async function initPartyListeners() {
         if (res2?.status === 200) return 2;
         return 0;
       default:
-        console.warn("Unknown VALORANT_PARTY message: " + command);
+        log.warn("Unknown VALORANT_PARTY message: " + command);
     }
   });
 }
