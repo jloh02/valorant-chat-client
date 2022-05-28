@@ -26,16 +26,11 @@ import ValorantMessage, {
 import ChatMessagesView from "./ChatMessagesView/ChatMessagesView.vue";
 import UserList from "./UserList/UserList.vue";
 
-const chatMessagesView = ref<InstanceType<typeof ChatMessagesView>>();
-const userList = ref<InstanceType<typeof UserList>>();
-
 const store = useStore();
 const presences = computed(() => store.state.presences);
 
-const unreadChats = reactive(new Set<string>()); //Set of unread chats cid
-
+/* ---------------------------- FRIENDS ---------------------------- */
 const friends = reactive(new Map<string, ValorantFriend>());
-
 function updateFriends(newFriends: ValorantFriend[]) {
   newFriends.forEach((f: ValorantFriend) => {
     if (f.puuid) friends.set(f.puuid, f);
@@ -57,10 +52,15 @@ const sortedFriends = computed((): ValorantFriend[] =>
   })
 );
 
+
+/* ---------------------------- MESSAGES ---------------------------- */
+const chatMessagesView = ref<InstanceType<typeof ChatMessagesView>>();
+const allowUnread = ref(false); //Disallow unread notifications for first 3s to allow existing msgs to load
+const unreadChats = reactive(new Set<string>()); //Set of unread chats cid
+
 const messages = reactive(
   new Map<string, Map<string, ValorantSimpleMessage>>()
 );
-const allowUnread = ref(false); //Disallow unread notifications for first 3s to allow existing msgs to load
 const messagesView = computed(() => {
   const msgMap = messages.get(active.value);
   if (!msgMap) return [];
@@ -70,6 +70,7 @@ const messagesView = computed(() => {
   });
 });
 
+const userList = ref<InstanceType<typeof UserList>>();
 function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
   newMessages.forEach((msg) => {
     const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
@@ -82,7 +83,7 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
       timestamp: msg["time"] as unknown as number,
     });
     if (setUnread) {
-      if (active.value == msgCidPuuid) {
+      if (active.value === msgCidPuuid) {
         chatMessagesView.value?.scrollLastMessage(false);
       } else {
         unreadChats.add(msg["puuid"]);
@@ -94,6 +95,7 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
   });
 }
 
+/* ---------------------------- SETTING ACTIVE CHAT ---------------------------- */
 const active = ref("");
 function setActivePuuid(newPuuid: string) {
   active.value = newPuuid;
@@ -101,11 +103,13 @@ function setActivePuuid(newPuuid: string) {
   chatMessagesView.value?.scrollLastMessage(false);
 }
 
+/* ---------------------------- IPC LISTENERS ---------------------------- */
 onMounted(() => {
+  allowUnread.value = false;
   while (!window.ipc);
   window.ipc.on("VALORANT_CHAT", (command: string, data) => {
-    if (command == "MESSAGE") updateMessages(data, true);
-    else if (command == "FRIEND") updateFriends(data);
+    if (command === "MESSAGE") updateMessages(data, true);
+    else if (command === "FRIEND") updateFriends(data);
   });
   window.ipc.invoke("VALORANT_CHAT", "FRIENDS").then((friends) => {
     updateFriends(friends);
