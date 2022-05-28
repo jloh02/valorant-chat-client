@@ -105,6 +105,8 @@ function initializeUpdateListeners() {
   //Automatically close application and install upon update completion
   autoUpdater.on("update-downloaded", (info) => {
     log.info("[UPDATER] Update downloaded (", info.version, ")");
-    setImmediate(() => autoUpdater.quitAndInstall());
+    setImmediate(() => {
+      autoUpdater.quitAndInstall();
+    });
   });
 }

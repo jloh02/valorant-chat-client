@@ -52,7 +52,6 @@ const sortedFriends = computed((): ValorantFriend[] =>
   })
 );
 
-
 /* ---------------------------- MESSAGES ---------------------------- */
 const chatMessagesView = ref<InstanceType<typeof ChatMessagesView>>();
 const allowUnread = ref(false); //Disallow unread notifications for first 3s to allow existing msgs to load
@@ -117,7 +116,9 @@ onMounted(() => {
     window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((httpChat) => {
       updateMessages(httpChat["data"]["messages"], allowUnread.value);
       chatMessagesView.value?.scrollLastMessage(false);
-      setTimeout(() => (allowUnread.value = true), 3000);
+      setTimeout(() => {
+        allowUnread.value = true;
+      }, 3000);
     });
   });
 });

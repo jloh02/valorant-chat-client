@@ -16,7 +16,9 @@ contextBridge.exposeInMainWorld("ipc", {
   on: (channel: string, callback: (...args: any[]) => any) => {
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender`
-      ipcRenderer.on(channel, (event, ...args) => callback(...args));
+      ipcRenderer.on(channel, (event, ...args) => {
+        callback(...args);
+      });
     }
   },
   invoke: (channel: string, ...args: any[]) => {
