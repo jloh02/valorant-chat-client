@@ -25,7 +25,7 @@
           "
         >
           <user-list-item
-            :active="f.puuid == active"
+            :active="f.puuid === active"
             :unread="unreadChats.has(f.puuid)"
             :puuid="f.puuid"
             :friend="f"
@@ -74,7 +74,7 @@ const searchField = ref("");
 //Filter then sort friends
 const filteredFriends = computed((): ValorantFriend[] =>
   props.friends.filter((friend: ValorantFriend) => {
-    if (searchField.value.length == 0) return true;
+    if (searchField.value.length === 0) return true;
     return (
       friend.gameName
         ?.toLowerCase()

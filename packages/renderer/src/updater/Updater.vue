@@ -16,7 +16,7 @@
     </button>
   </div>
   <div class="updater">
-    <p v-if="total == 1" class="updater-text">
+    <p v-if="total === 1" class="updater-text">
       Update Available. Do you want to update now?
     </p>
     <p v-else class="updater-text">
@@ -27,7 +27,7 @@
         <div class="progress-bar-fill" :style="'width:' + progress + '%'" />
       </div>
       <div class="updater-button">
-        <button v-if="total == 1" @click="update">Update</button>
+        <button v-if="total === 1" @click="update">Update</button>
         <p v-else>{{ transferred }}/{{ total }} kB</p>
       </div>
     </div>
@@ -54,7 +54,7 @@ while (!window.ipc);
 window.ipc.on(
   "UPDATE",
   (command: string, newTransferred: number, newTotal: number) => {
-    if (command != "PROGRESS") return;
+    if (command !== "PROGRESS") return;
     total.value = newTotal;
     transferred.value = newTransferred;
   }

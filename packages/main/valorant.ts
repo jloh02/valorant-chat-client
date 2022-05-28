@@ -77,7 +77,7 @@ export function initializeValorantApi(browserWindow: BrowserWindow) {
   axios.defaults.headers.common["Content-Type"] = "application/json";
 
   ipcMain.on("IPC_STATUS", (event, command) => {
-    if (command != "IPC_READY") return;
+    if (command !== "IPC_READY") return;
 
     initialize();
   });
@@ -207,7 +207,7 @@ async function initPresenceMonitoring() {
       "/chat/v4/presences",
       true
     );
-  } while (!pres || pres.status != 200);
+  } while (!pres || pres.status !== 200);
   if (pres.data) {
     win.webContents.send(
       "VALORANT_PRESENCES",
@@ -251,7 +251,7 @@ function initChatListeners() {
             "/chat/v4/friends",
             true
           );
-        } while (!res || res.status != 200 || res.data["friends"].length == 0);
+        } while (!res || res.status !== 200 || res.data["friends"].length === 0);
         log.info("[VALORANT] Friends Request: " + res?.data["friends"].length);
         return processFriend(res.data.friends);
       case "HISTORY":
@@ -262,7 +262,7 @@ function initChatListeners() {
             "/chat/v6/messages",
             true
           );
-        } while (!res || res.status != 200 || res.data["messages"].length == 0);
+        } while (!res || res.status !== 200 || res.data["messages"].length === 0);
         log.info("[VALORANT] Message History: " + res?.data["messages"].length);
         return convertQueryToIpcMsg(res);
       default:
@@ -288,15 +288,15 @@ async function initPartyListeners() {
           `/parties/v1/players/${puuid}`
         );
         log.info("[VALORANT] Party Response: " + partyRes?.data);
-        if (!partyRes || partyRes.status != 200) return 0;
+        if (!partyRes || partyRes.status !== 200) return 0;
         const resI = await query(
           RequestType.GLZ,
           "POST",
           `/parties/v1/parties/${partyRes.data.CurrentPartyID}/invites/name/${paramA}/tag/${paramB}`
         );
         log.info("[VALORANT] Party Invite Response: " + resI?.data);
-        if (resI?.status == 200) return 1;
-        if (resI?.status == 409) return 2;
+        if (resI?.status === 200) return 1;
+        if (resI?.status === 409) return 2;
         return 0;
 
       //paramA: partyId, paramB: otherPuuid
@@ -307,7 +307,7 @@ async function initPartyListeners() {
           `/parties/v1/players/${puuid}/joinparty/${paramA}`
         );
         log.info("[VALORANT] Party Join Response: " + res?.data);
-        if (res?.status == 200) return 1;
+        if (res?.status === 200) return 1;
 
         const res2 = await query(
           RequestType.GLZ,
@@ -317,7 +317,7 @@ async function initPartyListeners() {
           JSON.stringify({ Subjects: [paramB] })
         );
         log.info("[VALORANT] Party Join Request Response: " + res2?.data);
-        if (res2?.status == 200) return 2;
+        if (res2?.status === 200) return 2;
         return 0;
       default:
         console.warn("Unknown VALORANT_PARTY message: " + command);

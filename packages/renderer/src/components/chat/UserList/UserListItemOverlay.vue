@@ -2,7 +2,7 @@
   <div class="user-list-item-overlay">
     <div class="user-list-item-sub-col">
       <span>{{ props.friend.gameName }}#{{ props.friend.gameTag }}</span>
-      <div v-if="props.friend.note != ''" class="user-list-item-overlay-note">
+      <div v-if="props.friend.note !== ''" class="user-list-item-overlay-note">
         <document />
         <span>
           {{ props.friend.note }}

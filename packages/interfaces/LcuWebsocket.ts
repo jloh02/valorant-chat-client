@@ -34,9 +34,9 @@ export default class LcuWebSocket {
       const strMsg = data.toString();
       log.info(`[LCU Websocket] ${strMsg}`);
       try {
-        if (strMsg.length == 0) return;
+        if (strMsg.length === 0) return;
         const jsonMsg = JSON.parse(strMsg);
-        if (jsonMsg[0] != 8) {
+        if (jsonMsg[0] !== 8) {
           log.warn("[LCU Websocket] Not a message");
           return;
         }

@@ -54,19 +54,19 @@ function updatePresence() {
       if (cardRet) card.value = cardRet;
     });
 
-    if (presence.value.state == "away") {
+    if (presence.value.state === "away") {
       status.value = "Away";
       statusColor.value = "away";
-    } else if (presence.value.gameState == "INGAME") {
+    } else if (presence.value.gameState === "INGAME") {
       statusColor.value = "ingame";
-      if (presence.value.gameMode == "In Range") {
+      if (presence.value.gameMode === "In Range") {
         status.value = "In Range";
       } else {
         status.value = `${capsFirstLetter(presence.value.gameMode)} ${
           presence.value.scoreAlly
         }-${presence.value.scoreEnemy}`;
       }
-    } else if (presence.value.gameState == "MENUS") {
+    } else if (presence.value.gameState === "MENUS") {
       status.value = "Online";
       statusColor.value = "online";
     } /*PREGAME*/ else {

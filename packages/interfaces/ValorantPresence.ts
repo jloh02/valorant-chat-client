@@ -54,7 +54,7 @@ export default class ValorantPresence {
 
     this.gameState = privatePresence["sessionLoopState"];
     this.gameMode =
-      privatePresence["provisioningFlow"] == "ShootingRange"
+      privatePresence["provisioningFlow"] === "ShootingRange"
         ? "In Range"
         : GAME_MODE.get(privatePresence["queueId"]) ??
           privatePresence["queueId"];
@@ -103,9 +103,9 @@ export function processPresence(
   let ret = new Map();
   if (!presences) return ret;
   for (const p of presences) {
-    if (p["product"] != "valorant") continue;
+    if (p["product"] !== "valorant") continue;
     log.info("[VALORANT] Updating presence: " + p["puuid"]);
-    if (p["puuid"] == puuid)
+    if (p["puuid"] === puuid)
       ret.set(p["puuid"], new ValorantPresenceSelf(p, queryFunction));
     else ret.set(p["puuid"], new ValorantPresence(p));
   }

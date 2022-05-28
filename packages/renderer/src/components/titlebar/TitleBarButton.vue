@@ -1,12 +1,12 @@
 <template>
   <button
     @click="modWindow"
-    :class="'title-bar-button' + (props.icon == 'xmark' ? ' close' : ' normal')"
+    :class="'title-bar-button' + (props.icon === 'xmark' ? ' close' : ' normal')"
   >
     <div class="title-bar-button icon">
       <!--Custom svg for square icon-->
-      <minmax v-if="props.icon == 'minmax'" />
-      <minus v-else-if="props.icon == 'minus'" />
+      <minmax v-if="props.icon === 'minmax'" />
+      <minus v-else-if="props.icon === 'minus'" />
       <x-mark v-else />
     </div>
   </button>

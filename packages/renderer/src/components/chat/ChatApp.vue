@@ -20,7 +20,7 @@ const store = useStore();
 while (!window.ipc);
 
 window.ipc.on("IPC_STATUS", (command, ready, puuid) => {
-  if (command != "LOCKFILE_UPDATE") return;
+  if (command !== "LOCKFILE_UPDATE") return;
   riotAlive.value = ready;
   if (puuid) store.commit("updatePuuid", puuid);
 });
@@ -30,7 +30,7 @@ window.ipc.send("IPC_STATUS", "IPC_READY");
 window.ipc.on(
   "VALORANT_PRESENCES",
   (eventType: string, newPresences: Map<string, ValorantPresence>) => {
-    if (eventType == "Delete") {
+    if (eventType === "Delete") {
       newPresences.forEach((v: ValorantPresence, k: string) => {
         store.commit("deletePresence", k);
       });

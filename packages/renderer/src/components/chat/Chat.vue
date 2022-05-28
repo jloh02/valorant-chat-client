@@ -41,12 +41,12 @@ const sortedFriends = computed((): ValorantFriend[] =>
   Array.from(friends.values()).sort((a: ValorantFriend, b: ValorantFriend) => {
     const onlineA = presences.value.has(a.puuid);
     const onlineB = presences.value.has(b.puuid);
-    if (onlineA != onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
+    if (onlineA !== onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
     //Sort by party ID if online
     if (onlineA) {
       const partyA = presences.value.get(a.puuid).party_id;
       const partyB = presences.value.get(b.puuid).party_id;
-      if (partyA != partyB) return partyA.localeCompare(partyB);
+      if (partyA !== partyB) return partyA.localeCompare(partyB);
     }
     return a.gameName.localeCompare(b.gameName);
   })
@@ -74,7 +74,7 @@ const userList = ref<InstanceType<typeof UserList>>();
 function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
   newMessages.forEach((msg) => {
     const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
-    const msgOutgoing = msg["puuid"] != msgCidPuuid;
+    const msgOutgoing = msg["puuid"] !== msgCidPuuid;
     if (!messages.has(msgCidPuuid)) messages.set(msgCidPuuid, new Map());
     const msgExists = messages.get(msgCidPuuid)?.has(msg["mid"]);
     messages.get(msgCidPuuid)?.set(msg["mid"], {
