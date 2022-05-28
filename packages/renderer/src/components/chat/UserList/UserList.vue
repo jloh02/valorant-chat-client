@@ -164,5 +164,6 @@ defineExpose({ scrollChatListToPuuid });
   padding: 0;
   position: relative;
   background-color: transparent;
+  cursor: pointer;
 }
 </style>
