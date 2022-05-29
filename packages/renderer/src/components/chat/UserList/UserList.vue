@@ -40,10 +40,11 @@
         <user-list-party-entry
           v-if="
             presences.has(f.puuid) &&
-            presences.get(f.puuid)?.party_id !=
-              presences.get(filteredFriends[idx + 1]?.puuid)?.party_id
+            presences.get(f.puuid)?.partyId !=
+              presences.get(filteredFriends[idx + 1]?.puuid)?.partyId
           "
-          :partyCount="presences.get(f.puuid)?.party_size"
+          :active="f.puuid === active"
+          :partyCount="presences.get(f.puuid)?.partySize ?? 1"
         />
       </div>
     </ul>
@@ -51,17 +52,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, reactive, ref } from "vue";
+import { computed, ComputedRef, nextTick, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import Search from "@icons/Search.vue";
 import ValorantFriend from "@interfaces/ValorantFriend";
+import ValorantPresence from "@interfaces/ValorantPresence";
 import UserListItem from "./UserListItem.vue";
 import UserListContextMenu from "./UserListContextMenu.vue";
 import UserListItemOverlay from "./UserListItemOverlay.vue";
-import Search from "../../../icons/Search.vue";
+import UserListPartyEntry from "./UserListPartyEntry.vue";
 
 const store = useStore();
-const presences = computed(() => store.state.presences);
+const presences: ComputedRef<Map<string, ValorantPresence>> = computed(
+  () => store.state.presences
+);
 
 const props = defineProps<{
   active: string;
@@ -115,7 +119,7 @@ defineExpose({ scrollChatListToPuuid });
 </script>
 
 <style lang="scss" scoped>
-.user-list{
+.user-list {
   @extend .flex-col;
   flex: 0 0 min(calc(33.33333% + 1rem), 300px);
   margin: 0.5rem;
@@ -155,16 +159,17 @@ defineExpose({ scrollChatListToPuuid });
 .user-list-item-div {
   @extend .flex-col;
   width: 100%;
-  height: min-content;
+  height: auto;
   box-sizing: border-box;
   padding: 0.25rem;
   position: relative;
-}
-.user-list-item-div .user-list-item-button {
-  width: 100%;
-  padding: 0;
-  position: relative;
-  background-color: transparent;
-  cursor: pointer;
+
+  .user-list-item-button {
+    width: 100%;
+    padding: 0;
+    position: relative;
+    background-color: transparent;
+    cursor: pointer;
+  }
 }
 </style>

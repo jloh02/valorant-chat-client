@@ -89,7 +89,7 @@ li.user-list-item {
   text-align: left;
   padding: 0.25rem;
 }
-.user-list-item {
+*.user-list-item {
   @extend .flex;
   padding: 0;
 

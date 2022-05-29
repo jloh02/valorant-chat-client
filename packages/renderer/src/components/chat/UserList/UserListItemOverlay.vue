@@ -48,7 +48,7 @@ span {
   justify-content: space-between;
 
   position: absolute;
-  z-index: 10;
+  z-index: 1000;
   top: 3.75rem;
   left: 0.125rem;
   right: 0.125rem;
