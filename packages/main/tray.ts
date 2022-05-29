@@ -1,8 +1,9 @@
 import { App, BrowserWindow, Menu, Tray, nativeImage } from "electron";
 import { setPreference, getPreference } from "./preferences";
+import b64Icon from "@assets/icon.png";
 
 export function createTray(app: App, win: BrowserWindow, tray: Tray) {
-  tray = new Tray(nativeImage.createFromDataURL("/icon.png"));
+  tray = new Tray(nativeImage.createFromDataURL(b64Icon));
 
   const contextMenu = Menu.buildFromTemplate([
     {
