@@ -39,6 +39,7 @@ export default defineConfig({
     __VUE_OPTIONS_API__: false,
     __VUE_PROD_DEVTOOLS__: false,
   },
+  publicDir:"../../public",
   css: {
     preprocessorOptions: {
       scss: {
@@ -54,4 +55,3 @@ export default defineConfig({
     },
   },
 });
-console.log(path.resolve(__dirname, "../interfaces"));
