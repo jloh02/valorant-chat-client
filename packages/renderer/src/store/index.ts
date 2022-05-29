@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import ValorantPresence from "../../../interfaces/ValorantPresence";
+import ValorantPresence from "@interfaces/ValorantPresence";
 
 interface State {
   puuid: string;

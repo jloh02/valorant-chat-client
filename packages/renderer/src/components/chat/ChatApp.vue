@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useStore } from "vuex";
-import ValorantPresence from "../../../../interfaces/ValorantPresence";
+import ValorantPresence from "@interfaces/ValorantPresence";
 import Chat from "./Chat.vue";
 import ErrorPage from "../ErrorPage.vue";
 import TitleBar from "../titlebar/TitleBar.vue";

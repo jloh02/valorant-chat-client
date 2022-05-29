@@ -25,10 +25,10 @@
 </template>
 
 <script lang="ts" setup>
-import { getRankColor, getRankIcon } from "../../../ts/valorant-api";
-import Document from "../../../icons/Document.vue";
-import ValorantPresence from "../../../../../interfaces/ValorantPresence";
-import ValorantFriend from "../../../../../interfaces/ValorantFriend";
+import { getRankColor, getRankIcon } from "@/ts/valorant-api";
+import Document from "@icons/Document.vue";
+import ValorantPresence from "@interfaces/ValorantPresence";
+import ValorantFriend from "@interfaces/ValorantFriend";
 
 const props = defineProps<{
   friend: ValorantFriend;
@@ -37,7 +37,7 @@ const props = defineProps<{
 </script>
 
 <style lang="scss" scoped>
-span{
+span {
   display: inline-block;
   max-width: 100%;
   overflow-wrap: break-word;

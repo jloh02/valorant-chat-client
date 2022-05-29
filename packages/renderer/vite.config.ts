@@ -48,7 +48,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
-    }
+      "@": path.resolve(__dirname, "src"),
+      "@icons": path.resolve(__dirname, "src/icons"),
+      "@interfaces": path.resolve(__dirname, "../interfaces"),
+    },
   },
 });
+console.log(path.resolve(__dirname, "../interfaces"));

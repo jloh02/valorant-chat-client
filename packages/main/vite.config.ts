@@ -1,6 +1,7 @@
 import { builtinModules } from 'module'
 import { defineConfig } from 'vite'
 import pkg from '../../package.json'
+import path from "path";
 
 export default defineConfig({
   root: __dirname,
@@ -21,6 +22,11 @@ export default defineConfig({
         // @ts-ignore
         ...Object.keys(pkg.dependencies || {}),
       ],
+    },
+  },
+  resolve: {
+    alias: {
+      "@interfaces": path.resolve(__dirname, "../interfaces"),
     },
   },
 })

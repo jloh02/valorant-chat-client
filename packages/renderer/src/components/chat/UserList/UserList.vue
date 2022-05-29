@@ -53,7 +53,8 @@
 <script lang="ts" setup>
 import { computed, nextTick, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import ValorantFriend from "../../../../../interfaces/ValorantFriend";
+import Search from "@icons/Search.vue";
+import ValorantFriend from "@interfaces/ValorantFriend";
 import UserListItem from "./UserListItem.vue";
 import UserListContextMenu from "./UserListContextMenu.vue";
 import UserListItemOverlay from "./UserListItemOverlay.vue";

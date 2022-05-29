@@ -24,9 +24,9 @@
 <script lang="ts" setup>
 import { computed, ComputedRef, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { getPlayerCardSrc } from "../../../ts/valorant-api";
-import ValorantFriend from "../../../../../interfaces/ValorantFriend";
-import ValorantPresence from "../../../../../interfaces/ValorantPresence";
+import { getPlayerCardSrc } from "@/ts/valorant-api";
+import ValorantFriend from "@interfaces/ValorantFriend";
+import ValorantPresence from "@interfaces/ValorantPresence";
 
 const store = useStore();
 

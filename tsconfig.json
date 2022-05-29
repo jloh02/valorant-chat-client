@@ -11,7 +11,11 @@
     "sourceMap": false,
     "baseUrl": "./",
     "strict": true,
-    "paths": {},
+    "paths": {
+      "@": ["packages/renderer/src/*"],
+      "@icons": ["packages/renderer/src/icons/*"],
+      "@interfaces": ["packages/interfaces/*"]
+    },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
   }

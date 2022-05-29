@@ -12,10 +12,8 @@
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "paths": {
-      "@/*": ["packages/renderer/src/*"],
-      "@icons/*": ["packages/renderer/src/icons/*"],
       "@interfaces/*": ["packages/interfaces/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include":["*.ts"]
 }

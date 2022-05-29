@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import { ref, nextTick } from "vue";
 import ChatMessage from "./ChatMessage.vue";
-import { ValorantSimpleMessage } from "packages/interfaces/ValorantMessage";
+import { ValorantSimpleMessage } from "@interfaces/ValorantMessage";
 
 const props = defineProps<{
   inputLabel: string;

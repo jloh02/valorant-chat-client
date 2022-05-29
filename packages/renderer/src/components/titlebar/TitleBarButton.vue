@@ -13,9 +13,9 @@
 </template>
 
 <script lang="ts" setup>
-import Minus from "../../icons/Minus.vue";
-import Minmax from "../../icons/Minmax.vue";
-import XMark from "../../icons/XMark.vue";
+import Minus from "@icons/Minus.vue";
+import Minmax from "@icons/Minmax.vue";
+import XMark from "@icons/XMark.vue";
 
 const props = defineProps<{
   icon: String;

@@ -4,10 +4,10 @@ import log from "electron-log";
 import { readFileSync } from "fs";
 import { BrowserWindow, ipcMain } from "electron";
 import axios, { AxiosRequestHeaders, AxiosResponse, Method } from "axios";
-import LcuWebsocketReply from "../interfaces/LcuWebsocketReply";
-import LcuWebSocket from "../interfaces/LcuWebsocket";
-import { processPresence } from "../interfaces/ValorantPresence";
-import { processFriend } from "../interfaces/ValorantFriend";
+import LcuWebsocketReply from "@interfaces/LcuWebsocketReply";
+import LcuWebSocket from "@interfaces/LcuWebsocket";
+import { processPresence } from "@interfaces/ValorantPresence";
+import { processFriend } from "@interfaces/ValorantFriend";
 
 let ws: LcuWebSocket;
 let win: BrowserWindow;

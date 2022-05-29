@@ -19,10 +19,10 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted, onUnmounted, computed } from "vue";
 import { useStore } from "vuex";
-import ValorantFriend from "packages/interfaces/ValorantFriend";
+import ValorantFriend from "@interfaces/ValorantFriend";
 import ValorantMessage, {
   ValorantSimpleMessage,
-} from "packages/interfaces/ValorantMessage";
+} from "@interfaces/ValorantMessage";
 import ChatMessagesView from "./ChatMessagesView/ChatMessagesView.vue";
 import UserList from "./UserList/UserList.vue";
 
