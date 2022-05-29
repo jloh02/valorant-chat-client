@@ -44,8 +44,8 @@ const sortedFriends = computed((): ValorantFriend[] =>
     if (onlineA !== onlineB) return (onlineB ? 1 : 0) - (onlineA ? 1 : 0);
     //Sort by party ID if online
     if (onlineA) {
-      const partyA = presences.value.get(a.puuid).party_id;
-      const partyB = presences.value.get(b.puuid).party_id;
+      const partyA = presences.value.get(a.puuid).partyId;
+      const partyB = presences.value.get(b.puuid).partyId;
       if (partyA !== partyB) return partyA.localeCompare(partyB);
     }
     return a.gameName.localeCompare(b.gameName);
@@ -72,24 +72,24 @@ const messagesView = computed(() => {
 const userList = ref<InstanceType<typeof UserList>>();
 function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
   newMessages.forEach((msg) => {
-    const msgCidPuuid = msg["cid"].slice(0, msg["cid"].indexOf("@"));
-    const msgOutgoing = msg["puuid"] !== msgCidPuuid;
+    const msgCidPuuid = msg.cid.slice(0, msg.cid.indexOf("@"));
+    const msgOutgoing = msg.puuid !== msgCidPuuid;
     if (!messages.has(msgCidPuuid)) messages.set(msgCidPuuid, new Map());
-    const msgExists = messages.get(msgCidPuuid)?.has(msg["mid"]);
-    messages.get(msgCidPuuid)?.set(msg["mid"], {
+    const msgExists = messages.get(msgCidPuuid)?.has(msg.mid);
+    messages.get(msgCidPuuid)?.set(msg.mid, {
       outgoing: msgOutgoing,
-      message: msg["body"],
-      timestamp: msg["time"] as unknown as number,
+      message: msg.body,
+      timestamp: msg.time as unknown as number,
     });
     if (setUnread) {
       if (active.value === msgCidPuuid) {
         chatMessagesView.value?.scrollLastMessage(true);
       } else {
-        unreadChats.add(msg["puuid"]);
+        unreadChats.add(msg.puuid);
         userList.value?.scrollChatListToPuuid(msgCidPuuid);
       }
       if (!msgOutgoing && !msgExists)
-        window.ipc?.send("WINDOW", "NOTIFY", msg["gameName"], msg["body"]);
+        window.ipc?.send("WINDOW", "NOTIFY", msg.gameName, msg.body);
     }
   });
 }
@@ -113,8 +113,8 @@ onMounted(() => {
   window.ipc.invoke("VALORANT_CHAT", "FRIENDS").then((friends) => {
     updateFriends(friends);
     if (!window.ipc) return;
-    window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((httpChat) => {
-      updateMessages(httpChat["data"]["messages"], allowUnread.value);
+    window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((messages) => {
+      updateMessages(messages, allowUnread.value);
       chatMessagesView.value?.scrollLastMessage(false);
       setTimeout(() => {
         allowUnread.value = true;

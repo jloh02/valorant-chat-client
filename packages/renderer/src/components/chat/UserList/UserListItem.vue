@@ -41,6 +41,11 @@ const props = defineProps<{
   unread: boolean;
 }>();
 
+if(props.puuid==="095dfd66-c9ed-5d18-920c-1410c6c6cff8"){
+  console.log(props.friend);
+  console.log(props.unread);
+}
+
 //Presence monitoring to update current friend's status
 const presence: ComputedRef<ValorantPresence | undefined> = computed(() =>
   store.state.presences.get(props.puuid)
@@ -136,6 +141,7 @@ li.user-list-item {
 
   .unread-circle {
     margin: 0 0.5rem;
+    height: 0.75rem;
     width: 0.75rem;
     background-color: $valo-red;
     border-radius: 50%;

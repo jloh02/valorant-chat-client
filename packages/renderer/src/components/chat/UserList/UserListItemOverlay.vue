@@ -32,7 +32,7 @@ import ValorantFriend from "@interfaces/ValorantFriend";
 
 const props = defineProps<{
   friend: ValorantFriend;
-  presence: ValorantPresence;
+  presence: ValorantPresence | undefined;
 }>();
 </script>
 

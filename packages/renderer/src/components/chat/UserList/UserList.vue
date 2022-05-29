@@ -33,9 +33,7 @@
         </button>
         <user-list-item-overlay
           :friend="f"
-          :presence="
-            presences.has(f.puuid) ? presences.get(f.puuid) : undefined
-          "
+          :presence="presences.get(f.puuid)"
         />
         <user-list-party-entry
           v-if="
@@ -58,7 +56,7 @@ import Search from "@icons/Search.vue";
 import ValorantFriend from "@interfaces/ValorantFriend";
 import ValorantPresence from "@interfaces/ValorantPresence";
 import UserListItem from "./UserListItem.vue";
-import UserListContextMenu from "./UserListContextMenu.vue";
+import UserListContextMenu from "./ContextMenu/UserListContextMenu.vue";
 import UserListItemOverlay from "./UserListItemOverlay.vue";
 import UserListPartyEntry from "./UserListPartyEntry.vue";
 
@@ -76,7 +74,7 @@ const props = defineProps<{
 
 const searchField = ref("");
 
-//Filter then sort friends
+//Filter based on search
 const filteredFriends = computed((): ValorantFriend[] =>
   props.friends.filter((friend: ValorantFriend) => {
     if (searchField.value.length === 0) return true;
@@ -92,15 +90,16 @@ const filteredFriends = computed((): ValorantFriend[] =>
 
 const contextMenu = ref<InstanceType<typeof UserListContextMenu>>();
 function openCtxMenu(event: MouseEvent, puuid: string) {
-  //   const pres = presences.value.get(puuid);
-  //   contextMenu.setPosition(
-  //     event.pageX,
-  //     event.pageY,
-  //     puuid,
-  //     pres.party_id,
-  //     pres.name,
-  //     pres.tag
-  //   );
+  const pres = presences.value.get(puuid);
+  if (pres)
+    contextMenu.value?.setPosition(
+      event.pageX,
+      event.pageY,
+      puuid,
+      pres.partyId,
+      pres.name,
+      pres.tag
+    );
 }
 
 const refTags = reactive(new Map<string, Element>());
