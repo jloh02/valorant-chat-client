@@ -8,6 +8,7 @@ import LcuWebsocketReply from "@interfaces/LcuWebsocketReply";
 import LcuWebSocket from "@interfaces/LcuWebsocket";
 import { processPresence } from "@interfaces/ValorantPresence";
 import { processFriend } from "@interfaces/ValorantFriend";
+import { processMessage } from "@interfaces/ValorantMessage";
 
 let ws: LcuWebSocket;
 let win: BrowserWindow;
@@ -251,8 +252,8 @@ function initChatListeners() {
             "/chat/v4/friends",
             true
           );
-        } while (!res || res.status !== 200 || res.data["friends"].length === 0);
-        log.info("[VALORANT] Friends Request: " + res?.data["friends"].length);
+        } while (!res || res.status !== 200 || res.data.friends.length === 0);
+        log.info("[VALORANT] Friends Request: " + res?.data.friends.length);
         return processFriend(res.data.friends);
       case "HISTORY":
         do {
@@ -262,15 +263,15 @@ function initChatListeners() {
             "/chat/v6/messages",
             true
           );
-        } while (!res || res.status !== 200 || res.data["messages"].length === 0);
-        log.info("[VALORANT] Message History: " + res?.data["messages"].length);
-        return convertQueryToIpcMsg(res);
+        } while (!res || res.status !== 200 || res.data.messages.length === 0);
+        log.info("[VALORANT] Message History: " + res?.data.messages.length);
+        return processMessage(res.data.messages);
       default:
         log.warn("Unknown VALORANT_CHAT message: " + command);
     }
   });
   ws.subscribe("OnJsonApiEvent_chat_v6_messages", (res) => {
-    win.webContents.send("VALORANT_CHAT", "MESSAGE", res.data.messages);
+    win.webContents.send("VALORANT_CHAT", "MESSAGE", processMessage(res.data.messages));
   });
   ws.subscribe("OnJsonApiEvent_chat_v4_friends", (res) => {
     win.webContents.send("VALORANT_CHAT", "FRIEND", processFriend(res.data.friends));
