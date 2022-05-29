@@ -5,6 +5,7 @@ import path from "path";
 
 export default defineConfig({
   root: __dirname,
+  base: "./",
   build: {
     outDir: '../../dist/main',
     emptyOutDir: true,
@@ -24,8 +25,10 @@ export default defineConfig({
       ],
     },
   },
+  publicDir:"../../public",
   resolve: {
     alias: {
+      "@assets": path.resolve(__dirname, "../../assets"),
       "@interfaces": path.resolve(__dirname, "../interfaces"),
     },
   },

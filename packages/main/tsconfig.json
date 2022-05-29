@@ -12,8 +12,9 @@
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "paths": {
+      "@assets/*": ["assets/*"],
       "@interfaces/*": ["packages/interfaces/*"]
     }
   },
-  "include":["*.ts"]
+  "include":["**/*.ts"]
 }
