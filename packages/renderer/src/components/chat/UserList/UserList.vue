@@ -153,7 +153,7 @@ defineExpose({ scrollChatListToPuuid });
   @extend .max-size;
   overflow-y: scroll;
   padding: 0;
-  margin-top: 0.25rem;
+  margin: 0.25rem 0;
 }
 .user-list-item-div {
   @extend .flex-col;
