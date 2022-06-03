@@ -158,14 +158,17 @@ li.user-list-item {
     align-items: flex-start;
     pointer-events: none;
 
-    .game-name {
+    p.user-list-item.game-name {
       @extend .text;
       padding: 0;
-      padding-left: 0 !important;
+      padding-top: 0.125rem;
+      flex: 1;
     }
 
     .game-status {
       padding: 0;
+      padding-bottom: 0.375rem;
+      flex: 1;
       font-size: 0.75rem;
       line-height: 1rem;
 
