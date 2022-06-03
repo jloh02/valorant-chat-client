@@ -1,11 +1,19 @@
 <template>
-  <li :class="active ? 'user-list-item active' : 'user-list-item'">
-    <img
-      v-if="presence && card.length"
-      class="user-list-item card"
-      :src="card"
-    />
-    <img v-else src="/valo-icon.svg" class="user-list-item card" />
+  <li
+    :class="
+      'user-list-item' +
+      (active ? ' active' : '') +
+      (activeParty ? ' active-party' : '')
+    "
+  >
+    <div :class="'user-list-item card-box' + (firstInParty ? ' first' : '')">
+      <img
+        v-if="presence && card.length"
+        class="user-list-item card"
+        :src="card"
+      />
+      <img v-else src="/valo-icon.svg" class="user-list-item card" />
+    </div>
 
     <div class="user-list-item text">
       <p class="user-list-item game-name">
@@ -16,8 +24,10 @@
       </p>
     </div>
 
-    <div v-if="unread" class="user-list-item unread-circle" />
-    <div v-else class="user-list-item unread-circle placeholder" />
+    <div class="user-list-item unread-circle-box">
+      <div v-if="unread" class="user-list-item unread-circle" />
+      <div v-else class="user-list-item unread-circle placeholder" />
+    </div>
   </li>
 </template>
 
@@ -36,15 +46,12 @@ const statusColor = ref("");
 
 const props = defineProps<{
   active: boolean;
+  activeParty: boolean;
+  firstInParty: boolean;
   puuid: string;
   friend: ValorantFriend;
   unread: boolean;
 }>();
-
-if(props.puuid==="095dfd66-c9ed-5d18-920c-1410c6c6cff8"){
-  console.log(props.friend);
-  console.log(props.unread);
-}
 
 //Presence monitoring to update current friend's status
 const presence: ComputedRef<ValorantPresence | undefined> = computed(() =>
@@ -92,15 +99,41 @@ updatePresence();
 li.user-list-item {
   height: 100%;
   text-align: left;
-  padding: 0.25rem;
+  padding: 0;
+  margin-right: 0.25rem;
 }
 *.user-list-item {
   @extend .flex;
   padding: 0;
 
   &.active {
-    background-color: $background-lighter;
-    border-radius: 0.25rem;
+    .unread-circle-box {
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    .card-box,
+    .text,
+    .unread-circle-box {
+      background-color: $background-lighter;
+    }
+  }
+  &.active-party {
+    div.card-box {
+      background-color: $background-lighter;
+
+      &.first {
+        border-top-left-radius: 0.25rem;
+      }
+    }
+
+    &:not(.active) div.card-box.first {
+      border-top-right-radius: 0.25rem;
+    }
+  }
+  &:not(.active-party).active div.card-box {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
   }
 
   &.card {
@@ -111,19 +144,29 @@ li.user-list-item {
     width: 2.5rem;
   }
 
+  &.card-box {
+    height: 3rem;
+    padding: 0.25rem;
+    background-color: transparent;
+  }
+
   &.text {
     @extend .flex-col;
     flex: 1;
-    padding-left: 0.25rem;
+    justify-content: center;
+    height: 3rem;
+    padding: 0.25rem;
     align-items: flex-start;
     pointer-events: none;
 
     .game-name {
       @extend .text;
+      padding: 0;
       padding-left: 0 !important;
     }
 
     .game-status {
+      padding: 0;
       font-size: 0.75rem;
       line-height: 1rem;
 
@@ -139,6 +182,9 @@ li.user-list-item {
     }
   }
 
+  .unread-circle-box {
+    height: 100%;
+  }
   .unread-circle {
     margin: 0 0.5rem;
     height: 0.75rem;

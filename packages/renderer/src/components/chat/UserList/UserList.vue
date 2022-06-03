@@ -19,13 +19,21 @@
       >
         <button
           class="user-list-item-button"
-          @click="props.setActiveFn(f.puuid)"
+          @click="
+            props.setActiveFn(f.puuid, presences.get(f.puuid)?.partyId ?? '')
+          "
           @contextmenu="
             presences.has(f.puuid) ? openCtxMenu($event, f.puuid) : undefined
           "
         >
           <user-list-item
             :active="f.puuid === active"
+            :activeParty="presences.get(f.puuid)?.partyId === activeParty"
+            :firstInParty="
+              idx === 0 ||
+              presences.get(f.puuid)?.partyId !==
+                presences.get(filteredFriends[idx - 1]?.puuid)?.partyId
+            "
             :unread="unreadChats.has(f.puuid)"
             :puuid="f.puuid"
             :friend="f"
@@ -41,7 +49,10 @@
             presences.get(f.puuid)?.partyId !=
               presences.get(filteredFriends[idx + 1]?.puuid)?.partyId
           "
-          :active="f.puuid === active"
+          :active="
+            f.puuid === active ||
+            presences.get(f.puuid)?.partyId === activeParty
+          "
           :partyCount="presences.get(f.puuid)?.partySize ?? 1"
         />
       </div>
@@ -67,9 +78,10 @@ const presences: ComputedRef<Map<string, ValorantPresence>> = computed(
 
 const props = defineProps<{
   active: string;
+  activeParty: string;
   unreadChats: Set<string>;
   friends: ValorantFriend[];
-  setActiveFn: (puuid: string) => void;
+  setActiveFn: (puuid: string, partyId: string) => void;
 }>();
 
 const searchField = ref("");
@@ -160,7 +172,7 @@ defineExpose({ scrollChatListToPuuid });
   width: 100%;
   height: auto;
   box-sizing: border-box;
-  padding: 0.25rem;
+  padding: 0;
   position: relative;
 
   .user-list-item-button {

@@ -9,9 +9,10 @@
     <user-list
       ref="userList"
       :active="active"
+      :activeParty="activeParty"
       :unreadChats="unreadChats"
       :friends="sortedFriends"
-      :setActiveFn="setActivePuuid"
+      :setActiveFn="setActive"
     />
   </div>
 </template>
@@ -96,8 +97,10 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
 
 /* ---------------------------- SETTING ACTIVE CHAT ---------------------------- */
 const active = ref("");
-function setActivePuuid(newPuuid: string) {
+const activeParty = ref("");
+function setActive(newPuuid: string, newParty:string) {
   active.value = newPuuid;
+  activeParty.value = newParty;
   unreadChats.delete(newPuuid);
   chatMessagesView.value?.scrollLastMessage(false);
 }
@@ -118,7 +121,7 @@ onMounted(() => {
       chatMessagesView.value?.scrollLastMessage(false);
       setTimeout(() => {
         allowUnread.value = true;
-      }, 3000);
+      }, 5000);
     });
   });
 });
