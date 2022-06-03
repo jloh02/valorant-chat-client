@@ -28,6 +28,7 @@ import ChatMessagesView from "./ChatMessagesView/ChatMessagesView.vue";
 import UserList from "./UserList/UserList.vue";
 
 const store = useStore();
+const selfPuuid = computed(() => store.state.puuid);
 const presences = computed(() => store.state.presences);
 
 /* ---------------------------- FRIENDS ---------------------------- */
@@ -47,7 +48,14 @@ const sortedFriends = computed((): ValorantFriend[] =>
     if (onlineA) {
       const partyA = presences.value.get(a.puuid).partyId;
       const partyB = presences.value.get(b.puuid).partyId;
-      if (partyA !== partyB) return partyA.localeCompare(partyB);
+      if (partyA !== partyB) {
+        const selfPartyId = presences.value.get(selfPuuid.value)?.partyId;
+        if(selfPartyId){
+          if(partyA === selfPartyId) return -1;
+          if(partyB === selfPartyId) return 1;
+        }
+        return partyA.localeCompare(partyB);
+      }
     }
     return a.gameName.localeCompare(b.gameName);
   })

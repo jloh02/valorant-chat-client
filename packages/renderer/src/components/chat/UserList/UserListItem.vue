@@ -17,7 +17,7 @@
 
     <div class="user-list-item text">
       <p class="user-list-item game-name">
-        {{ friend.gameName }}
+        {{ gameName }}
       </p>
       <p v-if="presence" :class="'user-list-item game-status ' + statusColor">
         {{ status }}
@@ -35,7 +35,6 @@
 import { computed, ComputedRef, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { getPlayerCardSrc } from "@/ts/valorant-api";
-import ValorantFriend from "@interfaces/ValorantFriend";
 import ValorantPresence from "@interfaces/ValorantPresence";
 
 const store = useStore();
@@ -49,7 +48,7 @@ const props = defineProps<{
   activeParty: boolean;
   firstInParty: boolean;
   puuid: string;
-  friend: ValorantFriend;
+  gameName: string;
   unread: boolean;
 }>();
 

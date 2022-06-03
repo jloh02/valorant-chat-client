@@ -19,10 +19,11 @@ const store = useStore();
 
 while (!window.ipc);
 
-window.ipc.on("IPC_STATUS", (command, ready, puuid) => {
+window.ipc.on("IPC_STATUS", (command, ready, puuid, gameName) => {
   if (command !== "LOCKFILE_UPDATE") return;
   riotAlive.value = ready;
   if (puuid) store.commit("updatePuuid", puuid);
+  if (gameName) store.commit("updateGameName", gameName);
 });
 
 window.ipc.send("IPC_STATUS", "IPC_READY");

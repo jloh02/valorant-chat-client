@@ -11,6 +11,27 @@
     </div>
     <user-list-context-menu ref="contextMenu" />
     <ul class="user-list-presences">
+      <div :key="selfPuuid" class="user-list-item-div">
+        <div class="user-list-item-button" style="cursor:default">
+          <user-list-item
+            :active="false"
+            :activeParty="presences.get(selfPuuid)?.partyId === activeParty"
+            :firstInParty="true"
+            :unread="false"
+            :puuid="selfPuuid"
+            :gameName="gameName"
+          />
+        </div>
+        <user-list-party-entry
+          v-if="
+            presences.has(selfPuuid) &&
+            presences.get(selfPuuid)?.partyId !=
+              presences.get(filteredFriends[0]?.puuid)?.partyId
+          "
+          :active="false"
+          :partyCount="presences.get(selfPuuid)?.partySize ?? 1"
+        />
+      </div>
       <div
         v-for="[idx, f] of filteredFriends.entries()"
         :key="f.puuid"
@@ -36,7 +57,7 @@
             "
             :unread="unreadChats.has(f.puuid)"
             :puuid="f.puuid"
-            :friend="f"
+            :gameName="f.gameName"
           />
         </button>
         <user-list-item-overlay
@@ -72,6 +93,8 @@ import UserListItemOverlay from "./UserListItemOverlay.vue";
 import UserListPartyEntry from "./UserListPartyEntry.vue";
 
 const store = useStore();
+const selfPuuid: ComputedRef<string> = computed(() => store.state.puuid);
+const gameName: ComputedRef<string> = computed(() => store.state.gameName);
 const presences: ComputedRef<Map<string, ValorantPresence>> = computed(
   () => store.state.presences
 );

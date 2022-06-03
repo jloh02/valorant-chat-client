@@ -12,7 +12,11 @@ import { processMessage } from "@interfaces/ValorantMessage";
 
 let ws: LcuWebSocket;
 let win: BrowserWindow;
-let puuid: string, port: string, region: string, shard: string;
+let puuid: string,
+  gameName: string,
+  port: string,
+  region: string,
+  shard: string;
 let headers: AxiosRequestHeaders, basicHeaders: AxiosRequestHeaders;
 
 enum RequestType {
@@ -24,7 +28,9 @@ enum RequestType {
 function readLocalAppdataFile(path: string): string | undefined {
   let content;
   try {
-    content = readFileSync(process.env["LOCALAPPDATA"] + path).toString("utf-8");
+    content = readFileSync(process.env["LOCALAPPDATA"] + path).toString(
+      "utf-8"
+    );
   } catch (err) {
     log.error("[VALORANT] LocalAppData Error: " + JSON.stringify(err));
   }
@@ -121,7 +127,7 @@ async function initialize() {
     !regionShardMatch[1] ||
     !regionShardMatch[2]
   ) {
-    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined);
+    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined, undefined);
     prevLockfile = "";
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
     return;
@@ -162,7 +168,22 @@ async function initialize() {
     puuid = entJson["subject"];
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
     headers["X-Riot-Entitlements-JWT"] = entJson["token"]; //Set entitlement
-    log.info("[VALORANT] Entitlement: " + entJson);
+    log.info("[VALORANT] Entitlement: " + JSON.stringify(entJson));
+  }
+
+  //Get User Info
+  const authUserInfoRet = await query(
+    RequestType.LOCALHOST,
+    "GET",
+    "/rso-auth/v1/authorization/userinfo",
+    true
+  );
+  if (authUserInfoRet) {
+    const authUserInfoJson = authUserInfoRet.data;
+    const userInfo = JSON.parse(authUserInfoJson.userInfo);
+    gameName = userInfo.acct.game_name;
+    console.log(gameName);
+    log.info("[VALORANT] Auth User Info: " + JSON.stringify(userInfo));
   }
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
@@ -182,7 +203,7 @@ async function initialize() {
     log.info("[VALORANT] Created party monitoring");
 
     prevLockfile = lockfile;
-    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", true, puuid);
+    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", true, puuid, gameName);
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
   });
 }
@@ -271,10 +292,18 @@ function initChatListeners() {
     }
   });
   ws.subscribe("OnJsonApiEvent_chat_v6_messages", (res) => {
-    win.webContents.send("VALORANT_CHAT", "MESSAGE", processMessage(res.data.messages));
+    win.webContents.send(
+      "VALORANT_CHAT",
+      "MESSAGE",
+      processMessage(res.data.messages)
+    );
   });
   ws.subscribe("OnJsonApiEvent_chat_v4_friends", (res) => {
-    win.webContents.send("VALORANT_CHAT", "FRIEND", processFriend(res.data.friends));
+    win.webContents.send(
+      "VALORANT_CHAT",
+      "FRIEND",
+      processFriend(res.data.friends)
+    );
   });
 }
 

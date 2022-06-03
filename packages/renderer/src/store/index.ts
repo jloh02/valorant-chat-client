@@ -3,6 +3,7 @@ import ValorantPresence from "@interfaces/ValorantPresence";
 
 interface State {
   puuid: string;
+  gameName: string;
   presences: Map<string, ValorantPresence>;
 }
 
@@ -11,6 +12,7 @@ const store = createStore({
     //data
     return {
       puuid: "",
+      gameName: "",
       presences: new Map<string, ValorantPresence>(),
     };
   },
@@ -30,6 +32,9 @@ const store = createStore({
     },
     updatePuuid(state: State, puuid: string) {
       state.puuid = puuid;
+    },
+    updateGameName(state: State, gameName: string) {
+      state.gameName = gameName;
     },
   },
 });
