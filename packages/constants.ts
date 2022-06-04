@@ -2,6 +2,7 @@ export const GAME_MODE: Map<string, string> = new Map([
   ["", "Custom"],
   ["ggteam", "Escalation"],
   ["onefa", "Replication"],
+  ["Spikerush", "Spike Rush"],
 ]);
 
 export const SCREEN_DEFAULTS = {
