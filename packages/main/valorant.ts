@@ -182,7 +182,6 @@ async function initialize() {
     const authUserInfoJson = authUserInfoRet.data;
     const userInfo = JSON.parse(authUserInfoJson.userInfo);
     gameName = userInfo.acct.game_name;
-    console.log(gameName);
     log.info("[VALORANT] Auth User Info: " + JSON.stringify(userInfo));
   }
 
