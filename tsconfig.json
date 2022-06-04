@@ -12,9 +12,10 @@
     "baseUrl": "./",
     "strict": true,
     "paths": {
-      "@": ["packages/renderer/src/*"],
-      "@icons": ["packages/renderer/src/icons/*"],
-      "@interfaces": ["packages/interfaces/*"]
+      "@/*": ["packages/renderer/src/*"],
+      "@assets/*": ["assets/*"],
+      "@icons/*": ["packages/renderer/src/icons/*"],
+      "@interfaces/*": ["packages/interfaces/*"]
     },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true

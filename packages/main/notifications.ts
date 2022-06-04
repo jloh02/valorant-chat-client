@@ -1,4 +1,4 @@
-import { NOTIFICATION_TIMEOUT } from "./../constants";
+import { NOTIFICATION_TIMEOUT } from "../constants";
 import { Notification, nativeImage } from "electron";
 
 let notifs: Notification[] = [];
