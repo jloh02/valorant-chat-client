@@ -64,7 +64,7 @@ app.whenReady().then(() => {
   log.info("[Background] VALORANT API initialized");
 
   if (app.isPackaged) checkForUpdates(prefFound);
-  else testUpdater(prefFound);
+  // else testUpdater(prefFound);
 });
 
 if (!app.isPackaged) {
