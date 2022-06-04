@@ -50,9 +50,9 @@ const sortedFriends = computed((): ValorantFriend[] =>
       const partyB = presences.value.get(b.puuid).partyId;
       if (partyA !== partyB) {
         const selfPartyId = presences.value.get(selfPuuid.value)?.partyId;
-        if(selfPartyId){
-          if(partyA === selfPartyId) return -1;
-          if(partyB === selfPartyId) return 1;
+        if (selfPartyId) {
+          if (partyA === selfPartyId) return -1;
+          if (partyB === selfPartyId) return 1;
         }
         return partyA.localeCompare(partyB);
       }
@@ -106,7 +106,7 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
 /* ---------------------------- SETTING ACTIVE CHAT ---------------------------- */
 const active = ref("");
 const activeParty = ref("");
-function setActive(newPuuid: string, newParty:string) {
+function setActive(newPuuid: string, newParty: string) {
   active.value = newPuuid;
   activeParty.value = newParty;
   unreadChats.delete(newPuuid);
@@ -114,22 +114,30 @@ function setActive(newPuuid: string, newParty:string) {
 }
 
 /* ---------------------------- IPC LISTENERS ---------------------------- */
+let unreadTimeout: number;
 onMounted(() => {
   allowUnread.value = false;
   while (!window.ipc);
   window.ipc.on("VALORANT_CHAT", (command: string, data) => {
-    if (command === "MESSAGE") updateMessages(data, true);
-    else if (command === "FRIEND") updateFriends(data);
+    if (command === "MESSAGE") {
+      updateMessages(data, allowUnread.value);
+      if (!allowUnread.value) {
+        if (unreadTimeout) clearTimeout(unreadTimeout);
+        unreadTimeout = setTimeout(() => {
+          allowUnread.value = true;
+        }, 1000);
+      }
+    } else if (command === "FRIEND") updateFriends(data);
   });
   window.ipc.invoke("VALORANT_CHAT", "FRIENDS").then((friends) => {
     updateFriends(friends);
     if (!window.ipc) return;
     window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((messages) => {
-      updateMessages(messages, allowUnread.value);
+      updateMessages(messages, false);
       chatMessagesView.value?.scrollLastMessage(false);
-      setTimeout(() => {
-        allowUnread.value = true;
-      }, 5000);
+      unreadTimeout = setTimeout(() => {
+          allowUnread.value = true;
+        }, 1000);
     });
   });
 });
