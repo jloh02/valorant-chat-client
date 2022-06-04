@@ -51,9 +51,9 @@
             :active="f.puuid === active"
             :activeParty="presences.get(f.puuid)?.partyId === activeParty"
             :firstInParty="
-              idx === 0 ||
-              presences.get(f.puuid)?.partyId !==
-                presences.get(filteredFriends[idx - 1]?.puuid)?.partyId
+              idx === 0 ? (presences.get(selfPuuid)?.partyId !== activeParty):
+              (presences.get(f.puuid)?.partyId !==
+                presences.get(filteredFriends[idx - 1]?.puuid)?.partyId)
             "
             :unread="unreadChats.has(f.puuid)"
             :puuid="f.puuid"
