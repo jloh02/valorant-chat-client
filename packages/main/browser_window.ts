@@ -19,27 +19,28 @@ export function createWindow(
   let x: number | undefined;
   let y: number | undefined;
 
-  //Parameters for main renderer window
+  //Use default main window if no preferences file found
   if (!isPopup) {
-    //Use default main window if no preferences file found
     width = (getPreference("winWidth") || SCREEN_DEFAULTS.mainWidth) as number;
     height = (getPreference("winHeight") ||
       SCREEN_DEFAULTS.mainHeight) as number;
-    if (prefFound) {
-      x = getPreference("winX") as number;
-      y = getPreference("winY") as number;
-    }
+  }
+
+  //X and Y applies to both updater and main window
+  if (prefFound) {
+    x = getPreference("winX") as number;
+    y = getPreference("winY") as number;
   }
   let winVar = new BrowserWindow({
-    x: x,
-    y: y,
+    x: isPopup && x ? x  : x,
+    y: isPopup && y ? y : y,
     width: width,
     height: height,
-    minWidth: SCREEN_DEFAULTS.minWidth,
-    minHeight: SCREEN_DEFAULTS.minHeight,
+    minWidth: isPopup ? undefined : SCREEN_DEFAULTS.minWidth,
+    minHeight: isPopup ? undefined : SCREEN_DEFAULTS.minHeight,
     show: false,
     frame: false,
-    resizable: !isPopup,
+    resizable: !isPopup && false,
     modal: isPopup,
     parent: isPopup ? parentWindow : undefined,
     backgroundColor: "#292524",
@@ -50,7 +51,7 @@ export function createWindow(
         __dirname,
         isPopup ? "../preload/updater.cjs" : "../preload/renderer.cjs"
       ),
-      devTools: !isPopup,
+      devTools: !isPopup && false,
     },
   });
 
@@ -67,14 +68,14 @@ export function createWindow(
 
   if (isPackaged) {
     winVar.loadFile(
-      join(__dirname, `../renderer/index.html${isPopup ? "#updater" : ""}`)
+      join(__dirname, `../renderer/index.html${isPopup ? "/#/updater" : ""}`)
     );
     winVar.removeMenu();
   } else {
     // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
     const url = `http://${process.env["VITE_DEV_SERVER_HOST"]}:${
       process.env["VITE_DEV_SERVER_PORT"]
-    }/${isPopup ? "#/updater/" : ""}`;
+    }${isPopup ? "#/updater" : ""}`;
     winVar.loadURL(url);
     winVar.webContents.openDevTools();
   }

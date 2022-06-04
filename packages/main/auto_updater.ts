@@ -1,6 +1,11 @@
 import log from "electron-log";
 import { BrowserWindow, ipcMain } from "electron";
-import { autoUpdater, UpdateInfo, ProgressInfo } from "electron-updater";
+import {
+  autoUpdater,
+  UpdateInfo,
+  ProgressInfo,
+  CancellationToken,
+} from "electron-updater";
 import { createWindow } from "./browser_window";
 
 autoUpdater.autoDownload = false;
@@ -9,25 +14,31 @@ autoUpdater.allowDowngrade = false;
 autoUpdater.logger = log;
 
 let updaterWin: BrowserWindow;
+let isPackaged = true;
+let usePref = false;
 
 autoUpdater.on("update-available", (info: UpdateInfo) => {
   log.info("[UPDATER] Update available for version:", info.version);
-  updaterWin = createWindow(true, true);
+  updaterWin = createWindow(isPackaged, true, usePref);
   initializeUpdateListeners();
 });
 
-export function checkForUpdates() {
+export function checkForUpdates(prefFound: boolean) {
+  let cancellationToken = new CancellationToken();
+  isPackaged = true;
+  usePref = prefFound;
   ipcMain.on("UPDATE", (event, cmd) => {
     switch (cmd) {
       case "UPDATE":
         log.info("[UPDATER] Downloading update");
-        autoUpdater.downloadUpdate();
+        autoUpdater.downloadUpdate(cancellationToken);
         break;
       case "CANCEL":
         log.info("[UPDATER] Update cancelled");
         ipcMain.removeAllListeners("UPDATER");
         autoUpdater.removeAllListeners("update-downloaded");
         updaterWin.close();
+        cancellationToken.cancel();
         break;
       default:
         log.warn("[UPDATER] Invalid update command: " + cmd);
@@ -37,7 +48,11 @@ export function checkForUpdates() {
   autoUpdater.checkForUpdates();
 }
 
-export function testUpdater() {
+export function testUpdater(prefFound: boolean) {
+  let cancellationToken = new CancellationToken();
+  isPackaged = false;
+  usePref = prefFound;
+
   autoUpdater.emit("update-available", {
     version: "9999.9999.9999",
   });
@@ -70,6 +85,7 @@ export function testUpdater() {
         ipcMain.removeAllListeners("UPDATER");
         autoUpdater.removeAllListeners("update-downloaded");
         updaterWin.close();
+        cancellationToken.cancel();
         break;
       default:
         log.warn("[UPDATER] Invalid update command: " + cmd);

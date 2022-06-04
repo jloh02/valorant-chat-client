@@ -2,7 +2,7 @@ import { app, BrowserWindow, Tray } from "electron";
 import log from "electron-log";
 import { initLog } from "./log_util";
 import { release } from "os";
-import { checkForUpdates } from "./auto_updater";
+import { checkForUpdates, testUpdater } from "./auto_updater";
 import { createMainRendererWindow } from "./browser_window";
 import { readPreferences, saveWindowPreferences } from "./preferences";
 import { startRiotClient } from "./windows";
@@ -63,8 +63,8 @@ app.whenReady().then(() => {
   initializeValorantApi(win);
   log.info("[Background] VALORANT API initialized");
 
-  if (app.isPackaged) checkForUpdates();
-  // else testUpdater();
+  if (app.isPackaged) checkForUpdates(prefFound);
+  else testUpdater(prefFound);
 });
 
 if (!app.isPackaged) {
