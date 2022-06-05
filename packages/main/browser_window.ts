@@ -1,12 +1,10 @@
 import { SCREEN_DEFAULTS } from "./../constants";
 import { join } from "path";
-import { BrowserWindow, Tray, shell, globalShortcut, ipcMain } from "electron";
+import { BrowserWindow, shell, globalShortcut, ipcMain } from "electron";
 import log from "electron-log";
 import { getPreference, saveWindowPreferences } from "./preferences";
 import { startRiotClient } from "./windows";
 import { closeNotifications, showNotification } from "./notifications";
-
-let tray: Tray;
 
 export function createWindow(isPackaged: boolean, prefFound?: boolean) {
   let x: number | undefined;
@@ -136,7 +134,7 @@ export function createMainRendererWindow(
         }
         break;
       case "OPEN_RIOT_CLIENT":
-        startRiotClient();
+        startRiotClient(isPackaged);
         break;
       default:
         log.warn("[WINDOW] Invalid window control command: " + command);

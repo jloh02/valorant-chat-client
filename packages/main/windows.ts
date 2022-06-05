@@ -2,10 +2,8 @@ import log from "electron-log";
 import child_process from "child_process";
 import regedit, { RegistryItemCollection } from "regedit";
 
-export async function startRiotClient() {
-  regedit.setExternalVBSLocation(
-    process.env.NODE_ENV === "production" ? "resources/regedit/vbs" : "vbs"
-  );
+export async function startRiotClient(isPackaged: boolean) {
+  regedit.setExternalVBSLocation(isPackaged ? "resources/regedit/vbs" : "vbs");
 
   const regPath = [
     "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Riot Game valorant.live",

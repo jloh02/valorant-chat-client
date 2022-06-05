@@ -52,7 +52,7 @@ app.on("activate", () => {
 });
 
 app.whenReady().then(() => {
-  startRiotClient();
+  startRiotClient(app.isPackaged);
 
   const prefFound = readPreferences(app);
   win = createMainRendererWindow(app.isPackaged, prefFound);

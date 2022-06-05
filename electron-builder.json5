@@ -5,12 +5,11 @@
   productName: "VALORANT Chat Client",
   publish: ["github"],
   directories: {
+    buildResources: "build",
     output: "release/${version}",
   },
-  files: ["dist"],
   win: {
     target: ["nsis"],
-    icon: "assets/icon.png",
   },
   nsis: {
     oneClick: false,
@@ -19,4 +18,11 @@
     allowToChangeInstallationDirectory: true,
     deleteAppDataOnUninstall: false,
   },
+  extraResources: [
+    {
+      from: "node_modules/regedit/vbs",
+      to: "regedit/vbs",
+      filter: ["**/*"],
+    },
+  ],
 }

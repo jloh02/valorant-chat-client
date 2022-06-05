@@ -15,7 +15,7 @@ function show(message: string) {
   clearTimeout(timeout.value);
   timeout.value = setTimeout(() => {
     visibility.value = "no-show";
-  }, 2500);
+  }, 2500) as unknown as number;
 }
 
 defineExpose({ show });

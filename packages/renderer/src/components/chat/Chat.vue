@@ -125,7 +125,7 @@ onMounted(() => {
         if (unreadTimeout) clearTimeout(unreadTimeout);
         unreadTimeout = setTimeout(() => {
           allowUnread.value = true;
-        }, 1000);
+        }, 1000) as unknown as number;
       }
     } else if (command === "FRIEND") updateFriends(data);
   });
@@ -136,8 +136,8 @@ onMounted(() => {
       updateMessages(messages, false);
       chatMessagesView.value?.scrollLastMessage(false);
       unreadTimeout = setTimeout(() => {
-          allowUnread.value = true;
-        }, 1000);
+        allowUnread.value = true;
+      }, 1000) as unknown as number;
     });
   });
 });
