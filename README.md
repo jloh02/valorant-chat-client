@@ -1,74 +1,77 @@
-# electron-vite-vue
+# VALORANT Chat Client
+A Windows application to access VALORANT's chat function without opening the game
 
-[![awesome-vite](https://awesome.re/mentioned-badge.svg)](https://github.com/vitejs/awesome-vite)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/ae3863e3-1aec-4eb1-8f9f-1890af56929d/deploy-status)](https://app.netlify.com/sites/electron-vite/deploys)
-![GitHub license](https://img.shields.io/github/license/caoxiemeihao/electron-vite-vue?style=flat)
-![GitHub stars](https://img.shields.io/github/stars/caoxiemeihao/electron-vite-vue?color=fa6470&style=flat)
-![GitHub forks](https://img.shields.io/github/forks/caoxiemeihao/electron-vite-vue?style=flat)
+**Rationale**
 
+Many users do not have any access to Riot Mobile and have not way of checking if their friends are already online, much less text them ingame
 
-**English | [简体中文](README.zh-CN.md)**
+**Disclaimer**
 
-🥳 Real simple `Electron` + `Vue` + `Vite` boilerplate.
+Use of this application as at OWN RISK. The developer(s) will not be responsible for any harm/damage done due to the use of this application. This application is NOT endorsed by Riot Games.
 
-## Overview
+Nonetheless, you can check out the code. It's pretty much safe. I'm not trying to hack your computer ;)
 
-📦 Out of the box  
-💪 Support C/C++ addons  
-🔩 Support Use Electron、Node.js API in Renderer-process  
-🌱 Simple directory structure，real flexible  
-🖥 It's easy to implement multiple windows  
+## Contents
+- [VALORANT Chat Client](#valorant-chat-client)
+  - [Contents](#contents)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [User Manual](#user-manual)
+    - [General Usage](#general-usage)
+    - [Tray Icon](#tray-icon)
+    - [Updates](#updates)
+  - [Contributing](#contributing)
 
-## Quick Start
+## Features
+- Chat with friends in VALORANT with only Riot Client opened
+- View current game state of friends
+- Invite friends to party / Request to join party / Accept invitation to party (Only when online)
 
-```sh
-npm create electron-vite
+## Installation
+1. Download the installer (`VALORANT-Chat-Client-Setup-x.x.x.exe`) under assets from [latest release](https://github.com/jloh02/valorant-chat-client/releases/latest/) 
+2. Run the installer on your Windows computer
+3. When prompted by Windows Defender, click `More info`, then `Run anyway` (Sorry, I don't wish to pay $100 for a digital certificate) 
+4. When prompted to allow the installer to make changes to the computer, click `Yes`
+5. Open the VALORANT Chat Client application
+
+## User Manual
+### General Usage
+- Click on the users on the right side panel to choose who to chat with
+- Notifications will appear when anyone sends messages to you (Click on it to return to the application)
+
+![](docs/win-main-blurred.png)
+
+- Perform party operations by right-clicking on online players (`Join Party` can be used to accept invites or request to invite)
+
+![](docs/invite-ctxt-menu-blurred.png)
+
+### Tray Icon
+- By default, the application minimizes to the tray icon
+- Click on the icon to re-open the application
+- Right-clicking the icon opens a menu where you can close the application
+
+![](docs/tray.png)
+
+- You can change settings (e.g. disable minimizing to tray/notifications) by hovering over `options` in the menu 
+
+![](docs/tray-options.png)
+
+### Updates
+- When there is a new update, a popup will appear
+- Click `Update`, or the cross to ignore the update
+- After the update is complete, click the button to quit and install
+- When prompted to allow the installer to make changes to the computer, click `Yes`
+
+![](docs/update.png)
+ 
+
+## Contributing
+If you want to contribute back to this project, simply fork this repository, clone it and run
+```
+yarn install
 ```
 
-<!-- [![quick-start](https://asciinema.org/a/483731.svg)](https://asciinema.org/a/483731) -->
-
-![electron-vite-vue.gif](https://github.com/electron-vite/electron-vite-vue/blob/main/packages/renderer/public/electron-vite-vue.gif?raw=true)
-
-## Debug
-
-![electron-vite-react-debug.gif](https://github.com/electron-vite/electron-vite-react/blob/main/packages/renderer/public/electron-vite-react-debug.gif?raw=true)
-
-## Directory
-
-A `dist` folder will be generated everytime when `dev` or `build` command is executed. File structure of `dist` is identical to the `packages` directory to avoid any potential path calculation errors.
-
-```tree
-├── dist                      Will be generated following the structure of "packages" directory
-|   ├── main
-|   ├── preload
-|   └── renderer
-|
-├── scripts
-|   ├── build.mjs             Build script -> npm run build
-|   └── watch.mjs             Develop script -> npm run dev
-|
-├── packages
-|   ├── main                  Main-process source code
-|   |   └── vite.config.ts
-|   ├── preload               Preload-script source code
-|   |   └── vite.config.ts
-|   └── renderer              Renderer-process source code
-|       └── vite.config.ts
+To run a debug version
 ```
-
-## List the modules you may use as far as possible
-
-Used in `Main-process` 👉 [electron-vite-boilerplate](https://github.com/caoxiemeihao/electron-vite-boilerplate)
-
-Used in `Renderer-process` 👉 [electron-vite-boilerplate/tree/nodeIntegration](https://github.com/caoxiemeihao/electron-vite-boilerplate/tree/nodeIntegration)
-
-**ES Modules**
-
-- [execa](https://www.npmjs.com/package/execa)
-- [node-fetch](https://www.npmjs.com/package/node-fetch)
-- [file-type](https://www.npmjs.com/package/file-type)
-
-**Native Addons(C/C++)**
-
-- [sqlite3](https://www.npmjs.com/package/sqlite3)
-- [serialport](https://www.npmjs.com/package/serialport)
+yarn electron:serve
+```
