@@ -6,25 +6,17 @@ import { getPreference, saveWindowPreferences } from "./preferences";
 import { startRiotClient } from "./windows";
 import { closeNotifications, showNotification } from "./notifications";
 
-let parentWindow: BrowserWindow, tray: Tray;
+let tray: Tray;
 
-export function createWindow(
-  isPackaged: boolean,
-  isPopup: boolean,
-  prefFound?: boolean
-) {
-  //Default parameters for updater window
-  let width = SCREEN_DEFAULTS.updaterWidth;
-  let height = SCREEN_DEFAULTS.updaterHeight;
+export function createWindow(isPackaged: boolean, prefFound?: boolean) {
   let x: number | undefined;
   let y: number | undefined;
 
   //Use default main window if no preferences file found
-  if (!isPopup) {
-    width = (getPreference("winWidth") || SCREEN_DEFAULTS.mainWidth) as number;
-    height = (getPreference("winHeight") ||
-      SCREEN_DEFAULTS.mainHeight) as number;
-  }
+  let width = (getPreference("winWidth") ||
+    SCREEN_DEFAULTS.mainWidth) as number;
+  let height = (getPreference("winHeight") ||
+    SCREEN_DEFAULTS.mainHeight) as number;
 
   //X and Y applies to both updater and main window
   if (prefFound) {
@@ -32,26 +24,21 @@ export function createWindow(
     y = getPreference("winY") as number;
   }
   let winVar = new BrowserWindow({
-    x: isPopup && x ? x  : x,
-    y: isPopup && y ? y : y,
+    x: x,
+    y: y,
     width: width,
     height: height,
-    minWidth: isPopup ? undefined : SCREEN_DEFAULTS.minWidth,
-    minHeight: isPopup ? undefined : SCREEN_DEFAULTS.minHeight,
+    minWidth: SCREEN_DEFAULTS.minWidth,
+    minHeight: SCREEN_DEFAULTS.minHeight,
     show: false,
     frame: false,
-    resizable: !isPopup && false,
-    modal: isPopup,
-    parent: isPopup ? parentWindow : undefined,
+    resizable: true,
     backgroundColor: "#292524",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: join(
-        __dirname,
-        isPopup ? "../preload/updater.cjs" : "../preload/renderer.cjs"
-      ),
-      devTools: !isPopup && false,
+      preload: join(__dirname, "../preload/renderer.cjs"),
+      devTools: !isPackaged,
     },
   });
 
@@ -61,21 +48,14 @@ export function createWindow(
     return { action: "deny" };
   });
 
-  // Keep reference to main window for updater window to have parent
-  if (!isPopup) parentWindow = winVar;
-
   winVar.once("ready-to-show", () => winVar.show());
 
   if (isPackaged) {
-    winVar.loadFile(
-      join(__dirname, `../renderer/index.html${isPopup ? "/#/updater" : ""}`)
-    );
+    winVar.loadFile(join(__dirname, "../renderer/index.html"));
     winVar.removeMenu();
   } else {
     // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
-    const url = `http://${process.env["VITE_DEV_SERVER_HOST"]}:${
-      process.env["VITE_DEV_SERVER_PORT"]
-    }${isPopup ? "#/updater" : ""}`;
+    const url = `http://${process.env["VITE_DEV_SERVER_HOST"]}:${process.env["VITE_DEV_SERVER_PORT"]}`;
     winVar.loadURL(url);
     winVar.webContents.openDevTools();
   }
@@ -87,7 +67,7 @@ export function createMainRendererWindow(
   isPackaged: boolean,
   prefFound: boolean
 ) {
-  let win = createWindow(isPackaged, false, prefFound);
+  let win = createWindow(isPackaged, prefFound);
   globalShortcut.unregisterAll();
 
   //CORS Bypass

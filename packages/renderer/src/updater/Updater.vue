@@ -1,10 +1,10 @@
 <template>
-  <div class="updater-close-button">
-    <button @click="cancel">
-      <x-mark />
-    </button>
-  </div>
   <div class="updater">
+    <div class="updater-close-button">
+      <button @click="cancel">
+        <x-mark />
+      </button>
+    </div>
     <p v-if="total === 1" class="updater-text">
       Update Available. Do you want to update now?
     </p>
@@ -27,6 +27,10 @@
 import { ref, computed } from "vue";
 import XMark from "@/icons/XMark.vue";
 
+const props = defineProps<{
+  closeFn:()=>void;
+}>()
+
 const transferred = ref(0);
 const total = ref(1);
 const progress = computed(() =>
@@ -38,6 +42,7 @@ function update() {
 }
 function cancel() {
   window.ipc?.send("UPDATE", "CANCEL");
+  props.closeFn();
 }
 
 while (!window.ipc);
@@ -55,6 +60,14 @@ window.ipc.on(
 .updater {
   @extend .flex-col;
   @extend .max-size;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 150px;
+  z-index: 1000;
+
   justify-content: center;
   align-items: flex-start;
   box-sizing: border-box;
@@ -63,24 +76,23 @@ window.ipc.on(
 }
 
 .updater-close-button {
-  @extend .center;  
+  @extend .center;
   position: absolute;
   top: 0;
   right: 0;
   height: 1.5rem;
   width: 1.75rem;
   padding: 0.25rem;
-  z-index:2;
-  cursor: pointer;
+  z-index: 2;
 
   button {
-  border: none;
-  height: 1.5rem;
-  width: 1.75rem;
-  padding: 0.25rem;
-  border-radius: 0;
-  background-color: transparent;
-    cursor: pointer;
+    border: none;
+    height: 1.5rem;
+    width: 1.75rem;
+    padding: 0.25rem;
+    border-radius: 0;
+    background-color: transparent;
+  cursor: pointer;
   }
 }
 
@@ -104,6 +116,7 @@ window.ipc.on(
     margin: 0;
     padding: 0.375rem 0.75rem;
     border-radius: 0.125rem;
+    cursor: pointer;
   }
 }
 
@@ -124,8 +137,8 @@ window.ipc.on(
 
 <style lang="scss">
 .updater-close-button svg {
-  height:100%;
-  width:100%;
+  height: 100%;
+  width: 100%;
   background-color: transparent;
   color: $background-accent;
 }

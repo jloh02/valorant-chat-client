@@ -18,7 +18,6 @@ specifiers:
   vite-plugin-electron: ^0.4.3
   vite-plugin-resolve: ^2.0.8
   vue: ^3.2.35
-  vue-router: ^4.0.15
   vue-tsc: ^0.34.11
   vuex: ^4.0.2
   ws: ^8.6.0
@@ -30,7 +29,6 @@ dependencies:
   postcss: 8.4.14
   regedit: 5.1.1
   vue: 3.2.35
-  vue-router: 4.0.15_vue@3.2.35
   vuex: 4.0.2_vue@3.2.35
   ws: 8.6.0
 
@@ -2647,15 +2645,6 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
-
-  /vue-router/4.0.15_vue@3.2.35:
-    resolution: {integrity: sha512-xa+pIN9ZqORdIW1MkN2+d9Ui2pCM1b/UMgwYUCZOiFYHAvz/slKKBDha8DLrh5aCG/RibtrpyhKjKOZ85tYyWg==}
-    peerDependencies:
-      vue: ^3.2.0
-    dependencies:
-      '@vue/devtools-api': 6.1.4
-      vue: 3.2.35
-    dev: false
 
   /vue-tsc/0.34.15_typescript@4.6.4:
     resolution: {integrity: sha512-xRNaOpg/UCHnRcz9vOdbIjB7uCQ0mifHpqNaejAho7em4WLOzNdJx4R9HMJrqWek44keg7AblIiwM+86QfXx9g==}

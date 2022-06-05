@@ -6,27 +6,23 @@ import {
   ProgressInfo,
   CancellationToken,
 } from "electron-updater";
-import { createWindow } from "./browser_window";
 
 autoUpdater.autoDownload = false;
 autoUpdater.allowPrerelease = true;
 autoUpdater.allowDowngrade = false;
 autoUpdater.logger = log;
 
-let updaterWin: BrowserWindow;
-let isPackaged = true;
-let usePref = false;
-
 autoUpdater.on("update-available", (info: UpdateInfo) => {
   log.info("[UPDATER] Update available for version:", info.version);
-  updaterWin = createWindow(isPackaged, true, usePref);
   initializeUpdateListeners();
+  win.webContents.send("UPDATE", "SHOW");
 });
 
-export function checkForUpdates(prefFound: boolean) {
+let win: BrowserWindow;
+
+export function checkForUpdates(mainWin: BrowserWindow) {
+  win = mainWin;
   let cancellationToken = new CancellationToken();
-  isPackaged = true;
-  usePref = prefFound;
   ipcMain.on("UPDATE", (event, cmd) => {
     switch (cmd) {
       case "UPDATE":
@@ -37,7 +33,6 @@ export function checkForUpdates(prefFound: boolean) {
         log.info("[UPDATER] Update cancelled");
         ipcMain.removeAllListeners("UPDATER");
         autoUpdater.removeAllListeners("update-downloaded");
-        updaterWin.close();
         cancellationToken.cancel();
         break;
       default:
@@ -48,11 +43,9 @@ export function checkForUpdates(prefFound: boolean) {
   autoUpdater.checkForUpdates();
 }
 
-export function testUpdater(prefFound: boolean) {
-  let cancellationToken = new CancellationToken();
-  isPackaged = false;
-  usePref = prefFound;
-
+export function testUpdater(mainWin: BrowserWindow) {
+  win = mainWin;
+  let cancelled = false;
   autoUpdater.emit("update-available", {
     version: "9999.9999.9999",
   });
@@ -61,17 +54,16 @@ export function testUpdater(prefFound: boolean) {
     switch (cmd) {
       case "UPDATE":
         log.info("[UPDATER] Downloading update");
-        let i = 0;
-        for (; i < 100; i++) {
-          const j = i;
+        for (let i = 0; i < 100; i++) {
           setTimeout(() => {
+            if (cancelled) return;
             autoUpdater.emit("download-progress", {
               bytesPerSecond: 1,
-              percent: j / 100,
+              percent: i / 100,
               total: 100,
-              transferred: j,
+              transferred: i,
             });
-          }, (j + 1) * 1000);
+          }, (i + 1) * 1000);
         }
 
         setTimeout(() => {
@@ -84,8 +76,7 @@ export function testUpdater(prefFound: boolean) {
         log.info("[UPDATER] Update cancelled");
         ipcMain.removeAllListeners("UPDATER");
         autoUpdater.removeAllListeners("update-downloaded");
-        updaterWin.close();
-        cancellationToken.cancel();
+        cancelled = true;
         break;
       default:
         log.warn("[UPDATER] Invalid update command: " + cmd);
@@ -95,7 +86,6 @@ export function testUpdater(prefFound: boolean) {
 
 function initializeUpdateListeners() {
   autoUpdater.on("error", (error: Error) => {
-    if (updaterWin) updaterWin.close();
     log.warn(
       "[UPDATER] Update error:",
       error == null ? "unknown" : (error.stack || error).toString()
@@ -106,7 +96,7 @@ function initializeUpdateListeners() {
     log.info(
       `[UPDATER] Update progress: ${progress.transferred}/${progress.total}`
     );
-    updaterWin.webContents.send(
+    win.webContents.send(
       "UPDATE",
       "PROGRESS",
       progress.transferred,

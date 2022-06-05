@@ -13,9 +13,7 @@ export default defineConfig({
     sourcemap: "inline",
     rollupOptions: {
       input: {
-        // multiple entry
         renderer: join(__dirname, "renderer.ts"),
-        updater: join(__dirname, "updater.ts"),
       },
       output: {
         format: "cjs",

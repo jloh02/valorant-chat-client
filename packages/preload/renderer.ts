@@ -6,6 +6,7 @@ const validChannels = [
   "VALORANT_CHAT", //SEND (To Main), FRIENDS (Renderer Req), HISTORY (To Renderer), MESSAGE (To Renderer)
   "VALORANT_PARTY", //JOIN, INVITE
   "WINDOW", //Use MINMAX, MINIMIZE or CLOSE (To Main) to replace frame functions; NOTIFY (To Main) to show notification
+  "UPDATE", //SHOW (2-Way), UPDATE (To Main), PROGRESS (To Renderer), CANCEL (To Main) for Updater
 ];
 contextBridge.exposeInMainWorld("ipc", {
   send: (channel: string, ...args: any[]) => {

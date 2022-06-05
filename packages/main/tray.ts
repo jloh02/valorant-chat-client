@@ -3,6 +3,7 @@ import { setPreference, getPreference } from "./preferences";
 import b64Icon from "@assets/icon.png";
 
 export function createTray(app: App, win: BrowserWindow, tray: Tray) {
+  if (tray) return;
   tray = new Tray(nativeImage.createFromDataURL(b64Icon));
 
   const contextMenu = Menu.buildFromTemplate([

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray } from "electron";
+import { app, BrowserWindow, ipcMain, Tray } from "electron";
 import log from "electron-log";
 import { initLog } from "./log_util";
 import { release } from "os";
@@ -63,8 +63,12 @@ app.whenReady().then(() => {
   initializeValorantApi(win);
   log.info("[Background] VALORANT API initialized");
 
-  if (app.isPackaged) checkForUpdates(prefFound);
-  // else testUpdater(prefFound);
+  ipcMain.on("UPDATE", (event, cmd)=>{
+    if(cmd === "SHOW"){
+      if (app.isPackaged) checkForUpdates(win);
+      // else testUpdater(win);
+    }
+  });
 });
 
 if (!app.isPackaged) {

@@ -1,6 +1,10 @@
 <template>
-  <router-view />
+  <chat-app />
 </template>
+
+<script lang="ts" setup>
+import ChatApp from "./components/chat/ChatApp.vue"
+</script>
 
 <style lang="scss">
 #app {
