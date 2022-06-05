@@ -262,7 +262,7 @@ function initChatListeners() {
           true,
           `{"cid": "${cid}","message": "${message}","type": "chat"}`
         );
-        log.info("[VALORANT] Send Message: " + res?.data);
+        log.info("[VALORANT] Send Message: " + JSON.stringify(res?.data));
         return convertQueryToIpcMsg(res);
       case "FRIENDS":
         do {
