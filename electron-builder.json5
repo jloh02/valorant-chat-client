@@ -16,7 +16,7 @@
     perMachine: true,
     allowElevation: true,
     allowToChangeInstallationDirectory: true,
-    deleteAppDataOnUninstall: false,
+    deleteAppDataOnUninstall: true,
   },
   extraResources: [
     {
