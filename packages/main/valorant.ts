@@ -90,6 +90,18 @@ export function initializeValorantApi(browserWindow: BrowserWindow) {
   });
 }
 
+function failInitialize() {
+  win.webContents.send(
+    "IPC_STATUS",
+    "LOCKFILE_UPDATE",
+    false,
+    undefined,
+    undefined
+  );
+  prevLockfile = "";
+  setTimeout(initialize, LOCKFILE_POLLING_RATE);
+}
+
 let prevLockfile = "";
 async function initialize() {
   const lockfile = readLocalAppdataFile(
@@ -127,15 +139,7 @@ async function initialize() {
     !regionShardMatch[1] ||
     !regionShardMatch[2]
   ) {
-    win.webContents.send(
-      "IPC_STATUS",
-      "LOCKFILE_UPDATE",
-      false,
-      undefined,
-      undefined
-    );
-    prevLockfile = "";
-    setTimeout(initialize, LOCKFILE_POLLING_RATE);
+    failInitialize();
     return;
   }
 
@@ -175,7 +179,7 @@ async function initialize() {
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
     headers["X-Riot-Entitlements-JWT"] = entJson["token"]; //Set entitlement
     log.info("[VALORANT] Entitlement: " + JSON.stringify(entJson));
-  }
+  } else failInitialize();
 
   //Get User Info
   const authUserInfoRet = await query(
@@ -189,7 +193,7 @@ async function initialize() {
     const userInfo = JSON.parse(authUserInfoJson.userInfo);
     gameName = userInfo.acct.game_name;
     log.info("[VALORANT] Auth User Info: " + JSON.stringify(userInfo));
-  }
+  } else failInitialize();
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
   headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
