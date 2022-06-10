@@ -1,6 +1,9 @@
 # VALORANT Chat Client
 A Windows application to access VALORANT's chat function without opening the game
 
+
+[![Discord](https://img.shields.io/badge/discord-join-7389D8?style=flat&logo=discord)](https://discord.gg/2fUY2Y7Rhr)
+
 **Rationale**
 
 Many users do not have any access to Riot Mobile and have not way of checking if their friends are already online, much less text them ingame
