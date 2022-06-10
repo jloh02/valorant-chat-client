@@ -332,7 +332,9 @@ async function initPartyListeners() {
           "GET",
           `/parties/v1/players/${puuid}`
         );
-        log.info("[VALORANT] Party Response: " + partyRes?.data);
+        log.info(
+          "[VALORANT] Party Response: " + JSON.stringify(partyRes?.data)
+        );
         if (!partyRes || partyRes.status !== 200) return 0;
         const resI = await query(
           RequestType.GLZ,
