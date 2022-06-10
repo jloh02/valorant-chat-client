@@ -144,8 +144,9 @@ li.user-list-item {
   }
 
   &.card-box {
-    height: 3rem;
     padding: 0.25rem;
+    height:100%;
+    box-sizing: border-box;
     background-color: transparent;
   }
 
@@ -153,7 +154,6 @@ li.user-list-item {
     @extend .flex-col;
     flex: 1;
     justify-content: center;
-    height: 3rem;
     padding: 0.25rem;
     align-items: flex-start;
     pointer-events: none;
