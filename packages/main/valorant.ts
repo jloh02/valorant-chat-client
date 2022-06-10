@@ -42,7 +42,7 @@ async function query(
   method: Method,
   endpoint: string,
   useBasicHeader?: boolean,
-  body?: string | undefined
+  body?: string | object | undefined
 ): Promise<AxiosResponse | undefined> {
   let url = "";
   switch (type) {
@@ -127,7 +127,13 @@ async function initialize() {
     !regionShardMatch[1] ||
     !regionShardMatch[2]
   ) {
-    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", false, undefined, undefined);
+    win.webContents.send(
+      "IPC_STATUS",
+      "LOCKFILE_UPDATE",
+      false,
+      undefined,
+      undefined
+    );
     prevLockfile = "";
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
     return;
@@ -202,7 +208,13 @@ async function initialize() {
     log.info("[VALORANT] Created party monitoring");
 
     prevLockfile = lockfile;
-    win.webContents.send("IPC_STATUS", "LOCKFILE_UPDATE", true, puuid, gameName);
+    win.webContents.send(
+      "IPC_STATUS",
+      "LOCKFILE_UPDATE",
+      true,
+      puuid,
+      gameName
+    );
     setTimeout(initialize, LOCKFILE_POLLING_RATE);
   });
 }
@@ -260,7 +272,7 @@ function initChatListeners() {
           "POST",
           "/chat/v6/messages",
           true,
-          `{"cid": "${cid}","message": "${message}","type": "chat"}`
+          { cid: cid, message: message, type: "chat" }
         );
         log.info("[VALORANT] Send Message: " + JSON.stringify(res?.data));
         return convertQueryToIpcMsg(res);
