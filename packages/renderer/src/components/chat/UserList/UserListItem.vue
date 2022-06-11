@@ -145,7 +145,7 @@ li.user-list-item {
 
   &.card-box {
     padding: 0.25rem;
-    height:100%;
+    height: 100%;
     box-sizing: border-box;
     background-color: transparent;
   }
@@ -154,8 +154,10 @@ li.user-list-item {
     @extend .flex-col;
     flex: 1;
     justify-content: center;
-    padding: 0.25rem;
     align-items: flex-start;
+    padding: 0.25rem;
+    height: 100%;
+    box-sizing: border-box;
     pointer-events: none;
 
     p.user-list-item.game-name {
