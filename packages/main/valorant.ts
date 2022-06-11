@@ -60,7 +60,7 @@ async function query(
   }
   url += endpoint;
 
-  let res;
+  let res, retryCount=5;
   do {
     res = await axios
       .request({
@@ -71,10 +71,15 @@ async function query(
         httpsAgent: new https.Agent({
           rejectUnauthorized: false,
         }),
+        timeout: 1000, //1s timeout with 5 retries
         validateStatus: (status) => true, //Allow all status codes
       })
-      .catch((err) => undefined); //Return undefined if error found
-  } while (!res);
+      .catch((err) => {
+        //Return undefined if error found
+        // log.warn("[VALORANT] Query Error: " + err.message);
+        return undefined;
+      });
+  } while (!res && --retryCount);
   return res;
 }
 
@@ -90,6 +95,7 @@ export function initializeValorantApi(browserWindow: BrowserWindow) {
   });
 }
 
+let prevLockfile = "";
 function failInitialize() {
   win.webContents.send(
     "IPC_STATUS",
@@ -101,8 +107,6 @@ function failInitialize() {
   prevLockfile = "";
   setTimeout(initialize, LOCKFILE_POLLING_RATE);
 }
-
-let prevLockfile = "";
 async function initialize() {
   const lockfile = readLocalAppdataFile(
     "\\Riot Games\\Riot Client\\Config\\lockfile"
@@ -179,7 +183,10 @@ async function initialize() {
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
     headers["X-Riot-Entitlements-JWT"] = entJson["token"]; //Set entitlement
     log.info("[VALORANT] Entitlement: " + JSON.stringify(entJson));
-  } else failInitialize();
+  } else {
+    failInitialize();
+    return;
+  }
 
   //Get User Info
   const authUserInfoRet = await query(
@@ -193,7 +200,10 @@ async function initialize() {
     const userInfo = JSON.parse(authUserInfoJson.userInfo);
     gameName = userInfo.acct.game_name;
     log.info("[VALORANT] Auth User Info: " + JSON.stringify(userInfo));
-  } else failInitialize();
+  } else {
+    failInitialize();
+    return;
+  }
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
   if (verRes && verRes.status === 200) {
@@ -202,7 +212,10 @@ async function initialize() {
       "[VALORANT] Riot Client Version: " +
         verRes.data["data"]["riotClientVersion"]
     );
-  } else failInitialize();
+  } else {
+    failInitialize();
+    return;
+  }
 
   ws = new LcuWebSocket(lockfileDet[3], port);
   ws.onReady(async () => {
