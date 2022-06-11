@@ -210,7 +210,7 @@ async function initialize() {
     log.info("[VALORANT] Initialized presence monitoring");
     initChatListeners();
     log.info("[VALORANT] Created chat monitoring");
-    initPartyListeners();
+    await initPartyListeners();
     log.info("[VALORANT] Created party monitoring");
 
     prevLockfile = lockfile;
