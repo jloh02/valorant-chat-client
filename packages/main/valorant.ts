@@ -173,7 +173,7 @@ async function initialize() {
     "/entitlements/v1/token",
     true
   );
-  if (entRet) {
+  if (entRet && entRet.status === 200) {
     const entJson = entRet.data;
     puuid = entJson["subject"];
     headers["Authorization"] = "Bearer " + entJson["accessToken"]; //Set token
@@ -188,7 +188,7 @@ async function initialize() {
     "/rso-auth/v1/authorization/userinfo",
     true
   );
-  if (authUserInfoRet) {
+  if (authUserInfoRet && authUserInfoRet.status === 200) {
     const authUserInfoJson = authUserInfoRet.data;
     const userInfo = JSON.parse(authUserInfoJson.userInfo);
     gameName = userInfo.acct.game_name;
@@ -196,11 +196,13 @@ async function initialize() {
   } else failInitialize();
 
   const verRes = await axios.get("https://valorant-api.com/v1/version");
-  headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
-  log.info(
-    "[VALORANT] Riot Client Version: " +
-      verRes.data["data"]["riotClientVersion"]
-  );
+  if (verRes && verRes.status === 200) {
+    headers["X-Riot-ClientVersion"] = verRes.data["data"]["riotClientVersion"];
+    log.info(
+      "[VALORANT] Riot Client Version: " +
+        verRes.data["data"]["riotClientVersion"]
+    );
+  } else failInitialize();
 
   ws = new LcuWebSocket(lockfileDet[3], port);
   ws.onReady(async () => {
@@ -322,7 +324,7 @@ function initChatListeners() {
   });
 }
 
-async function initPartyListeners() {
+function initPartyListeners() {
   ipcMain.handle("VALORANT_PARTY", async (event, command, paramA, paramB) => {
     switch (command) {
       //paramA: name, paramB: tag
