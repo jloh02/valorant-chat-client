@@ -8,6 +8,7 @@
     buildResources: "build",
     output: "release/${version}",
   },
+  files: ["dist"],
   win: {
     target: ["nsis"],
   },
