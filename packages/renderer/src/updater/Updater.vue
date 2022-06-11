@@ -17,7 +17,7 @@
       </div>
       <div class="updater-button">
         <button v-if="total === 1" @click="update">Update</button>
-        <p v-else>{{ transferred }}/{{ total }} kB</p>
+        <p v-else>{{ transferred }}/{{ total }} MB</p>
       </div>
     </div>
   </div>
@@ -28,8 +28,8 @@ import { ref, computed } from "vue";
 import XMark from "@/icons/XMark.vue";
 
 const props = defineProps<{
-  closeFn:()=>void;
-}>()
+  closeFn: () => void;
+}>();
 
 const transferred = ref(0);
 const total = ref(1);
@@ -50,8 +50,8 @@ window.ipc.on(
   "UPDATE",
   (command: string, newTransferred: number, newTotal: number) => {
     if (command !== "PROGRESS") return;
-    total.value = newTotal;
-    transferred.value = newTransferred;
+    total.value = Math.round(newTotal >> 10);
+    transferred.value = Math.round(newTransferred >> 10);
   }
 );
 </script>
@@ -92,7 +92,7 @@ window.ipc.on(
     padding: 0.25rem;
     border-radius: 0;
     background-color: transparent;
-  cursor: pointer;
+    cursor: pointer;
   }
 }
 

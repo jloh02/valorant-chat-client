@@ -58,10 +58,10 @@ export function testUpdater(mainWin: BrowserWindow) {
           setTimeout(() => {
             if (cancelled) return;
             autoUpdater.emit("download-progress", {
-              bytesPerSecond: 1,
+              bytesPerSecond: 10000,
               percent: i / 100,
-              total: 100,
-              transferred: i,
+              total: 1000000,
+              transferred: i*10000,
             });
           }, (i + 1) * 1000);
         }
