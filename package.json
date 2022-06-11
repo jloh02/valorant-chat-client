@@ -49,7 +49,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "electron-log": "^4.4.7",
-    "electron-updater": "^5.0.1",
+    "electron-updater": "4.6.5",
     "postcss": "^8.1.0",
     "regedit": "^5.1.1",
     "vue": "^3.2.35",
