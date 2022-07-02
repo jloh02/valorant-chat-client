@@ -53,11 +53,17 @@ export default class ValorantPresence {
     );
 
     this.gameState = privatePresence["sessionLoopState"];
-    this.gameMode =
-      privatePresence["provisioningFlow"] === "ShootingRange"
-        ? "In Range"
-        : GAME_MODE.get(privatePresence["queueId"]) ??
-          privatePresence["queueId"];
+
+    if (privatePresence["provisioningFlow"] === "ShootingRange")
+      this.gameMode = "In Range";
+    else if (privatePresence["provisioningFlow"] === "CustomGame")
+      this.gameMode = "Custom";
+    else if (privatePresence["provisioningFlow"] === "Matchmaking")
+      this.gameMode = "In Queue";
+    else
+      this.gameMode =
+        GAME_MODE.get(privatePresence["queueId"]) ?? privatePresence["queueId"];
+
     this.scoreAlly = privatePresence["partyOwnerMatchScoreAllyTeam"];
     this.scoreEnemy = privatePresence["partyOwnerMatchScoreEnemyTeam"];
     this.partyId = privatePresence["partyId"];
@@ -80,6 +86,7 @@ export class ValorantPresenceSelf extends ValorantPresence {
     super(presence);
     switch (this.gameState) {
       case "PREGAME":
+      case "MENUS":
         getGameId(`/pregame/v1/players/${presence.puuid}`).then((res) => {
           this.matchId = res?.data["MatchID"];
         });
