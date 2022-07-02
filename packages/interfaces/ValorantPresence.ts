@@ -58,8 +58,6 @@ export default class ValorantPresence {
       this.gameMode = "In Range";
     else if (privatePresence["provisioningFlow"] === "CustomGame")
       this.gameMode = "Custom";
-    else if (privatePresence["provisioningFlow"] === "Matchmaking")
-      this.gameMode = "In Queue";
     else
       this.gameMode =
         GAME_MODE.get(privatePresence["queueId"]) ?? privatePresence["queueId"];
