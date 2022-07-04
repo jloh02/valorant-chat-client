@@ -12,7 +12,7 @@
     <user-list-context-menu ref="contextMenu" />
     <ul class="user-list-presences">
       <div :key="selfPuuid" class="user-list-item-div">
-        <div class="user-list-item-button" style="cursor:default">
+        <div class="user-list-item-button" style="cursor: default">
           <user-list-item
             :active="false"
             :activeParty="presences.get(selfPuuid)?.partyId === activeParty"
@@ -32,6 +32,7 @@
           :partyCount="presences.get(selfPuuid)?.partySize ?? 1"
         />
       </div>
+
       <div
         v-for="[idx, f] of filteredFriends.entries()"
         :key="f.puuid"
@@ -51,9 +52,10 @@
             :active="f.puuid === active"
             :activeParty="presences.get(f.puuid)?.partyId === activeParty"
             :firstInParty="
-              idx === 0 ? (presences.get(selfPuuid)?.partyId !== activeParty):
-              (presences.get(f.puuid)?.partyId !==
-                presences.get(filteredFriends[idx - 1]?.puuid)?.partyId)
+              idx === 0
+                ? presences.get(selfPuuid)?.partyId !== activeParty
+                : presences.get(f.puuid)?.partyId !==
+                  presences.get(filteredFriends[idx - 1]?.puuid)?.partyId
             "
             :unread="unreadChats.has(f.puuid)"
             :puuid="f.puuid"

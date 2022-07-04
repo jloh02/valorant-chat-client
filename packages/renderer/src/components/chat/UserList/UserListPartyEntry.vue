@@ -23,12 +23,13 @@ defineProps<{
 
   position: relative;
   margin-bottom: 0.125rem;
+  transform: translateY(-0.25rem);
 
   div {
     @extend .center;
     height: 0.75rem;
     width: 3.5rem;
-    padding-top: 0.125rem;
+    padding-top: 0.375rem;
     padding-bottom: 0.25rem;
     border-radius: 0 0 0.25rem 0.25rem;
     background-color: transparent;

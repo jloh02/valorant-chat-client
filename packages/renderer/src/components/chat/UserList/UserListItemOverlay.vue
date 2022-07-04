@@ -9,13 +9,13 @@
         </span>
       </div>
     </div>
-    <div v-if="props.presence" class="user-list-item-sub-col">
+    <div v-if="props.presence" class="user-list-item-sub-col rank">
       <img
         class="user-list-item-rank-icon"
         :src="getRankIcon(props.presence.competitiveTier)"
       />
       <span
-        v-if="props.presence.competitiveTier > 20"
+        v-if="props.presence.competitiveTier > 23"
         :style="'color: #' + getRankColor(props.presence.competitiveTier)"
       >
         #{{ props.presence.leaderboardPosition }}
@@ -49,8 +49,8 @@ span {
 
   position: absolute;
   z-index: 100;
-  top: 3.75rem;
-  left: 0.125rem;
+  top: 3rem;
+  left: 0rem;
   right: 0.125rem;
   padding: 0.5rem 1rem;
 
@@ -71,6 +71,10 @@ span {
   justify-content: center;
   align-items: start;
   text-align: left;
+
+  &.rank {
+    align-items: center;
+  }
 }
 
 .user-list-item-overlay-note {
