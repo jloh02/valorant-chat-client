@@ -4,8 +4,14 @@
       <chat-message
         v-for="[idx, msg] of messages.entries()"
         :key="idx"
+        :insertDay="
+          idx == 0 ||
+          new Date(parseInt('' + msg.timestamp)).getDate() !==
+            new Date(parseInt('' + messages[idx - 1].timestamp)).getDate()
+        "
         :outgoing="msg.outgoing"
         :message="msg.message"
+        :datetime="new Date(parseInt('' + msg.timestamp))"
       />
       <div ref="chatMessagesViewLast" id="chat-messages-view-last" />
     </ul>
@@ -73,7 +79,7 @@ defineExpose({ scrollLastMessage });
   padding-right: 0.75rem;
   width: 100%;
   height: 100%;
-  :first-child{
+  :first-child {
     margin-top: auto;
   }
 }

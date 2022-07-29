@@ -12,7 +12,7 @@ export interface ValorantRawMessage {
   region: string;
   time: string;
   type: string;
-};
+}
 
 export default class ValorantMessage {
   body: string;
@@ -35,21 +35,24 @@ export default class ValorantMessage {
     this.pid = msg.pid;
     this.puuid = msg.puuid;
     this.time = msg.time;
-  } 
-};
+  }
+}
 
 export interface ValorantSimpleMessage {
   outgoing: boolean;
   message: string;
   timestamp: number;
-};
+}
 
 export function processMessage(
   messages: ValorantRawMessage[] | undefined
 ): ValorantMessage[] {
-  if(!messages) return [];
-  return messages?.reduce((arr:ValorantMessage[], currFriend:ValorantRawMessage) => {
-    if (currFriend) arr.push(new ValorantMessage(currFriend));
-    return arr
-  }, []);
+  if (!messages) return [];
+  return messages?.reduce(
+    (arr: ValorantMessage[], currFriend: ValorantRawMessage) => {
+      if (currFriend) arr.push(new ValorantMessage(currFriend));
+      return arr;
+    },
+    []
+  );
 }
