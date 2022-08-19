@@ -64,6 +64,7 @@ const sortedFriends = computed((): ValorantFriend[] =>
 /* ---------------------------- MESSAGES ---------------------------- */
 const chatMessagesView = ref<InstanceType<typeof ChatMessagesView>>();
 const allowUnread = ref(false); //Disallow unread notifications for first 3s to allow existing msgs to load
+const lastMessageUpdate = ref<number>(); //Timestamp of last message update; For initialization of messages to determine if notification should be displayed
 const unreadChats = reactive(new Set<string>()); //Set of unread chats cid
 
 const messages = reactive(
@@ -114,7 +115,6 @@ function setActive(newPuuid: string, newParty: string) {
 }
 
 /* ---------------------------- IPC LISTENERS ---------------------------- */
-let unreadTimeout: number;
 onMounted(() => {
   allowUnread.value = false;
   while (!window.ipc);
@@ -122,12 +122,19 @@ onMounted(() => {
     if (command === "MESSAGE") {
       updateMessages(data, allowUnread.value);
       if (!allowUnread.value) {
-        if (unreadTimeout) clearTimeout(unreadTimeout);
-        unreadTimeout = setTimeout(() => {
+        const nowMillis = Date.now();
+        if (
+          lastMessageUpdate.value &&
+          nowMillis - lastMessageUpdate.value > 500
+        ) {
           allowUnread.value = true;
-        }, 1000) as unknown as number;
+        } else {
+          lastMessageUpdate.value = nowMillis;
+        }
       }
-    } else if (command === "FRIEND") updateFriends(data);
+    } else if (command === "FRIEND") {
+      updateFriends(data);
+    }
   });
   window.ipc.invoke("VALORANT_CHAT", "FRIENDS").then((friends) => {
     updateFriends(friends);
@@ -135,9 +142,7 @@ onMounted(() => {
     window.ipc.invoke("VALORANT_CHAT", "HISTORY").then((messages) => {
       updateMessages(messages, false);
       chatMessagesView.value?.scrollLastMessage(false);
-      unreadTimeout = setTimeout(() => {
-        allowUnread.value = true;
-      }, 1000) as unknown as number;
+      lastMessageUpdate.value = Date.now();
     });
   });
 });
