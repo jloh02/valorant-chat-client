@@ -98,7 +98,7 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
         unreadChats.add(msg.puuid);
         userList.value?.scrollChatListToPuuid(msgCidPuuid);
       }
-      if (!msgOutgoing && !msgExists)
+      if (!msgOutgoing && !msgExists && newMessages.length === 1)
         window.ipc?.send("WINDOW", "NOTIFY", msg.gameName, msg.body);
     }
   });
