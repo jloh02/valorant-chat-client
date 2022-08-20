@@ -18,14 +18,23 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-
+        
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Install Yarn
+      run: npm install -g yarn
+    - name: Use Node.js ${{ matrix.node-version }} with Yarn
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - run: corepack enable
-    - run: yarn install
-    - run: yarn build
+    - name: Install Dependencies
+      run: yarn install
+    - name: Build App
+      run: yarn build
+    - name: Uninstall Yarn
+      run: npm uninstall -g yarn
