@@ -1,6 +1,8 @@
 # VALORANT Chat Client
-A Windows application to access VALORANT's chat function without opening the game
 
+![](https://github.com/jloh02/valorant-chat-client/actions/workflows/node.js.yml/badge.svg)
+
+A Windows application to access VALORANT's chat function without opening the game
 
 [![Discord](https://img.shields.io/badge/discord-join-7389D8?style=flat&logo=discord)](https://discord.gg/2fUY2Y7Rhr)
 
