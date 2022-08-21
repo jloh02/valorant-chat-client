@@ -121,8 +121,8 @@ Note: Some UI components have changed slightly. Below are the changes made
 ![](docs/components-title-bar.png)
 
 **Chat**
-`ChatApp`: Handles application state (data taken from Riot Client VALORANT API) and displaying of updater/error windows
-`Chat`: Actual chat UI
+`ChatApp`: Handles presence sent by VALORANT and displaying of updater/error windows
+`Chat`: Actual chat UI + other data taken from Riot Client VALORANT API (Messages and friends)
 
 ##### Level 3+ Structure
 ![](docs/components-chat.png)
