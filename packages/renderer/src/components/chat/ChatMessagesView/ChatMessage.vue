@@ -33,8 +33,12 @@ const date = computed(() => {
 });
 
 const time = computed(() => {
-  const dtStr = props.datetime.toTimeString().split(":");
-  return `${dtStr[0]}:${dtStr[1]}`;
+  const dtStr = props.datetime.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    hourCycle: "h24",
+    minute: "2-digit",
+  });
+  return `${dtStr}`;
 });
 </script>
 

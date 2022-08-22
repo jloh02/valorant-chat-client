@@ -75,7 +75,7 @@ const messagesView = computed(() => {
   if (!msgMap) return [];
   const msgList: ValorantSimpleMessage[] = Array.from(msgMap.values());
   return msgList.sort((a: ValorantSimpleMessage, b: ValorantSimpleMessage) => {
-    return a.timestamp - b.timestamp;
+    return a.datetime.getTime() - b.datetime.getTime();
   });
 });
 
@@ -89,7 +89,7 @@ function updateMessages(newMessages: ValorantMessage[], setUnread?: boolean) {
     messages.get(msgCidPuuid)?.set(msg.mid, {
       outgoing: msgOutgoing,
       message: msg.body,
-      timestamp: msg.time as unknown as number,
+      datetime: msg.datetime,
     });
     if (setUnread) {
       if (active.value === msgCidPuuid) {

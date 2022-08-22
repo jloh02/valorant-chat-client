@@ -23,7 +23,7 @@ export default class ValorantMessage {
   mid: string;
   pid: string;
   puuid: string;
-  time: string;
+  datetime: Date;
 
   constructor(msg: ValorantRawMessage) {
     this.body = msg.body;
@@ -34,14 +34,14 @@ export default class ValorantMessage {
     this.mid = msg.mid;
     this.pid = msg.pid;
     this.puuid = msg.puuid;
-    this.time = msg.time;
+    this.datetime = new Date(parseInt("" + msg.time));
   }
 }
 
 export interface ValorantSimpleMessage {
   outgoing: boolean;
   message: string;
-  timestamp: number;
+  datetime: Date;
 }
 
 export function processMessage(

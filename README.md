@@ -71,12 +71,4 @@ Nonetheless, you can check out the code. It's pretty much safe. I'm not trying t
  
 
 ## Contributing
-If you want to contribute back to this project, simply fork this repository, clone it and run
-```
-yarn install
-```
-
-To run a debug version
-```
-yarn electron:serve
-```
+Refer to ![CONTRIBUTING.md](CONTRIBUTING.md)
