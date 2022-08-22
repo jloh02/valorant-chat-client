@@ -4,7 +4,7 @@
 
 A Windows application to access VALORANT's chat function without opening the game
 
-![Active Downloads](https://img.shields.io/github/downloads/jloh02/valorant-chat-client/latest/total?color=orange&label=Latest%20Downloads&sort=semver&style=plastic) [![Discord](https://img.shields.io/badge/discord-join-7389D8?style=flat&logo=discord)](https://discord.gg/2fUY2Y7Rhr)
+![](https://img.shields.io/badge/dynamic/json?color=orange&label=Latest%20Downloads&query=%24.assets%5B1%5D.download_count&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fjloh02%2Fvalorant-chat-client%2Freleases%2Flatest) [![Discord](https://img.shields.io/badge/discord-join-7389D8?style=flat&logo=discord)](https://discord.gg/2fUY2Y7Rhr)
 
 **Rationale**
 
