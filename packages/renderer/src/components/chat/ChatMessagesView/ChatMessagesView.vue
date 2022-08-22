@@ -6,12 +6,11 @@
         :key="idx"
         :insertDay="
           idx == 0 ||
-          new Date(parseInt('' + msg.timestamp)).getDate() !==
-            new Date(parseInt('' + messages[idx - 1].timestamp)).getDate()
+          msg.datetime.getDate() !== messages[idx - 1].datetime.getDate()
         "
         :outgoing="msg.outgoing"
         :message="msg.message"
-        :datetime="new Date(parseInt('' + msg.timestamp))"
+        :datetime="msg.datetime"
       />
       <div ref="chatMessagesViewLast" id="chat-messages-view-last" />
     </ul>
